@@ -1,0 +1,14 @@
+.row {
+  display: flex;
+  flex-flow: row;
+  white-space: nowrap;
+  justify-content: flex-start;
+  justify-items: flex-start;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .row {
+    flex-flow: column;
+  }
+}

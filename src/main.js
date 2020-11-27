@@ -1,4 +1,5 @@
-import './vendor'
+import '~/vendor'
+import 'Styles/index'
 import Vue from 'vue'
 import App from './App.vue'
 

@@ -78,9 +78,13 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm.js',
+      '~': path.resolve(__dirname, 'src'),
+      'Assets': path.resolve(__dirname, 'src/assets'),
+      'Public': path.resolve(__dirname, 'src/assets/public'),
+      'Styles': path.resolve(__dirname, 'src/assets/stylesheets'),
     },
-    extensions: ['*', '.js', '.vue', '.json']
+    extensions: ['*', '.js', '.vue', '.json', '.scss']
   },
   devServer: {
     historyApiFallback: true,
