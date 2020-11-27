@@ -2,7 +2,7 @@
   <app-layout id="app" />
 </template>
 
-<script>
+<script lang="ts">
 import AppLayout from '~/components/app-layout'
 
 export default {

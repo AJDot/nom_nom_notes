@@ -24,7 +24,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import AppHeader from '~/components/app-header'
 
 export default {

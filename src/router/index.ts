@@ -1,8 +1,8 @@
-import { createWebHistory, createRouter } from "vue-router"
-import RecipesIndex from "~/views/recipes/Index"
-import NotFound from '~/views/NotFound'
+import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router"
+import RecipesIndex from "~/views/recipes/Index.vue"
+import NotFound from '~/views/NotFound.vue'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "home",
