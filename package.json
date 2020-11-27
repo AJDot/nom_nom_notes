@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "jquery": "^3.5.1",
-    "vue": "^3.0.3"
+    "vue": "^3.0.3",
+    "vue-router": "^4.0.0-rc.5"
   },
   "browserslist": [
     "> 1%",

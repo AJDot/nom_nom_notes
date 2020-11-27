@@ -1,17 +1,4 @@
 <template>
-  <!--  <% content_for :header_links do %>-->
-  <!--  <% if current_user? %>-->
-  <!--  <ul>-->
-  <!--    <li>-->
-  <!--      <a href="/recipe/create">-->
-  <!--        <i class="material-icons spin">add_circle_outline</i>-->
-  <!--        <span class="safe">New Recipe</span>-->
-  <!--      </a>-->
-  <!--    </li>-->
-  <!--  </ul>-->
-  <!--  <% end %>-->
-  <!--  <% end %>-->
-
   <div class="container">
     <aside class="filters">
       <a class="drawer_toggle" href="#"><i class="material-icons">filter_list</i></a>
