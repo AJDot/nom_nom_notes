@@ -1,9 +1,9 @@
 import { MutationTree } from 'vuex'
-import { PersistenceState } from '~/store/interfaces'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
+import { RecipesState } from '~/store/interfaces'
 
-const mutations: MutationTree<PersistenceState<Recipe>> = {
+const mutations: MutationTree<RecipesState> = {
   set(state, recipes) {
     state.all = recipes
   },

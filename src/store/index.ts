@@ -11,7 +11,7 @@ export const store = createStore<RootState>({
     recipes: recipes,
   },
   state: {
-  },
+  } as RootState,
   mutations: {},
   actions: {},
 })

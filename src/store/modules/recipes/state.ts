@@ -1,7 +1,6 @@
-import { PersistenceState } from '~/store/interfaces'
-import Recipe from 'Models/recipe'
+import { RecipesState } from '~/store/interfaces'
 
-const state: (() => PersistenceState<Recipe>) = () => ({
+const state: (() => RecipesState) = () => ({
   all: [],
 })
 

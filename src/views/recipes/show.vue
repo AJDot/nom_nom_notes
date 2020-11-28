@@ -72,23 +72,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue"
-import { mapState, useStore } from 'vuex'
+import { computed, defineComponent } from "vue"
+import { useStore } from 'vuex'
 import { stateKey } from '~/store'
 import router from '~/router'
-import Recipe from 'Models/recipe'
+import { RootState } from '~/store/interfaces'
 
 export default defineComponent({
   name: "recipe",
-  async beforeCreate() {
-    const store = useStore(stateKey)
-    await store.dispatch('recipes/fetch', router.currentRoute.value.params.id)
-  },
-  computed: {
-    ...mapState('recipes', {recipes: 'all'}),
-    recipe() {
-      return (<any>this).recipes.find((x: Recipe) => x.id && x.id.toString() === this.$route.params.id)
+  setup() {
+    const store = useStore<RootState>(stateKey)
+    store.dispatch('recipes/fetch', router.currentRoute.value.params.id)
+    return {
+      recipe: computed(() => store.getters['recipes/find'](router.currentRoute.value.params.id))
     }
-  }
+  },
 })
+
 </script>

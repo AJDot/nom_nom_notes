@@ -54,13 +54,15 @@ export default defineComponent({
   computed: {
     ...mapState('recipes', { recipes: 'all' }),
     sortedRecipes(): Array<Recipe> {
-      return ArrayUtils.sort<Recipe>(this.recipes, (a: Recipe, b: Recipe) => {
-        const nameA = a.name && a.name.toLowerCase()
+      return ArrayUtils.sort<any>(this.recipes, (a: Recipe, b: Recipe) => {
+        // if (typeof b === 'undefined') return 1
+        // if (typeof a === 'undefined') return -1
         const nameB = b.name && b.name.toLowerCase()
-        if (!nameA) return -1
+        const nameA = a.name && a.name.toLowerCase()
         if (!nameB) return 1
-        if (nameA < nameB) return -1
+        if (!nameA) return -1
         if (nameA > nameB) return 1
+        if (nameA < nameB) return -1
         return 0
       })
     },
