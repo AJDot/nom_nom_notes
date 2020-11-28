@@ -10,8 +10,7 @@
     </aside>
     <main>
       <ul class="card-list">
-        <!--        <% sort_by_name(@recipes).each do |recipe| %>-->
-        <li v-for="recipe in recipes">
+        <li v-for="recipe in sortedRecipes" :key="recipe.id">
           <article>
             <h1>{{ recipe.name }}</h1>
             <section>
@@ -39,21 +38,28 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
+import { mapState, useStore } from 'vuex'
+import { stateKey } from '~/store'
+import Recipe from 'Models/recipe'
+import { ArrayUtils } from '~/utils/arrayUtils'
 
 export default defineComponent({
   name: "recipes-index",
-  data () {
-    return {
-      recipes: [],
-    }
+  setup(props, context) {
+    const store = useStore(stateKey)
+    store.dispatch('recipes/getAll')
   },
-  created () {
-    $.ajax({
-      url: 'http://localhost:3000/v1/recipes',
-      method: 'get',
-    }).then(response => {
-      this.recipes = response
-    })
+  computed: {
+    ...mapState('recipes', { recipes: 'all' }),
+    sortedRecipes(): Array<Recipe> {
+      return ArrayUtils.sort(this.recipes, (a, b) => {
+        const nameA = a.name.toLowerCase()
+        const nameB = b.name.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+    },
   },
 })
 </script>

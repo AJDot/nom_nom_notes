@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import AppLayout from '~/components/app-layout'
+import AppLayout from '~/components/app-layout.vue'
 
 export default {
   name: 'app',

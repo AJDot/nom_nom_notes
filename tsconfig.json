@@ -49,6 +49,8 @@
      "paths": {
        "~/*": ["src/*"],
        "@/*": ["src/components/*"],
+       "Interfaces/*": ["src/interfaces/*"],
+       "Models/*": ["src/models/*"],
        "Assets/*": ["src/assets/*"],
        "Public/*": ["src/assets/public/*"],
        "Styles/*": ["src/assets/stylesheets/*"]
@@ -83,6 +85,7 @@
     "./node-modules"
   ],
   "files": [
-    "src/shims/vue-shims.d.ts"
+    "src/shims/vue-shim.d.ts",
+    "src/shims/vuex-shim.d.ts"
   ]
 }

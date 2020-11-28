@@ -42,6 +42,8 @@ module.exports = {
         loader: 'ts-loader',
         options: {
           appendTsSuffixTo: [/\.vue$/],
+          transpileOnly: true,
+          experimentalWatchApi: true,
         },
       },
       {
@@ -92,6 +94,8 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm-bundler.js',
       '~': path.resolve(__dirname, 'src'),
       '@': path.resolve(__dirname, 'src/components'),
+      'Interfaces': path.resolve(__dirname, 'src/interfaces'),
+      'Models': path.resolve(__dirname, 'src/models'),
       'Assets': path.resolve(__dirname, 'src/assets'),
       'Public': path.resolve(__dirname, 'src/assets/public'),
       'Styles': path.resolve(__dirname, 'src/assets/stylesheets'),

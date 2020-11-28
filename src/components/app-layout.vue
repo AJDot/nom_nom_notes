@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import AppHeader from '~/components/app-header'
+import AppHeader from '~/components/app-header.vue'
 
 export default {
   components: {
