@@ -20,7 +20,9 @@
               <!--              <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />-->
               <!--              <% end %>-->
               <div class="content">
-                <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
+                <router-link :to="{name: 'recipe', params: {id: recipe.id}}" class="view-recipe">
+                  <i class="material-icons">receipt</i>View Recipe
+                </router-link>
                 <ul class="categories">
                   <li v-for="category in recipe.categories">
                     {{ category.name }}
@@ -47,14 +49,16 @@ export default defineComponent({
   name: "recipes-index",
   setup(props, context) {
     const store = useStore(stateKey)
-    store.dispatch('recipes/getAll')
+    store.dispatch('recipes/fetchAll')
   },
   computed: {
     ...mapState('recipes', { recipes: 'all' }),
     sortedRecipes(): Array<Recipe> {
-      return ArrayUtils.sort(this.recipes, (a, b) => {
-        const nameA = a.name.toLowerCase()
-        const nameB = b.name.toLowerCase()
+      return ArrayUtils.sort<Recipe>(this.recipes, (a: Recipe, b: Recipe) => {
+        const nameA = a.name && a.name.toLowerCase()
+        const nameB = b.name && b.name.toLowerCase()
+        if (!nameA) return -1
+        if (!nameB) return 1
         if (nameA < nameB) return -1
         if (nameA > nameB) return 1
         return 0

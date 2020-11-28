@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router"
 import RecipesIndex from "~/views/recipes/Index.vue"
+import ShowRecipe from "~/views/recipes/show.vue"
 import NotFound from '~/views/NotFound.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -9,10 +10,15 @@ const routes: RouteRecordRaw[] = [
     component: RecipesIndex,
   },
   {
+    path: "/recipes/:id",
+    name: "recipe",
+    component: ShowRecipe,
+  },
+  {
     name: 'not-found',
     path: "/:catchAll(.*)",
-    component: NotFound
-  }
+    component: NotFound,
+  },
 ]
 
 const router = createRouter({

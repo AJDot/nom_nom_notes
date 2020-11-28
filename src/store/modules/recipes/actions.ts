@@ -14,22 +14,32 @@ interface RecipesResponse extends Response {
 }
 
 const actions: ActionTree<PersistenceState<Recipe>, RootState> = {
-  async get({ commit }, id) {
+  async fetch({ commit }, id) {
     const [result, statusText, xhr] = await new AjaxRequest({
       url: Path.apiBase() + Path.recipe(id),
       type: 'GET',
       dataType: 'json',
     }).send<RecipeResponse>()
     commit('add', new Recipe(result.recipe))
+    return [result, statusText, xhr]
   },
-  async getAll({ commit }) {
+  async fetchAll({ commit }) {
     const [result, statusText, xhr] = await new AjaxRequest({
       url: Path.apiBase() + Path.recipes(),
       type: 'GET',
       dataType: 'json',
     }).send<RecipesResponse>()
     commit('set', result.recipes.map(x => new Recipe(x)))
+    return [result, statusText, xhr]
   },
+  async findOrFetch({commit, getters, dispatch}, id: string) {
+    const recipe = getters.find(id)
+    if (recipe) {
+      return Promise.resolve(recipe)
+    } else {
+      return dispatch('fetch', id)
+    }
+  }
 }
 
 export default actions
