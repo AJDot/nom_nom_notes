@@ -10,14 +10,5 @@ export default {
   components: {
     AppLayout,
   },
-  data () {
-    $.ajax({
-      url: 'http://localhost:3000/v1/recipes',
-      method: 'get',
-    })
-    return {
-      msg: 'Welcome to Your Vue.js App',
-    }
-  },
 }
 </script>

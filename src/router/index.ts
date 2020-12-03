@@ -5,13 +5,18 @@ import NotFound from '~/views/NotFound.vue'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
     name: "home",
+    path: "/",
     component: RecipesIndex,
   },
   {
-    path: "/recipes/:id",
     name: "recipe",
+    path: "/recipes/:id",
+    component: ShowRecipe,
+  },
+  {
+    name: "recipe",
+    path: "/recipes/:id",
     component: ShowRecipe,
   },
   {

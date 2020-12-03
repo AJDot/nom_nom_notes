@@ -74,17 +74,19 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue"
 import { useStore } from 'vuex'
-import { stateKey } from '~/store'
+import { stateKey, StoreModuleTypes } from '~/store'
 import router from '~/router'
 import { RootState } from '~/store/interfaces'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import { RecipeGetterTypes } from '~/store/modules/recipes/getters'
 
 export default defineComponent({
   name: "recipe",
   setup() {
     const store = useStore<RootState>(stateKey)
-    store.dispatch('recipes/fetch', router.currentRoute.value.params.id)
+    store.dispatch(StoreModuleTypes.Recipes + RecipeActionTypes.FETCH, router.currentRoute.value.params.id)
     return {
-      recipe: computed(() => store.getters['recipes/find'](router.currentRoute.value.params.id))
+      recipe: computed(() => store.getters[StoreModuleTypes.Recipes + RecipeGetterTypes.FIND](router.currentRoute.value.params.id))
     }
   },
 })

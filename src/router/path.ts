@@ -3,7 +3,7 @@ import { RRecord } from 'Interfaces/model_interfaces'
 
 class Path {
   apiBase(): string {
-    return 'http://localhost:3000/v1'
+    return 'http://localhost:3000/api/v1'
   }
 
   root() {
