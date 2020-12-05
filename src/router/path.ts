@@ -10,6 +10,10 @@ class Path {
     return router.options.history.base
   }
 
+  home() {
+    return this.root()
+  }
+
   recipes() {
     return '/recipes'
   }
@@ -34,4 +38,6 @@ class Path {
   }
 }
 
-export default new Path()
+const RoutePath = new Path()
+
+export default RoutePath
