@@ -15,7 +15,7 @@
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
         <li>
-          <a href="/sign_in">Sign In</a>
+          <router-link :to="{name: 'new-session'}">Sign In</router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% if request.path_info != '/sign_up' %>-->
