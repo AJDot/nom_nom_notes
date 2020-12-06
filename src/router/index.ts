@@ -1,6 +1,8 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router"
 import RecipesIndex from "~/views/recipes/Index.vue"
 import ShowRecipe from "~/views/recipes/show.vue"
+import ShowRecipeHeader from "~/views/recipes/showHeader.vue"
+import EditRecipe from "~/views/recipes/edit.vue"
 import SignIn from "~/views/signIn.vue"
 import SignUp from "~/views/signUp.vue"
 import NotFound from '~/views/NotFound.vue'
@@ -11,17 +13,25 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.Home,
     path: "/",
+    redirect: { name: RouteName.Recipes },
+  },
+  {
+    name: RouteName.Recipes,
+    path: "/recipes",
     component: RecipesIndex,
   },
   {
     name: RouteName.Recipe,
     path: "/recipes/:id",
-    component: ShowRecipe,
+    components: {
+      default: ShowRecipe,
+      'secondary-header': ShowRecipeHeader,
+    },
   },
   {
-    name: RouteName.Recipes,
-    path: "/recipes/:id",
-    component: ShowRecipe,
+    name: RouteName.EditRecipe,
+    path: "/recipes/:id/edit",
+    component: EditRecipe,
   },
   {
     name: RouteName.SignIn,

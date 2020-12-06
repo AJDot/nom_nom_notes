@@ -32,7 +32,9 @@
       </ul>
     </div>
     <div class="secondary-header">
-      <!--      <div class="header-links"><%== yield_content :header_links %></div>-->
+      <div class="header-links">
+        <router-view name="secondary-header" />
+      </div>
     </div>
     <flash />
   </header>
