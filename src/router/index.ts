@@ -4,42 +4,44 @@ import ShowRecipe from "~/views/recipes/show.vue"
 import SignIn from "~/views/signIn.vue"
 import SignUp from "~/views/signUp.vue"
 import NotFound from '~/views/NotFound.vue'
+import { RouteName } from '~/router/routeName'
+import AppConfig from '~/appConfig'
 
-const routes: RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
-    name: "home",
+    name: RouteName.Home,
     path: "/",
     component: RecipesIndex,
   },
   {
-    name: "recipe",
+    name: RouteName.Recipe,
     path: "/recipes/:id",
     component: ShowRecipe,
   },
   {
-    name: "recipe",
+    name: RouteName.Recipes,
     path: "/recipes/:id",
     component: ShowRecipe,
   },
   {
-    name: "new-session",
+    name: RouteName.SignIn,
     path: "/sign_in",
     component: SignIn,
   },
   {
-    name: "sign-up",
+    name: RouteName.SignUp,
     path: "/sign_up",
     component: SignUp,
   },
   {
-    name: 'not-found',
+    name: RouteName.NotFound,
     path: "/:catchAll(.*)",
     component: NotFound,
   },
 ]
 
 const router = createRouter({
-  history: createWebHistory('/'),
+  history: createWebHistory(AppConfig.ROOT_PATH),
   routes,
 })
 

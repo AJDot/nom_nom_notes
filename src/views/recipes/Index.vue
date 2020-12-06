@@ -20,7 +20,7 @@
               <!--              <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />-->
               <!--              <% end %>-->
               <div class="content">
-                <router-link :to="{name: 'recipe', params: {id: recipe.id}}" class="view-recipe">
+                <router-link :to="{name: RouteName.Recipe, params: {id: recipe.id}}" class="view-recipe">
                   <i class="material-icons">receipt</i>View Recipe
                 </router-link>
                 <ul class="categories">
@@ -45,12 +45,16 @@ import { stateKey, StoreModulePath } from '~/store'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
   name: "recipes-index",
   setup(props, context) {
     const store = useStore(stateKey)
     store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH_ALL)
+    return {
+      RouteName,
+    }
   },
   computed: {
     ...mapState('recipes', { recipes: 'all' }),

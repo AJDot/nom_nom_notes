@@ -33,6 +33,8 @@ import { defineComponent } from "vue"
 import { StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
+import { RouteName } from '~/router/routeName'
+import RoutePath from '~/router/path'
 
 export default defineComponent({
   name: "sign-up",
@@ -53,7 +55,7 @@ export default defineComponent({
   },
   methods: {
     signup() {
-      this.$http.plain.post('/signup', { ...this.formData })
+      this.$http.plain.post(RoutePath.signup(), { ...this.formData })
         .then(response => this.signupSuccessful(response))
         .catch(error => this.signupFailed(error))
     },
@@ -63,8 +65,7 @@ export default defineComponent({
         return
       }
       this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_IN, response.data.csrf)
-      this.error = ''
-      this.$router.replace({ name: "home" })
+      this.$router.replace({ name: RouteName.Home })
     },
     signupFailed(error) {
       const errorText = error?.response?.data?.error
@@ -73,7 +74,7 @@ export default defineComponent({
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
-        this.$router.replace({ name: "home" })
+        this.$router.replace({ name: RouteName.Home })
       }
     },
   },
