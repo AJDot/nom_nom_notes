@@ -4,7 +4,6 @@ import Recipe from 'Models/recipe'
 import AjaxRequest from '~/services/ajaxRequest'
 import Path from '~/router/path'
 import { ModelData, ModelResponse } from 'Interfaces/server_interfaces'
-import { StoreModulePath } from '~/store'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 
 export enum RecipeActionTypes {
@@ -22,7 +21,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
       type: 'GET',
       dataType: 'json',
     }).send<ModelResponse>()
-    commit(RecipeMutationTypes.ADD, new Recipe({ id: result.data.id, ...result.data.attributes }))
+    commit(RecipeMutationTypes.ADD,{ id: result.data.id, ...result.data.attributes })
     return [result, statusText, xhr]
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
@@ -31,19 +30,22 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
       type: 'GET',
       dataType: 'json',
     }).send<ModelResponse<ModelData[]>>()
-    commit(RecipeMutationTypes.SET, result.data.map(x => new Recipe({ id: x.id, ...x.attributes })))
+    commit(RecipeMutationTypes.SET, result.data.map(x => {
+      return { id: x.id, ...x.attributes }
+    }))
     return [result, statusText, xhr]
   },
   async [RecipeActionTypes.FIND_OR_FETCH]({
                                             commit,
                                             getters,
                                             dispatch,
-                                          }: ActionContext<RecipesState, RootState>, id: string) {
-    const recipe = getters.find(id)
+                                          }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {
+    const recipe = Recipe.find(id)
     if (recipe) {
       return Promise.resolve(recipe)
     } else {
-      return dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, id)
+      await dispatch(RecipeActionTypes.FETCH, id)
+      return Promise.resolve(Recipe.find(id))
     }
   },
 }

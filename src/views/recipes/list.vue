@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { mapState, useStore } from 'vuex'
+import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
@@ -57,11 +57,11 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState('recipes', { recipes: 'all' }),
+    recipes(): Array<Recipe> {
+      return Recipe.all()
+    },
     sortedRecipes(): Array<Recipe> {
       return ArrayUtils.sort<any>(this.recipes, (a: Recipe, b: Recipe) => {
-        // if (typeof b === 'undefined') return 1
-        // if (typeof a === 'undefined') return -1
         const nameB = b.name && b.name.toLowerCase()
         const nameA = a.name && a.name.toLowerCase()
         if (!nameB) return 1

@@ -97,34 +97,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue"
+import { defineComponent } from "vue"
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
 import { RootState } from '~/store/interfaces'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import { RecipeGetterTypes } from '~/store/modules/recipes/getters'
 import Recipe from 'Models/recipe'
 import RoutePath from '~/router/path'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
   name: "recipe-edit",
-  // setup() {
-  //   const store = useStore<RootState>(stateKey)
-  //   return store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, router.currentRoute.value.params.id)
-  //     .then(() => {
-  //       const recipe = computed(() => store.getters[StoreModulePath.Recipes + RecipeGetterTypes.FIND](router.currentRoute.value.params.id))
-  //       const tRecipe = ref(new Recipe())
-  //       tRecipe.value.loadFromModel(recipe.value)
-  //
-  //       return {
-  //         tRecipe: tRecipe,
-  //       }
-  //     })
-  // },
   data() {
     return {
       tRecipe: null,
@@ -133,23 +118,17 @@ export default defineComponent({
   },
   async beforeMount() {
     const store = useStore<RootState>(stateKey)
-    const finder = store.getters[StoreModulePath.Recipes + RecipeGetterTypes.FIND]
-    let recipe = finder(router.currentRoute.value.params.id)
-    if (!recipe) {
-      await store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, router.currentRoute.value.params.id)
-      recipe = finder(router.currentRoute.value.params.id)
-    }
-    this.recipe = recipe
-    this.tRecipe = new Recipe({ id: this.recipe.id, name: this.recipe.name })
+    const id =router.currentRoute.value.params.id
+    this.recipe = await store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH, id)
+    this.tRecipe = new Recipe({ ...this.recipe.$toJson(), id: 't_' + this.recipe.id,  })
   },
   methods: {
     save() {
-      this.$http.secured.patch(RoutePath.apiBase() + RoutePath.recipe(this.tRecipe.id), {
-        recipe: {
-          name: this.tRecipe.name,
-          description: this.tRecipe.description,
-          note: this.tRecipe.note,
-        },
+      const json = this.tRecipe.$toJson()
+      json.id = this.recipe.id
+      delete json['id']
+      this.$http.secured.patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.id), {
+        recipe: json
       })
         .then(response => this.updateSuccessful(response))
         .catch(error => this.updateFailed(error))
@@ -158,8 +137,10 @@ export default defineComponent({
       if (response.data.error) {
         this.updateFailed(response)
       }
-      this.recipe.name = this.tRecipe.name
-      this.$router.push({ name: RouteName.Recipe, params: { id: this.tRecipe.id } })
+      const json = this.tRecipe.$toJson()
+      delete json['id']
+      this.recipe.$update(json)
+      this.$router.push({ name: RouteName.Recipe, params: { id: this.recipe.id } })
     },
     updateFailed(error) {
       const errorText = error?.response?.data?.error ?? error?.data?.error
