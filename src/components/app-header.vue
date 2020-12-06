@@ -14,19 +14,19 @@
       <ul class="suffix s-200-em horizontal j-slash">
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
-        <li>
+        <li v-if="!signedIn">
           <router-link :to="{name: 'new-session'}">Sign In</router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% if request.path_info != '/sign_up' %>-->
-        <li>
-          <a href="/sign_up">Sign Up</a>
+        <li v-if="!signedIn">
+          <router-link :to="{name: 'sign-up'}">Sign Up</router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% end %>-->
         <!--        <% if current_user.present? %>-->
-        <li>
-          <a href="/sign_out">Sign Out</a>
+        <li v-if="signedIn">
+          <a href="#" @click.prevent="signOut">Sign Out</a>
         </li>
         <!--        <% end %>-->
       </ul>
@@ -34,9 +34,43 @@
     <div class="secondary-header">
       <!--      <div class="header-links"><%== yield_content :header_links %></div>-->
     </div>
+    <flash />
   </header>
 </template>
 
 <script lang="ts">
-export default {}
+import { defineComponent } from 'vue'
+import { mapState } from 'vuex'
+import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { StoreModulePath } from '~/store'
+import Flash from '@/flash.vue'
+
+export default defineComponent({
+  components: { Flash },
+  data() {
+    return {
+      error: null,
+    }
+  },
+  computed: {
+    ...mapState('sessions', { signedIn: 'signedIn' }),
+    // signedIn(): boolean {
+    //   return localStorage.signedIn
+    // },
+  },
+  methods: {
+    setError(error, text): void {
+      this.error = (error.response && error.response.data && error.response.data.error) || text
+    },
+    signOut(): void {
+      this.$http.secured.delete('/signin')
+        .then(response => {
+          this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+          this.$router.replace({ name: 'home' })
+          this.error = null
+        })
+        .catch(error => this.setError(error, 'Cannot sign out'))
+    },
+  },
+})
 </script>

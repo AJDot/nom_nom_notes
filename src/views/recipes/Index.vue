@@ -41,7 +41,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { mapState, useStore } from 'vuex'
-import { stateKey, StoreModuleTypes } from '~/store'
+import { stateKey, StoreModulePath } from '~/store'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
@@ -50,7 +50,7 @@ export default defineComponent({
   name: "recipes-index",
   setup(props, context) {
     const store = useStore(stateKey)
-    store.dispatch(StoreModuleTypes.Recipes + RecipeActionTypes.FETCH_ALL)
+    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH_ALL)
   },
   computed: {
     ...mapState('recipes', { recipes: 'all' }),

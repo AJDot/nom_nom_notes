@@ -1,7 +1,8 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router"
 import RecipesIndex from "~/views/recipes/Index.vue"
 import ShowRecipe from "~/views/recipes/show.vue"
-import NewSession from "~/views/sessions/new.vue"
+import SignIn from "~/views/signIn.vue"
+import SignUp from "~/views/signUp.vue"
 import NotFound from '~/views/NotFound.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -23,7 +24,12 @@ const routes: RouteRecordRaw[] = [
   {
     name: "new-session",
     path: "/sign_in",
-    component: NewSession,
+    component: SignIn,
+  },
+  {
+    name: "sign-up",
+    path: "/sign_up",
+    component: SignUp,
   },
   {
     name: 'not-found',

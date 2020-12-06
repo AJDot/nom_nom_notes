@@ -9,5 +9,8 @@ export interface PersistenceState<T> {
 }
 
 export type RecipesState = PersistenceState<Recipe>
-export type SessionsState = object
 
+export interface SessionsState {
+  csrf: string | null
+  signedIn: boolean | null
+}

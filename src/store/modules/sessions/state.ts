@@ -1,7 +1,8 @@
 import { SessionsState } from '~/store/interfaces'
 
 const state: (() => SessionsState) = () => ({
-  all: [],
+  csrf: localStorage.csrf,
+  signedIn: localStorage.signedIn,
 })
 
 export default state
