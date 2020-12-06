@@ -78,15 +78,15 @@ import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
 import { RootState } from '~/store/interfaces'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import { RecipeGetterTypes } from '~/store/modules/recipes/getters'
+import Recipe from 'Models/recipe'
 
 export default defineComponent({
   name: "recipe",
   setup() {
     const store = useStore<RootState>(stateKey)
-    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, router.currentRoute.value.params.id)
+    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH, router.currentRoute.value.params.id)
     return {
-      recipe: computed(() => store.getters[StoreModulePath.Recipes + RecipeGetterTypes.FIND](router.currentRoute.value.params.id))
+      recipe: computed(() => Recipe.find(router.currentRoute.value.params.id))
     }
   },
 })

@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router"
-import RecipesIndex from "~/views/recipes/Index.vue"
+import ListRecipe from "~/views/recipes/list.vue"
 import ShowRecipe from "~/views/recipes/show.vue"
 import ShowRecipeHeader from "~/views/recipes/showHeader.vue"
 import EditRecipe from "~/views/recipes/edit.vue"
@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.Recipes,
     path: "/recipes",
-    component: RecipesIndex,
+    component: ListRecipe,
   },
   {
     name: RouteName.Recipe,
