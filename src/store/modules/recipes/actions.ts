@@ -4,7 +4,7 @@ import Recipe from 'Models/recipe'
 import AjaxRequest from '~/services/ajaxRequest'
 import Path from '~/router/path'
 import { ModelData, ModelResponse } from 'Interfaces/server_interfaces'
-import { StoreModuleTypes } from '~/store'
+import { StoreModulePath } from '~/store'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 
 export enum RecipeActionTypes {
@@ -43,7 +43,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     if (recipe) {
       return Promise.resolve(recipe)
     } else {
-      return dispatch(StoreModuleTypes.Recipes + RecipeActionTypes.FETCH, id)
+      return dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, id)
     }
   },
 }

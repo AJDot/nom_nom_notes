@@ -19,19 +19,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
-import { useLoading } from '~/mixins/loading'
-import { StoreModuleTypes } from '~/store'
-import { SessionActionTypes } from '~/store/modules/sessions/actions'
+import { StoreModulePath } from '~/store'
+import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { FlashActionTypes } from '~/store/modules/flash'
 
 export default defineComponent({
   name: "sign-in",
-  setup(props, context) {
-    const { loads, loading } = useLoading()
-    return {
-      loads,
-      loading: loading,
-    }
-  },
   data() {
     return {
       formData: {
@@ -47,11 +40,6 @@ export default defineComponent({
     this.checkSignedIn()
   },
   methods: {
-    // submit() {
-    // this.loading('my thing', () => {
-    // this.$store.dispatch(StoreModuleTypes.Session + SessionActionTypes.CREATE)
-    // })
-    // },
     signin() {
       this.$http.plain.post('/signin', { ...this.formData })
         .then(response => this.signinSuccessful(response))
@@ -62,19 +50,18 @@ export default defineComponent({
         this.signinFailed(response)
         return
       }
-      localStorage.csrf = response.data.csrf
-      localStorage.signedIn = true
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_IN, response.data.csrf)
       this.error = ''
-      this.$router.replace({name: "home"})
+      this.$router.replace({ name: "home" })
     },
     signinFailed(error) {
-      this.error = (error.response && error.response.data && error.response.data.error) || ''
-      delete localStorage.csrf
-      delete localStorage.signedIn
+      const errorText = error?.response?.data?.error ?? error?.data?.error
+      if (errorText) this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, { flash: { alert: errorText } })
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
-        this.$router.replace({name: "home"})
+        this.$router.replace({ name: "home" })
       }
     },
   },
