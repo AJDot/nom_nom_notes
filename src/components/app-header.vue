@@ -15,12 +15,12 @@
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{name: 'new-session'}">Sign In</router-link>
+          <router-link :to="{name: RouteName.SignIn}">Sign In</router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% if request.path_info != '/sign_up' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{name: 'sign-up'}">Sign Up</router-link>
+          <router-link :to="{name: RouteName.SignUp}">Sign Up</router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% end %>-->
@@ -44,30 +44,30 @@ import { mapState } from 'vuex'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { StoreModulePath } from '~/store'
 import Flash from '@/flash.vue'
+import { RouteName } from '~/router/routeName'
+import { FlashActionTypes } from '~/store/modules/flash'
+import RoutePath from '~/router/path'
 
 export default defineComponent({
   components: { Flash },
-  data() {
+  setup(props, context) {
     return {
-      error: null,
+      RouteName,
     }
   },
   computed: {
     ...mapState('sessions', { signedIn: 'signedIn' }),
-    // signedIn(): boolean {
-    //   return localStorage.signedIn
-    // },
   },
   methods: {
     setError(error, text): void {
-      this.error = (error.response && error.response.data && error.response.data.error) || text
+      const errorText = (error.response && error.response.data && error.response.data.error) || text
+      if (errorText) this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, { flash: { alert: errorText } })
     },
     signOut(): void {
-      this.$http.secured.delete('/signin')
+      this.$http.secured.delete(RoutePath.signin())
         .then(response => {
           this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
-          this.$router.replace({ name: 'home' })
-          this.error = null
+          this.$router.replace({ name: RouteName.Home })
         })
         .catch(error => this.setError(error, 'Cannot sign out'))
     },

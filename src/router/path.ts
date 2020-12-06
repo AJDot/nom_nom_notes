@@ -14,6 +14,18 @@ class Path {
     return this.root()
   }
 
+  signin(): string {
+    return '/signin'
+  }
+
+  signup(): string {
+    return '/signup'
+  }
+
+  refresh(): string {
+    return '/refresh'
+  }
+
   recipes() {
     return '/recipes'
   }

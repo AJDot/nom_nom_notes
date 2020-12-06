@@ -1,9 +1,9 @@
 import axios from 'axios'
-
-const API_URL = 'http://localhost:3000'
+import AppConfig from '~/appConfig'
+import RoutePath from '~/router/path'
 
 const securedAxiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: AppConfig.API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ const securedAxiosInstance = axios.create({
 })
 
 const plainAxiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: AppConfig.API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ securedAxiosInstance.interceptors.request.use(config => {
 securedAxiosInstance.interceptors.response.use(undefined, error => {
   if (error.response && error.response.config && error.response.status === 401) {
     // If 401 by expired access cookie, we do a refresh request
-    return plainAxiosInstance.post('/refresh', {}, { headers: { 'X-CSRF-TOKEN': localStorage.csrf } })
+    return plainAxiosInstance.post(RoutePath.refresh(), {}, { headers: { 'X-CSRF-TOKEN': localStorage.csrf } })
       .then(response => {
         localStorage.csrf = response.data.csrf
         localStorage.signedIn = true
