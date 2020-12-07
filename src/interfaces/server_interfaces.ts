@@ -1,17 +1,9 @@
-import jqXHR = JQuery.jqXHR
-
-export interface Response {
-  data: object
-}
-
-export interface ModelData {
+export interface ServerData<T = Record<string, unknown>> {
   id: string
   type: string
-  attributes: object
+  attributes: T
 }
 
-export interface ModelResponse<T = ModelData> {
+export interface ServerResponse<U, T = ServerData<U>> {
   data: T
 }
-
-export type ServerData<T = Response> = [T, string, jqXHR]
