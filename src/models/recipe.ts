@@ -1,7 +1,9 @@
 import { Fields, Model } from '@vuex-orm/core'
 import { Nameable, RRecord } from 'Interfaces/model_interfaces'
 
-export interface RRecipe extends RRecord, Nameable {
+export type RecipeAttributes = Nameable
+
+export interface RRecipe extends RRecord, RecipeAttributes {
 }
 
 export default class Recipe extends Model implements RRecipe {
