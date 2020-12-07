@@ -10,10 +10,8 @@ import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 createApp(App)
   .use(router)
   .use(store, stateKey)
-  .use(VueAxios,
-    {
-      secured: securedAxiosInstance,
-      plain: plainAxiosInstance,
-    },
-  )
+  .use(VueAxios, {
+    secured: securedAxiosInstance,
+    plain: plainAxiosInstance,
+  })
   .mount('#app')

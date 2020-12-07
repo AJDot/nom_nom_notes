@@ -14,17 +14,23 @@ type RecipeMutations = { [key in RecipeMutationTypes]: Mutation<RecipesState> }
 const mutations: MutationTree<RecipesState> & RecipeMutations = {
   async [RecipeMutationTypes.SET](state, recipes: RRecord[]) {
     recipes = ArrayUtils.wrap(recipes)
-    await Recipe.insert({data: {id: 'abc', name: '123'}})
+    await Recipe.insert({
+      data: {
+        id: 'abc',
+        name: '123',
+      },
+    })
     // delete all recipes that don't match the incoming ids
-    Recipe.query().where((recipe: Recipe) => {
-      return !recipes.some(r => r.id === recipe.id)
-    }).get().forEach(recipe => recipe.$delete())
+    Recipe.query()
+      .where((recipe: Recipe) => {
+        return !recipes.some((r) => r.id === recipe.id)
+      })
+      .get()
+      .forEach((recipe) => recipe.$delete())
     await Recipe.insertOrUpdate({ data: recipes })
   },
   async [RecipeMutationTypes.ADD](state, recipes: RRecord | Array<RRecord>) {
-    await ArrayUtils.wrap(recipes).forEach(recipe => {
-      Recipe.insertOrUpdate({ data: recipes })
-    })
+    await Recipe.insertOrUpdate({ data: recipes })
   },
 }
 

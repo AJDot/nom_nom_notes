@@ -8,7 +8,7 @@ import VuexORM from '@vuex-orm/core'
 import Recipe from 'Models/recipe'
 
 // define injection key
-export const stateKey: InjectionKey<Store<RootState>> = Symbol()
+export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
 
 export enum StoreModuleType {
   Root = '',
@@ -28,9 +28,7 @@ const database = new VuexORM.Database()
 database.register(Recipe)
 
 export const store = createStore<RootState>({
-  plugins: [
-    VuexORM.install(database),
-  ],
+  plugins: [VuexORM.install(database)],
   modules: {
     recipes,
     sessions,

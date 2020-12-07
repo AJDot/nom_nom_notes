@@ -6,7 +6,7 @@
 import AppLayout from '~/components/app-layout.vue'
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     AppLayout,
   },

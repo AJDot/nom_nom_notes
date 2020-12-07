@@ -1,6 +1,6 @@
 import { RecipesState } from '~/store/interfaces'
 
-const state: (() => RecipesState) = () => ({
+const state: () => RecipesState = () => ({
   all: [],
 })
 

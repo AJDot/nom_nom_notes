@@ -1,5 +1,6 @@
-import router from "./index"
+import router from './index'
 import { RRecord } from 'Interfaces/model_interfaces'
+import { Hash } from 'Interfaces/util_interfaces'
 
 class Path {
   apiBase(): string {
@@ -31,10 +32,10 @@ class Path {
   }
 
   recipe(recipeId: RRecord['id']) {
-    return Path.buildPath(`/recipes/:id`, { id: recipeId })
+    return Path.buildPath('/recipes/:id', { id: recipeId })
   }
 
-  private static buildPath(path: string, wildcards: object) {
+  private static buildPath(path: string, wildcards: Hash) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {
       let val

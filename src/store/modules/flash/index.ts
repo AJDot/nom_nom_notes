@@ -1,4 +1,13 @@
-import { Action, ActionTree, Commit, Getter, GetterTree, Module, Mutation, MutationTree } from 'vuex'
+import {
+  Action,
+  ActionTree,
+  Commit,
+  Getter,
+  GetterTree,
+  Module,
+  Mutation,
+  MutationTree,
+} from 'vuex'
 import { RootState } from '~/store/interfaces'
 import { FlashHash } from 'Interfaces/flashInterfaces'
 
@@ -7,8 +16,7 @@ export interface FlashState {
   trigger: boolean
 }
 
-export enum FlashGetterTypes {
-}
+export enum FlashGetterTypes {}
 
 export enum FlashMutationTypes {
   SET = 'SET',
@@ -20,11 +28,15 @@ export enum FlashActionTypes {
   SET = 'SET',
 }
 
-type FlashGetters = { [key in FlashGetterTypes]: Getter<FlashState, RootState> }
+type FlashGetters = {
+  [key in FlashGetterTypes]: Getter<FlashState, RootState>;
+}
 type FlashMutations = { [key in FlashMutationTypes]: Mutation<FlashState> }
-type FlashActions = { [key in FlashActionTypes]: Action<FlashState, RootState> }
+type FlashActions = {
+  [key in FlashActionTypes]: Action<FlashState, RootState>;
+}
 
-const state: (() => FlashState) = () => ({
+const state: () => FlashState = () => ({
   flash: {},
   trigger: true,
 })
@@ -34,7 +46,7 @@ const getters: GetterTree<FlashState, RootState> & FlashGetters = {}
 const mutations: MutationTree<FlashState> & FlashMutations = {
   [FlashMutationTypes.SET](state, { flash }: { flash: FlashHash }) {
     state.flash = flash
-    state.trigger = true;
+    state.trigger = true
   },
   [FlashMutationTypes.RESET](state) {
     state.flash = {}
@@ -47,11 +59,13 @@ const mutations: MutationTree<FlashState> & FlashMutations = {
 }
 
 const actions: ActionTree<FlashState, RootState> & FlashActions = {
-  [FlashActionTypes.SET]({ commit }: { commit: Commit }, { flash }: { flash: FlashHash }) {
+  [FlashActionTypes.SET](
+    { commit }: { commit: Commit },
+    { flash }: { flash: FlashHash },
+  ) {
     commit(FlashMutationTypes.SET, { flash })
   },
 }
-
 
 const flash: Module<FlashState, RootState> = {
   namespaced: true,

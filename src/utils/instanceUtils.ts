@@ -1,8 +1,8 @@
 export const InstanceUtils = {
-  isPresent(instance: any): boolean {
+  isPresent(instance: unknown): boolean {
     if (instance === null || instance === undefined) {
       return false
-    } else if (instance instanceof Array) {
+    } else if (Array.isArray(instance)) {
       return instance.length > 0
     } else if (this.isObject(instance)) {
       return Object.keys(instance).length > 0
@@ -10,25 +10,31 @@ export const InstanceUtils = {
       return instance
     } else if (this.isString(instance)) {
       return instance.length > 0
+    } else if (this.isFunction(instance)) {
+      return true
     } else {
       return false
     }
   },
-  toArray(instance: any) {
+  toArray<T = unknown>(instance: T | Array<T>): Array<T> {
     if (this.isPresent(instance)) {
-      return (instance instanceof Array) ? instance : [instance]
-    } else return []
+      return instance instanceof Array ? instance : [instance]
+    } else {
+      return []
+    }
   },
-  isObject(instance: any) {
+  isObject(instance: unknown): instance is Record<string, unknown> {
     return typeof instance === 'object'
   },
-  isBoolean(instance: any) {
+  isBoolean(instance: unknown): instance is boolean {
     return typeof instance === 'boolean'
   },
-  isString(instance: any) {
+  isString(instance: unknown): instance is string {
     return typeof instance === 'string'
   },
-  isFunction(instance: any) {
+  isFunction(
+    instance: unknown,
+  ): instance is (..._args: Array<unknown>) => unknown {
     return typeof instance === 'function'
   },
 }

@@ -6,11 +6,13 @@ export enum SessionGetterTypes {
   SIGNED_IN = 'SIGNED_IN',
 }
 
-type SessionGetters = { [key in SessionGetterTypes]: Getter<SessionsState, RootState> }
+type SessionGetters = {
+  [key in SessionGetterTypes]: Getter<SessionsState, RootState>;
+}
 
 const getters: GetterTree<SessionsState, RootState> & SessionGetters = {
-  [SessionGetterTypes.CSRF]: state => state.csrf,
-  [SessionGetterTypes.SIGNED_IN]: state => state.signedIn,
+  [SessionGetterTypes.CSRF]: (state) => state.csrf,
+  [SessionGetterTypes.SIGNED_IN]: (state) => state.signedIn,
 }
 
 export default getters

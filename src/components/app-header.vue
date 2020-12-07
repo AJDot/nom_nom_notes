@@ -2,9 +2,16 @@
   <header class="app-header">
     <div class="primary-header row">
       <h1 class="row">
-        <a href="/" aria-label="Go to Nom Nom Notes Home">
+        <a
+          href="/"
+          aria-label="Go to Nom Nom Notes Home"
+        >
           <!--        <a href="/" aria-label="Go to <%= context_dig('app.header.title') %> Home">-->
-          <img src="~Public/logo-512x512.png" alt="Nom Nom Notes" class="logo-n3">
+          <img
+            src="~Public/logo-512x512.png"
+            alt="Nom Nom Notes"
+            class="logo-n3"
+          >
           <!--          <img src="/logo-512x512.png" alt="<%= context_dig('app.header.title') %>" class="logo-n3">-->
           <!--          <% if %w[/ /sign_in /sign_up].include?(request.path_info) %>-->
           <!--          <span><%= context_dig('app.header.title') %></span>-->
@@ -15,18 +22,25 @@
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{name: RouteName.SignIn}">Sign In</router-link>
+          <router-link :to="{ name: RouteName.SignIn }">
+            Sign In
+          </router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% if request.path_info != '/sign_up' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{name: RouteName.SignUp}">Sign Up</router-link>
+          <router-link :to="{ name: RouteName.SignUp }">
+            Sign Up
+          </router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% end %>-->
         <!--        <% if current_user.present? %>-->
         <li v-if="signedIn">
-          <a href="#" @click.prevent="signOut">Sign Out</a>
+          <a
+            href="#"
+            @click.prevent="signOut"
+          >Sign Out</a>
         </li>
         <!--        <% end %>-->
       </ul>
@@ -52,7 +66,7 @@ import RoutePath from '~/router/path'
 
 export default defineComponent({
   components: { Flash },
-  setup(props, context) {
+  setup(_props, _context) {
     return {
       RouteName,
     }
@@ -62,16 +76,25 @@ export default defineComponent({
   },
   methods: {
     setError(error, text): void {
-      const errorText = (error.response && error.response.data && error.response.data.error) || text
-      if (errorText) this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, { flash: { alert: errorText } })
+      const errorText =
+        (error.response && error.response.data && error.response.data.error) ||
+        text
+      if (errorText) {
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: errorText },
+        })
+      }
     },
     signOut(): void {
-      this.$http.secured.delete(RoutePath.signin())
-        .then(response => {
-          this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      this.$http.secured
+        .delete(RoutePath.signin())
+        .then((_response) => {
+          this.$store.commit(
+            StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
+          )
           this.$router.replace({ name: RouteName.Home })
         })
-        .catch(error => this.setError(error, 'Cannot sign out'))
+        .catch((error) => this.setError(error, 'Cannot sign out'))
     },
   },
 })
