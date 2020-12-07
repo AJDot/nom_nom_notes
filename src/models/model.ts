@@ -11,7 +11,7 @@ export default class Model implements RRecord {
 
   loadFromJson(object = {}): this {
     Object.assign(this, object)
-    return this;
+    return this
   }
 
   loadFromModel(model: Model): this {

@@ -12,34 +12,46 @@ export enum RecipeActionTypes {
   FIND_OR_FETCH = 'FIND_OR_FETCH',
 }
 
-type RecipeActions = { [key in RecipeActionTypes]: Action<RecipesState, RootState> }
+type RecipeActions = {
+  [key in RecipeActionTypes]: Action<RecipesState, RootState>;
+}
 
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
-  async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
+  async [RecipeActionTypes.FETCH](
+    { commit }: ActionContext<RecipesState, RootState>,
+    id: string,
+  ) {
     const [result, statusText, xhr] = await new AjaxRequest({
       url: Path.apiBase() + Path.recipe(id),
       type: 'GET',
       dataType: 'json',
     }).send<ModelResponse>()
-    commit(RecipeMutationTypes.ADD,{ id: result.data.id, ...result.data.attributes })
+    commit(RecipeMutationTypes.ADD, {
+      id: result.data.id,
+      ...result.data.attributes,
+    })
     return [result, statusText, xhr]
   },
-  async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
+  async [RecipeActionTypes.FETCH_ALL]({
+    commit,
+  }: ActionContext<RecipesState, RootState>) {
     const [result, statusText, xhr] = await new AjaxRequest({
       url: Path.apiBase() + Path.recipes(),
       type: 'GET',
       dataType: 'json',
     }).send<ModelResponse<ModelData[]>>()
-    commit(RecipeMutationTypes.SET, result.data.map(x => {
-      return { id: x.id, ...x.attributes }
-    }))
+    commit(
+      RecipeMutationTypes.SET,
+      result.data.map((x) => {
+        return { id: x.id, ...x.attributes }
+      }),
+    )
     return [result, statusText, xhr]
   },
-  async [RecipeActionTypes.FIND_OR_FETCH]({
-                                            commit,
-                                            getters,
-                                            dispatch,
-                                          }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {
+  async [RecipeActionTypes.FIND_OR_FETCH](
+    { dispatch }: ActionContext<RecipesState, RootState>,
+    id: string,
+  ): Promise<Recipe | null> {
     const recipe = Recipe.find(id)
     if (recipe) {
       return Promise.resolve(recipe)

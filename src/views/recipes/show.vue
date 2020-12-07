@@ -1,5 +1,4 @@
 <template>
-
   <!--  <% content_for :header_links do %>-->
   <!--  <ul>-->
   <!--    <li>-->
@@ -19,7 +18,11 @@
   <!--  </ul>-->
   <!--  <% end %>-->
 
-  <article v-if="recipe" class="recipe" :key="recipe.id">
+  <article
+    v-if="recipe"
+    :key="recipe.id"
+    class="recipe"
+  >
     <header>
       <!--      <% if @recipe.image.url.present? %>-->
       <!--      <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" />-->
@@ -29,7 +32,9 @@
       <h1>{{ recipe.name }}</h1>
 
       <ul>
-        <li v-if="recipe.cook_interval">Cook Time: {{ recipe.cook_interval }}</li>
+        <li v-if="recipe.cook_interval">
+          Cook Time: {{ recipe.cook_interval }}
+        </li>
       </ul>
 
       <ul class="ethnicities">
@@ -42,7 +47,9 @@
         <!--        <li><%= cat.name %></li>-->
         <!--        <% end %>-->
       </ul>
-      <p v-if="recipe.description">{{ recipe.description }}</p>
+      <p v-if="recipe.description">
+        {{ recipe.description }}
+      </p>
     </header>
     <section>
       <h2>Ingredients</h2>
@@ -72,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue"
+import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
@@ -81,14 +88,16 @@ import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
 
 export default defineComponent({
-  name: "recipe",
+  name: 'Recipe',
   setup() {
     const store = useStore<RootState>(stateKey)
-    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH, router.currentRoute.value.params.id)
+    store.dispatch(
+      StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
+      router.currentRoute.value.params.id,
+    )
     return {
-      recipe: computed(() => Recipe.find(router.currentRoute.value.params.id))
+      recipe: computed(() => Recipe.find(router.currentRoute.value.params.id)),
     }
   },
 })
-
 </script>

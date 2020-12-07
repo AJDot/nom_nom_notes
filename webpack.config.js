@@ -1,6 +1,7 @@
-var path = require('path')
-var webpack = require('webpack')
+const path = require('path')
+const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = {
   entry: './src/main.ts',
@@ -11,31 +12,27 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
+    new ESLintPlugin({
+      fix: false,
+      extensions: ['.js', '.jsx', '.vue', '.ts', '.tsx'],
+      cache: false,
+      emitWarning: true,
+      emitError: true,
+    }),
   ],
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-        ],
+        use: ['vue-style-loader', 'css-loader'],
       },
       {
         test: /\.scss$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          'sass-loader',
-        ],
+        use: ['vue-style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.sass$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          'sass-loader?indentedSyntax',
-        ],
+        use: ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax'],
       },
       {
         test: /\.ts$/,
@@ -54,12 +51,8 @@ module.exports = {
             // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
             // the "scss" and "sass" values for the lang attribute to the right configs here.
             // other preprocessors should work out of the box, no loader config like this necessary.
-            'scss': [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader',
-            ],
-            'sass': [
+            scss: ['vue-style-loader', 'css-loader', 'sass-loader'],
+            sass: [
               'vue-style-loader',
               'css-loader',
               'sass-loader?indentedSyntax',
@@ -81,24 +74,24 @@ module.exports = {
         },
       },
       {
-        test: require.resolve("jquery"),
-        loader: "expose-loader",
+        test: require.resolve('jquery'),
+        loader: 'expose-loader',
         options: {
-          exposes: ["$", "jQuery"],
+          exposes: ['$', 'jQuery'],
         },
       },
     ],
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm-bundler.js',
+      vue$: 'vue/dist/vue.esm-bundler.js',
       '~': path.resolve(__dirname, 'src'),
       '@': path.resolve(__dirname, 'src/components'),
-      'Interfaces': path.resolve(__dirname, 'src/interfaces'),
-      'Models': path.resolve(__dirname, 'src/models'),
-      'Assets': path.resolve(__dirname, 'src/assets'),
-      'Public': path.resolve(__dirname, 'src/assets/public'),
-      'Styles': path.resolve(__dirname, 'src/assets/stylesheets'),
+      Interfaces: path.resolve(__dirname, 'src/interfaces'),
+      Models: path.resolve(__dirname, 'src/models'),
+      Assets: path.resolve(__dirname, 'src/assets'),
+      Public: path.resolve(__dirname, 'src/assets/public'),
+      Styles: path.resolve(__dirname, 'src/assets/stylesheets'),
     },
     extensions: ['*', '.js', '.ts', '.vue', '.json', '.scss'],
   },

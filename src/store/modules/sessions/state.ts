@@ -1,6 +1,6 @@
 import { SessionsState } from '~/store/interfaces'
 
-const state: (() => SessionsState) = () => ({
+const state: () => SessionsState = () => ({
   csrf: localStorage.csrf,
   signedIn: localStorage.signedIn,
 })

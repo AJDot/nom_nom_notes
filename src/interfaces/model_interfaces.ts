@@ -5,4 +5,3 @@ export interface RRecord {
 export interface Nameable {
   name: string | undefined
 }
-

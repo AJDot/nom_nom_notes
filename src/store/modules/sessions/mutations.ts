@@ -8,9 +8,11 @@ export enum SessionMutationTypes {
   SIGN_OUT = 'SIGN_OUT',
 }
 
-type SessionMutations = { [key in SessionMutationTypes]: Mutation<SessionsState> }
+type SessionMutations = {
+  [key in SessionMutationTypes]: Mutation<SessionsState>;
+}
 
-function setCsrf(state: SessionsState, csrf: string | null) {
+function setCsrf(state: SessionsState, csrf: string | null): void {
   state.csrf = csrf
   if (csrf) {
     localStorage.csrf = state.csrf
@@ -19,7 +21,7 @@ function setCsrf(state: SessionsState, csrf: string | null) {
   }
 }
 
-function setSignedIn(state: SessionsState, signedIn: boolean | null) {
+function setSignedIn(state: SessionsState, signedIn: boolean | null): void {
   state.signedIn = signedIn
   if (signedIn) {
     localStorage.signedIn = state.signedIn
@@ -29,16 +31,16 @@ function setSignedIn(state: SessionsState, signedIn: boolean | null) {
 }
 
 const mutations: MutationTree<SessionsState> & SessionMutations = {
-  [SessionMutationTypes.SIGN_IN](state: SessionsState, csrf: string): any {
+  [SessionMutationTypes.SIGN_IN](state: SessionsState, csrf: string): void {
     setCsrf(state, csrf)
     setSignedIn(state, true)
   },
-  [SessionMutationTypes.SIGN_OUT](state: SessionsState): any {
+  [SessionMutationTypes.SIGN_OUT](state: SessionsState): void {
     setCsrf(state, null)
     setSignedIn(state, null)
   },
   [SessionMutationTypes.SET_CSRF]: setCsrf,
-  [SessionMutationTypes.SET_SIGNED_IN]: setSignedIn
+  [SessionMutationTypes.SET_SIGNED_IN]: setSignedIn,
 }
 
 export default mutations
