@@ -39,7 +39,11 @@
 import { defineComponent } from 'vue'
 import { StoreModulePath, StoreModuleType } from '~/store'
 import { FlashMutationTypes, FlashState } from '~/store/modules/flash'
+import { FlashHash } from 'Interfaces/flashInterfaces'
 
+interface Data {
+  flash: FlashHash
+}
 export default defineComponent({
   props: {
     fixed: {
@@ -47,19 +51,20 @@ export default defineComponent({
       default: false,
     },
   },
-  data: function() {
+  data(): Data {
     return {
       flash: {},
     }
   },
   computed: {
-    fullMessages(): { [key: string]: string[] } {
-      const flashes = {}
+    fullMessages(): FlashHash<Array<string>> {
+      const flashes: FlashHash<Array<string>> = {}
       for (const key in this.flash) {
-        if (this.flash[key] instanceof Array) {
-          flashes[key] = this.flash[key]
+        const val: string | string[] = this.flash[key]
+        if (val instanceof Array) {
+          flashes[key] = val
         } else {
-          flashes[key] = [this.flash[key]]
+          flashes[key] = [val]
         }
       }
       return flashes

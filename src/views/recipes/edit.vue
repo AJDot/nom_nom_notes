@@ -158,10 +158,17 @@ import Recipe from 'Models/recipe'
 import RoutePath from '~/router/path'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
+import { AxiosError, AxiosResponse } from 'axios'
+import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+
+interface Data {
+  tRecipe: Recipe | null
+  recipe: Recipe | null
+}
 
 export default defineComponent({
   name: 'RecipeEdit',
-  data() {
+  data(): Data {
     return {
       tRecipe: null,
       recipe: null,
@@ -174,13 +181,16 @@ export default defineComponent({
       StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
       id,
     )
-    this.tRecipe = new Recipe({
-      ...this.recipe.$toJson(),
-      id: 't_' + this.recipe.id,
-    })
+    if (this.recipe) {
+      this.tRecipe = new Recipe({
+        ...this.recipe.$toJson(),
+        id: 't_' + this.recipe.id,
+      })
+    }
   },
   methods: {
     save() {
+      if (!this.tRecipe || !this.recipe) return
       const json = this.tRecipe.$toJson()
       json.id = this.recipe.id
       delete json.id
@@ -189,27 +199,35 @@ export default defineComponent({
           recipe: json,
         })
         .then((response) => this.updateSuccessful(response))
-        .catch((error) => this.updateFailed(error))
+        .catch((error) => this.updateError(error))
     },
-    updateSuccessful(response) {
+    updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {
         this.updateFailed(response)
       }
-      const json = this.tRecipe.$toJson()
-      delete json.id
-      this.recipe.$update(json)
-      this.$router.push({
-        name: RouteName.Recipe,
-        params: { id: this.recipe.id },
-      })
+      if (this.tRecipe && this.recipe) {
+        const json = this.tRecipe.$toJson()
+        delete json.id
+        this.recipe.$update(json)
+        this.$router.push({
+          name: RouteName.Recipe,
+          params: { id: this.recipe.id ?? '' },
+        })
+      }
     },
-    updateFailed(error) {
-      const errorText = error?.response?.data?.error ?? error?.data?.error
+    updateFailed(error: AxiosResponse) {
+      this.processFailedUpdate(error?.data?.error)
+    },
+    updateError(error: AxiosError) {
+      this.processFailedUpdate(error.response?.data.error)
+    },
+    processFailedUpdate(errorText: string | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
   },
 })

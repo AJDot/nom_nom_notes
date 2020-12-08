@@ -41,6 +41,7 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
 import RoutePath from '~/router/path'
+import { AxiosError, AxiosResponse } from 'axios'
 
 export default defineComponent({
   name: 'SignIn',
@@ -63,9 +64,9 @@ export default defineComponent({
       this.$http.plain
         .post(RoutePath.signin(), { ...this.formData })
         .then((response) => this.signinSuccessful(response))
-        .catch((error) => this.signinFailed(error))
+        .catch((error) => this.signinError(error))
     },
-    signinSuccessful(response) {
+    signinSuccessful(response: AxiosResponse) {
       if (!response.data.csrf) {
         this.signinFailed(response)
         return
@@ -76,16 +77,19 @@ export default defineComponent({
       )
       this.$router.replace({ name: RouteName.Home })
     },
-    signinFailed(error) {
-      const errorText = error?.response?.data?.error ?? error?.data?.error
+    signinFailed(error: AxiosResponse) {
+      this.processFailedSignin(error?.data?.error)
+    },
+    signinError(error: AxiosError) {
+      this.processFailedSignin(error.response?.data.error)
+    },
+    processFailedSignin(errorText: string | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(
-        StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
-      )
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
