@@ -56,11 +56,12 @@ module.exports = {
         requireLast: false,
       },
       singleline: {
-        delimiter: 'semi',
+        delimiter: 'comma',
         requireLast: false,
       },
     }],
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
+    '@typescript-eslint/no-empty-interface': ['off'],
   },
 }

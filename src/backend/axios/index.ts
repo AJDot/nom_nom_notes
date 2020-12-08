@@ -1,6 +1,9 @@
 import axios from 'axios'
 import AppConfig from '~/appConfig'
 import RoutePath from '~/router/path'
+import { StoreModuleType } from '~/store/interfaces'
+import { store, StoreModulePath } from '~/store'
+import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 
 const securedAxiosInstance = axios.create({
   baseURL: AppConfig.API_URL,
@@ -23,7 +26,7 @@ securedAxiosInstance.interceptors.request.use((config) => {
   if (method !== 'OPTIONS' && method !== 'GET') {
     config.headers = {
       ...config.headers,
-      'X-CSRF-TOKEN': localStorage.csrf,
+      'X-CSRF-TOKEN': store.state[StoreModuleType.Session].csrf,
     }
   }
   return config
@@ -40,19 +43,22 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
       .post(
         RoutePath.refresh(),
         {},
-        { headers: { 'X-CSRF-TOKEN': localStorage.csrf } },
+        { headers: { 'X-CSRF-TOKEN': store.state[StoreModuleType.Session].csrf } },
       )
       .then((response) => {
-        localStorage.csrf = response.data.csrf
-        localStorage.signedIn = true
+        store.commit(
+          StoreModulePath.Session + SessionMutationTypes.SIGN_IN,
+          response.data.csrf,
+        )
         // After another successful refresh - repeat original request
         const retryConfig = error.response.config
-        retryConfig.headers['X-CSRF-TOKEN'] = localStorage.csrf
+        retryConfig.headers['X-CSRF-TOKEN'] = store.state[StoreModuleType.Session].csrf
         return plainAxiosInstance.request(retryConfig)
       })
       .catch((error) => {
-        delete localStorage.csrf
-        delete localStorage.signedIn
+        store.commit(
+          StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
+        )
         // redirect to signin if refresh fails
         location.replace('/')
         return Promise.reject(error)

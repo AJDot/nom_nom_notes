@@ -10,13 +10,6 @@ import Recipe from 'Models/recipe'
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
 
-export enum StoreModuleType {
-  Root = '',
-  Recipes = 'recipes',
-  Session = 'sessions',
-  Flash = 'flash',
-}
-
 export enum StoreModulePath {
   Root = '',
   Recipes = 'recipes/',

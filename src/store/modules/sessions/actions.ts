@@ -1,24 +1,22 @@
 import { Action, ActionTree } from 'vuex'
 import { RootState, SessionsState } from '~/store/interfaces'
+import RoutePath from '~/router/path'
+import { plainAxiosInstance } from '~/backend/axios'
+import { AxiosResponse } from 'axios'
 
-export enum SessionActionTypes {}
-
-// CREATE = 'CREATE',
+export enum SessionActionTypes {
+  CREATE = 'CREATE',
+}
 
 type SessionActions = {
   [key in SessionActionTypes]: Action<SessionsState, RootState>;
 }
 
 const actions: ActionTree<SessionsState, RootState> & SessionActions = {
-  // async [SessionActionTypes.CREATE]({ commit }: ActionContext<SessionsState, RootState>, id: string) {
-  // const [result, statusText, xhr] = await new AjaxRequest({
-  //   url: Path.apiBase() + Path.recipe(id),
-  //   type: 'GET',
-  //   dataType: 'json',
-  // }).send<SessionResponse>()
-  // // commit('add', new Recipe(result.recipe))
-  // return [result, statusText, xhr]
-  // },
+  async [SessionActionTypes.CREATE](_store, payload: {email: string, password: string}): Promise<AxiosResponse> {
+    return plainAxiosInstance
+      .post(RoutePath.signin(), payload)
+  },
 }
 
 export default actions
