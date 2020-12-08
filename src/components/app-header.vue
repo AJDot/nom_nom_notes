@@ -63,6 +63,7 @@ import Flash from '@/flash.vue'
 import { RouteName } from '~/router/routeName'
 import { FlashActionTypes } from '~/store/modules/flash'
 import RoutePath from '~/router/path'
+import { AxiosError } from 'axios'
 
 export default defineComponent({
   components: { Flash },
@@ -75,7 +76,7 @@ export default defineComponent({
     ...mapState('sessions', { signedIn: 'signedIn' }),
   },
   methods: {
-    setError(error, text): void {
+    setError(error: AxiosError, text: string): void {
       const errorText =
         (error.response && error.response.data && error.response.data.error) ||
         text

@@ -1,25 +1,12 @@
-import _Vue from 'vue'
-import Axios, { AxiosInstance, AxiosStatic } from 'axios'
+import { AxiosInstance } from 'axios'
 
-export function AxiosPlugin<AxiosPluginOptions>(Vue: typeof _Vue, _options?: AxiosPluginOptions): void {
-  // do stuff with options
-  Vue.prototype.$http = Axios
-}
-
-export class AxiosPluginOptions {
-  // add stuff
+interface AxiosInstances {
   plain: AxiosInstance
-  secure: AxiosInstance
+  secured: AxiosInstance
 }
 
-// eslint-disable-next-line no-redeclare
-export class AxiosStatic {
-  plain: AxiosInstance
-  secure: AxiosInstance
-}
-
-declare module 'vue/types/vue' {
-  interface Vue {
-    $http: AxiosStatic
+declare module '@vue/runtime-core' {
+  export interface ComponentCustomProperties {
+    $http: AxiosInstances
   }
 }

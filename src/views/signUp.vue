@@ -52,6 +52,7 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
 import RoutePath from '~/router/path'
+import { AxiosError, AxiosResponse } from 'axios'
 
 export default defineComponent({
   name: 'SignUp',
@@ -77,7 +78,7 @@ export default defineComponent({
         .then((response) => this.signupSuccessful(response))
         .catch((error) => this.signupFailed(error))
     },
-    signupSuccessful(response) {
+    signupSuccessful(response: AxiosResponse) {
       if (!response.data.csrf) {
         this.signupFailed(response)
         return
@@ -88,16 +89,19 @@ export default defineComponent({
       )
       this.$router.replace({ name: RouteName.Home })
     },
-    signupFailed(error) {
-      const errorText = error?.response?.data?.error
+    signupFailed(error: AxiosResponse) {
+      this.processFailedSignup(error?.data?.error)
+    },
+    signupError(error: AxiosError) {
+      this.processFailedSignup(error.response?.data.error)
+    },
+    processFailedSignup(errorText: string | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(
-        StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
-      )
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
