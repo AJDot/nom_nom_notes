@@ -40,8 +40,8 @@ import { StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
-import RoutePath from '~/router/path'
 import { AxiosError, AxiosResponse } from 'axios'
+import { SessionActionTypes } from '~/store/modules/sessions/actions'
 
 export default defineComponent({
   name: 'SignIn',
@@ -61,10 +61,9 @@ export default defineComponent({
   },
   methods: {
     signin() {
-      this.$http.plain
-        .post(RoutePath.signin(), { ...this.formData })
-        .then((response) => this.signinSuccessful(response))
-        .catch((error) => this.signinError(error))
+      this.$store.dispatch(StoreModulePath.Session + SessionActionTypes.CREATE, this.formData)
+        .then((response: AxiosResponse) => this.signinSuccessful(response))
+        .catch((error: AxiosError) => this.signinError(error))
     },
     signinSuccessful(response: AxiosResponse) {
       if (!response.data.csrf) {

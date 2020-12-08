@@ -204,6 +204,7 @@ export default defineComponent({
     updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {
         this.updateFailed(response)
+        return
       }
       if (this.tRecipe && this.recipe) {
         const json = this.tRecipe.$toJson()
@@ -222,12 +223,12 @@ export default defineComponent({
       this.processFailedUpdate(error.response?.data.error)
     },
     processFailedUpdate(errorText: string | null | undefined) {
+      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
   },
 })
