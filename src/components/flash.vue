@@ -10,7 +10,8 @@
     >
       <div
         :key="type.toString()"
-        class="alert alert-dismissible"
+        class="flash"
+        :class="type"
         role="alert"
       >
         <ul>
