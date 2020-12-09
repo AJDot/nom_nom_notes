@@ -74,7 +74,7 @@ export default defineComponent({
         StoreModulePath.Session + SessionMutationTypes.SIGN_IN,
         response.data.csrf,
       )
-      this.$router.replace({ name: RouteName.Home })
+      this.$routerExtension.replace({ name: RouteName.Home })
     },
     signinFailed(error: AxiosResponse) {
       this.processFailedSignin(error?.data?.error)

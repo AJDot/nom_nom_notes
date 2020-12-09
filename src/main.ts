@@ -6,6 +6,7 @@ import router from '~/router'
 import { stateKey, store } from '~/store'
 import VueAxios from 'vue-axios'
 import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
+import routerExtension from '~/router/routerExtension'
 
 createApp(App)
   .use(router)
@@ -14,4 +15,5 @@ createApp(App)
     secured: securedAxiosInstance,
     plain: plainAxiosInstance,
   })
+  .use(routerExtension)
   .mount('#app')
