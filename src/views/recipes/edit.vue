@@ -160,6 +160,7 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { HttpStatusCode } from '~/utils/httpUtils'
 
 interface Data {
   tRecipe: Recipe | null
@@ -217,13 +218,23 @@ export default defineComponent({
       }
     },
     updateFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error)
+      this.processFailedUpdate(error?.data?.error, { signOut: false })
     },
     updateError(error: AxiosError) {
-      this.processFailedUpdate(error.response?.data.error)
+      const errorText = error.response?.data.error
+      const opts = {}
+      switch (error.response?.status) {
+        case (HttpStatusCode.Forbidden):
+          opts.signOut = true
+          break
+        default:
+          opts.signOut = false
+          break
+      }
+      this.processFailedUpdate(errorText, opts)
     },
-    processFailedUpdate(errorText: string | null | undefined) {
-      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+    processFailedUpdate(errorText: string | null | undefined, { signOut }: { signOut: boolean }) {
+      if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },

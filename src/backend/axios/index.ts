@@ -1,9 +1,13 @@
 import axios from 'axios'
 import AppConfig from '~/appConfig'
 import RoutePath from '~/router/path'
-import { StoreModuleType } from '~/store/interfaces'
 import { store, StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+
+/**
+ * DO NOT use store to get csrf - go straight to localStorage
+ * If csrf is removed manually from localstorage (instead of through Vue app), this will still get the updated value
+ */
 
 const securedAxiosInstance = axios.create({
   baseURL: AppConfig.API_URL,
@@ -26,7 +30,7 @@ securedAxiosInstance.interceptors.request.use((config) => {
   if (method !== 'OPTIONS' && method !== 'GET') {
     config.headers = {
       ...config.headers,
-      'X-CSRF-TOKEN': store.state[StoreModuleType.Session].csrf,
+      'X-CSRF-TOKEN': localStorage.csrf,
     }
   }
   return config
@@ -43,7 +47,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
       .post(
         RoutePath.refresh(),
         {},
-        { headers: { 'X-CSRF-TOKEN': store.state[StoreModuleType.Session].csrf } },
+        { headers: { 'X-CSRF-TOKEN': localStorage.csrf } },
       )
       .then((response) => {
         store.commit(
@@ -52,7 +56,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
         )
         // After another successful refresh - repeat original request
         const retryConfig = error.response.config
-        retryConfig.headers['X-CSRF-TOKEN'] = store.state[StoreModuleType.Session].csrf
+        retryConfig.headers['X-CSRF-TOKEN'] = localStorage.csrf
         return plainAxiosInstance.request(retryConfig)
       })
       .catch((error) => {
