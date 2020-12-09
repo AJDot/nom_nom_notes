@@ -87,6 +87,7 @@
   "files": [
     "src/shims/vue-shim.d.ts",
     "src/shims/vuex-shim.d.ts",
-    "src/shims/axios-plugin.d.ts"
+    "src/shims/axios-plugin.d.ts",
+    "src/shims/router-extension-plugin.d.ts"
   ]
 }
