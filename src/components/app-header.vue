@@ -22,7 +22,7 @@
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{ name: RouteName.SignIn }">
+          <router-link :to="{ name: RouteName.SignIn, params: {originalRequest: $router.currentRoute.value.path} }">
             Sign In
           </router-link>
         </li>
