@@ -12,6 +12,7 @@ export enum RecipeActionTypes {
   FETCH_ALL = 'FETCH_ALL',
   FIND_OR_FETCH = 'FIND_OR_FETCH',
   CREATE = 'CREATE',
+  DESTROY = 'DESTROY',
 }
 
 type RecipeActions = {
@@ -52,6 +53,11 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     })
     recipe.id = response.data.data.id
     await recipe.$update({ data: response.data.data.attributes })
+    return response
+  },
+  async [RecipeActionTypes.DESTROY](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
+    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.delete(RoutePath.apiBase() + RoutePath.recipe(recipe.id))
+    await recipe.$delete()
     return response
   },
 }

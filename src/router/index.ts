@@ -5,6 +5,7 @@ import NewRecipe from '~/views/recipes/new.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import EditRecipe from '~/views/recipes/edit.vue'
+import EditRecipeHeader from '~/views/recipes/editHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
 import NotFound from '~/views/NotFound.vue'
@@ -64,7 +65,10 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.EditRecipe,
     path: '/recipes/:id/edit',
-    component: EditRecipe,
+    components: {
+      default: EditRecipe,
+      'secondary-header': EditRecipeHeader,
+    },
   },
   {
     name: RouteName.SignIn,
