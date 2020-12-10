@@ -77,6 +77,10 @@ main::after {
   clear: both;
 }
 
+pre {
+  font-family: 'Josefin Slab', serif;
+}
+
 ::selection {
   color: #000000;
   background: #44dd9f;

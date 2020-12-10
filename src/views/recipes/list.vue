@@ -34,7 +34,7 @@
               <!--              <% end %>-->
               <div class="content">
                 <router-link
-                  :to="{ name: RouteName.Recipe, params: { id: recipe.id } }"
+                  :to="{ name: $routerExtension.names.Recipe, params: { id: recipe.id } }"
                   class="view-recipe"
                 >
                   <i class="material-icons">receipt</i>View Recipe
@@ -64,16 +64,12 @@ import { stateKey, StoreModulePath } from '~/store'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
   name: 'RecipesIndex',
   setup() {
     const store = useStore(stateKey)
     store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH_ALL)
-    return {
-      RouteName,
-    }
   },
   computed: {
     recipes(): Array<Recipe> {
