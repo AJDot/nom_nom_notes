@@ -39,7 +39,6 @@ import { defineComponent } from 'vue'
 import { StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { RouteName } from '~/router/routeName'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionActionTypes } from '~/store/modules/sessions/actions'
 
@@ -74,7 +73,7 @@ export default defineComponent({
         StoreModulePath.Session + SessionMutationTypes.SIGN_IN,
         response.data.csrf,
       )
-      this.$routerExtension.replace({ name: RouteName.Home })
+      this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
     },
     signinFailed(error: AxiosResponse) {
       this.processFailedSignin(error?.data?.error)
@@ -92,7 +91,7 @@ export default defineComponent({
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
-        this.$router.replace({ name: RouteName.Home })
+        this.$router.replace({ name: this.$routerExtension.names.Home })
       }
     },
   },

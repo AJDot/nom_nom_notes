@@ -1,32 +1,24 @@
 <template>
   <form
-    v-if="tRecipe && recipe"
     class="edit-recipe"
     enctype="multipart/form-data"
     @submit.prevent="save"
   >
-    <h2>Edit Recipe: {{ recipe.name }}</h2>
+    <h2>Create Recipe</h2>
     <input
       class="btn"
       type="submit"
-      value="Update Recipe"
-      placeholder="My Super Awesome Recipe"
+      value="Create"
     >
     <dl class="image">
       <dt>
-        <!--        <% if params[:image] %>-->
-        <!--        <img src="#" alt="<%= params[:image][:filename] %>" title="<%= params[:image][:filename] %>" id="image" />-->
-        <!--        <% elsif @recipe.image.url %>-->
-        <!--        <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" id="image" />-->
-        <!--        <% else %>-->
-        <!--        <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' id="image" />-->
-        <!--        <% end %>-->
+        <!--          <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' />-->
       </dt>
       <dd>
-        <!--        <label class="choose-file btn">-->
-        <!--          Choose File-->
-        <!--          <input type="file" name="image" data-for="#image" />-->
-        <!--        </label>-->
+        <!--          <label class="choose-file btn">-->
+        <!--            Choose File-->
+        <!--            <input type="file" name="image" />-->
+        <!--          </label>-->
       </dd>
     </dl>
     <dl class="name">
@@ -34,7 +26,7 @@
       <dd>
         <input
           id="name"
-          v-model="tRecipe.name"
+          v-model="recipe.name"
           type="text"
           name="name"
           placeholder="My Super Awesome Recipe"
@@ -44,7 +36,7 @@
     <dl class="cook-time grid grid-1-4">
       <dt><label for="hours">Cook Time</label></dt>
       <dd class="grid-1-2">
-        <h3><label for="hours">Hours</label></h3>
+        <h3>Hours</h3>
         <input
           id="hours"
           type="number"
@@ -52,8 +44,8 @@
           min="0"
         >
       </dd>
-      <dd class="grid-1-2 last">
-        <h3><label for="minutes" />Minutes</h3>
+      <dd class="grid-1-2">
+        <h3>Minutes</h3>
         <input
           id="minutes"
           type="number"
@@ -68,7 +60,7 @@
       <dd>
         <textarea
           id="description"
-          v-model="tRecipe.description"
+          v-model="recipe.description"
           name="description"
           cols="80"
           rows="10"
@@ -89,7 +81,7 @@
           />
         </dd>
       </dl>
-      <dl class="grid-1-2">
+      <dl class="grid-1-2 last">
         <dt><label for="categories">Categories</label></dt>
         <dd>
           <textarea
@@ -127,12 +119,12 @@
       </dd>
     </dl>
     <dl>
-      <dt><label for="note">Notes</label></dt>
+      <dt><label for="notes">Notes</label></dt>
       <dd>
         <textarea
-          id="note"
-          v-model="tRecipe.note"
-          name="note"
+          id="notes"
+          v-model="recipe.note"
+          name="notes"
           cols="80"
           rows="10"
           placeholder="Put each note on its own line."
@@ -142,103 +134,72 @@
     <input
       class="btn"
       type="submit"
-      value="Update Recipe"
+      value="Create"
     >
   </form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useStore } from 'vuex'
-import { stateKey, StoreModulePath } from '~/store'
-import router from '~/router'
-import { RootState } from '~/store/interfaces'
-import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import { StoreModulePath } from '~/store'
 import Recipe from 'Models/recipe'
-import RoutePath from '~/router/path'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 
 interface Data {
-  tRecipe: Recipe | null
-  recipe: Recipe | null
+  recipe: Recipe
 }
 
 export default defineComponent({
   name: 'RecipeEdit',
-  data(): Data {
+  setup(_props, _context): Data {
+    const recipe = new Recipe()
     return {
-      tRecipe: null,
-      recipe: null,
-    }
-  },
-  async beforeMount() {
-    const store = useStore<RootState>(stateKey)
-    const id = router.currentRoute.value.params.id
-    this.recipe = await store.dispatch(
-      StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-      id,
-    )
-    if (this.recipe) {
-      this.tRecipe = new Recipe({
-        ...this.recipe.$toJson(),
-        id: 't_' + this.recipe.id,
-      })
+      recipe,
     }
   },
   methods: {
     save() {
-      if (!this.tRecipe || !this.recipe) return
-      const json = this.tRecipe.$toJson()
-      json.id = this.recipe.id
-      delete json.id
-      this.$http.secured
-        .patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.id), {
-          recipe: json,
-        })
-        .then((response) => this.updateSuccessful(response))
-        .catch((error) => this.updateError(error))
+      this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.CREATE, this.recipe)
+        .then((response) => this.createSuccessful(response))
+        .catch((error) => this.createError(error))
     },
-    updateSuccessful(response: AxiosResponse) {
+    createSuccessful(response: AxiosResponse) {
       if (response.data.error) {
-        this.updateFailed(response)
+        this.createFailed(response)
         return
       }
-      if (this.tRecipe && this.recipe) {
-        const json = this.tRecipe.$toJson()
-        delete json.id
-        this.recipe.$update(json)
-        this.$router.push({
-          name: this.$routerExtension.names.Recipe,
-          params: { id: this.recipe.id ?? '' },
-        })
-      }
+      this.$router.push({
+        name: this.$routerExtension.names.Recipe,
+        params: { id: this.recipe.id ?? '' },
+      })
     },
-    updateFailed(error: AxiosResponse) {
+    createFailed(error: AxiosResponse) {
       this.processFailedUpdate(error?.data?.error, { signOut: false })
     },
-    updateError(error: AxiosError) {
-      const errorText = error.response?.data.error
-      const opts: {signOut: boolean | null} = { signOut: null }
+    createError(error: AxiosError) {
+      let errorText = error.response?.data.error
+      const opts: {signOut: boolean} = { signOut: false }
       switch (error.response?.status) {
         case (HttpStatusCode.Forbidden):
           opts.signOut = true
           break
+        case (HttpStatusCode.NotFound):
+          errorText = errorText ?? 'An unknown error occurred. Please contact the app admin.'
+          break
         default:
-          opts.signOut = false
           break
       }
       this.processFailedUpdate(errorText, opts)
     },
     processFailedUpdate(errorText: string | null | undefined, { signOut }: { signOut: boolean | null }) {
       if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
-      if (errorText) {
-        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: errorText },
-        })
-      }
+      this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+        flash: { alert: errorText || 'An unknown error occurred' },
+      })
     },
   },
 })

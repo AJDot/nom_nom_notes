@@ -22,14 +22,14 @@
         <!--        <% if current_user.blank? %>-->
         <!--        <% if request.path_info != '/sign_in' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{ name: RouteName.SignIn, params: {originalRequest: $router.currentRoute.value.path} }">
+          <router-link :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }">
             Sign In
           </router-link>
         </li>
         <!--        <% end %>-->
         <!--        <% if request.path_info != '/sign_up' %>-->
         <li v-if="!signedIn">
-          <router-link :to="{ name: RouteName.SignUp }">
+          <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
         </li>
@@ -60,18 +60,12 @@ import { mapState } from 'vuex'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { StoreModulePath } from '~/store'
 import Flash from '@/flash.vue'
-import { RouteName } from '~/router/routeName'
 import { FlashActionTypes } from '~/store/modules/flash'
 import RoutePath from '~/router/path'
 import { AxiosError } from 'axios'
 
 export default defineComponent({
   components: { Flash },
-  setup(_props, _context) {
-    return {
-      RouteName,
-    }
-  },
   computed: {
     ...mapState('sessions', { signedIn: 'signedIn' }),
   },
@@ -93,7 +87,7 @@ export default defineComponent({
           this.$store.commit(
             StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
           )
-          this.$router.replace({ name: RouteName.Home })
+          this.$router.replace({ name: this.$routerExtension.names.Home })
         })
         .catch((error) => this.setError(error, 'Cannot sign out'))
     },

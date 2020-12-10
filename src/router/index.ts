@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter, RouteRecordRaw, NavigationGuard, RouteRecord } from 'vue-router'
 import ListRecipe from '~/views/recipes/list.vue'
+import ListRecipeHeader from '~/views/recipes/listHeader.vue'
+import NewRecipe from '~/views/recipes/new.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import EditRecipe from '~/views/recipes/edit.vue'
@@ -41,7 +43,15 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.Recipes,
     path: '/recipes',
-    component: ListRecipe,
+    components: {
+      default: ListRecipe,
+      'secondary-header': ListRecipeHeader,
+    },
+  },
+  {
+    name: RouteName.NewRecipe,
+    path: '/recipe',
+    component: NewRecipe,
   },
   {
     name: RouteName.Recipe,

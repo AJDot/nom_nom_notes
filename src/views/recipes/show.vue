@@ -71,7 +71,7 @@
       <h2>Notes</h2>
       <ul class="notes">
         <!--        <% split_lines(make_link(@recipe.note)).each do |note| %>-->
-        <!--        <li><%== note %></li>-->
+        <li><pre>{{ recipe.note }}</pre></li>
         <!--        <% end %>-->
       </ul>
     </section>
