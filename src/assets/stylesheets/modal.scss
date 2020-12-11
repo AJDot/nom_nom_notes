@@ -20,8 +20,7 @@
 .modal-container {
   width: 600px;
   margin: 0 auto;
-  //padding: 20px 30px;
-  padding: 60px;
+  padding: 20px 30px;
   background-color: #fff;
   border-radius: 1em;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -39,7 +38,7 @@
 
 .modal-header h3 {
   font-weight: 900;
-  font-size: 24px;
+  font-size: 48px;
   margin: 0 auto;
   text-align: center;
   color: $color-black;

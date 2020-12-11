@@ -1,15 +1,21 @@
 <template>
   <ul>
     <li>
-      <router-link :to="{ name: $routerExtension.names.Recipes }">
+      <router-link
+        :to="{ name: $routerExtension.names.Recipes }"
+        class="safe"
+      >
         <i class="material-icons wiggle">view_comfy</i>
-        <span class="safe">Recipe Cards</span>
+        <span>Recipe Cards</span>
       </router-link>
     </li>
     <li v-if="signedIn">
-      <router-link :to="{ name: $routerExtension.names.EditRecipe }">
+      <router-link
+        :to="{ name: $routerExtension.names.EditRecipe }"
+        class="safe"
+      >
         <i class="material-icons wiggle">edit</i>
-        <span class="safe">Edit Recipe</span>
+        <span>Edit Recipe</span>
       </router-link>
     </li>
   </ul>

@@ -3,10 +3,11 @@
     <li v-if="signedIn && recipe">
       <a
         href="#"
+        class="destroy"
         @click.prevent="confirmDestroy"
       >
         <i class="material-icons wiggle">delete</i>
-        <span class="destroy">Delete Recipe</span>
+        <span>Delete Recipe</span>
       </a>
     </li>
   </ul>
