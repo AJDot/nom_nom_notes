@@ -4,6 +4,7 @@ import RoutePath from '~/router/path'
 import { store, StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import { RouteName } from '~/router/routeName'
 
 /**
  * DO NOT use store to get csrf - go straight to localStorage
@@ -65,7 +66,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
           StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
         )
         // redirect to signin if refresh fails
-        location.replace('/')
+        location.replace(RouteName.SignIn)
         return Promise.reject(error)
       })
   } else {
