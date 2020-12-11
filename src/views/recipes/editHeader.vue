@@ -1,5 +1,14 @@
 <template>
   <ul>
+    <li>
+      <router-link
+        :to="{name: $routerExtension.names.Recipe, params: {id: recipe.id}}"
+        class="cancel"
+      >
+        <i class="material-icons wiggle">receipt</i>
+        <span>Back to Recipe</span>
+      </router-link>
+    </li>
     <li v-if="signedIn && recipe">
       <a
         href="#"
