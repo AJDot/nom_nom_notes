@@ -3,6 +3,7 @@ import AppConfig from '~/appConfig'
 import RoutePath from '~/router/path'
 import { store, StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { HttpStatusCode } from '~/utils/httpUtils'
 
 /**
  * DO NOT use store to get csrf - go straight to localStorage
@@ -40,7 +41,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
   if (
     error.response &&
     error.response.config &&
-    error.response.status === 401
+    error.response.status === HttpStatusCode.Forbidden
   ) {
     // If 401 by expired access cookie, we do a refresh request
     return plainAxiosInstance
