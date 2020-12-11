@@ -1,17 +1,4 @@
 /*
-  COLORS
-**********************
-  BLACK
-  #333333;
-  BLUE
-  #4d9ad9;
-  RED
-  #ff834e;
-  GREEN
-  #44dd9f;
-  ORANGE
-  #ffb54e;
-
   FONTS
 **********************
   San-Serif
@@ -121,6 +108,27 @@ input[type="submit"] {
 .btn:focus {
   color: #000000;
   background: #44dd9f;
+}
+
+.btn-link {
+  font: inherit;
+  background: none;
+  border: none;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
+  transition: all .3s ease;
+
+  &:hover,
+  &:focus {
+    border-bottom-width: 2px;
+    cursor: pointer;
+    //text-decoration: underline;
+  }
+
+  &.lg {
+    font-size: 2em;
+    border-bottom-width: 5px;
+  }
 }
 
 input[type="submit"].btn {
@@ -632,49 +640,6 @@ dl.description::before {
 
 .flash.success {
   background: #44dd9f; /* green */
-}
-
-/*
-*************************
-  DESTROY MODAL
-*************************
-*/
-
-.destroy ~ .modal-overlay {
-  display: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  background: rgba(0, 0, 0, .3);
-}
-
-.destroy ~ .modal {
-  display: none;
-  position: absolute;
-  left: 50%;
-  z-index: 101;
-  width: 600px;
-  padding: 60px;
-  margin: 0 0 0 -300px;
-  background: #ffffff;
-  box-sizing: border-box;
-}
-
-.destroy ~ .modal .destroy:hover {
-  border-bottom-color: #ff834e;
-}
-
-.modal .cancel {
-  float: right;
-  display: inline-block;
-  line-height: 1.4em;
-}
-
-.modal .cancel:hover {
-  border-bottom-color: #4d9ad9;
 }
 
 /*

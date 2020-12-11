@@ -3,17 +3,40 @@
     <li v-if="signedIn && recipe">
       <a
         href="#"
-        @click.prevent="destroy"
+        @click.prevent="confirmDestroy"
       >
         <i class="material-icons wiggle">delete</i>
         <span class="destroy">Delete Recipe</span>
       </a>
     </li>
   </ul>
+  <modal
+    v-if="showModal"
+    @close="showModal = false"
+  >
+    <template #header>
+      <h3>Are you sure?</h3>
+    </template>
+    <template #footer>
+      <button
+        class="btn-link lg warn"
+        type="button"
+        @click="destroy"
+      >
+        Delete Recipe
+      </button>
+      <button
+        class="btn-link lg cancel"
+        @click="resetModal"
+      >
+        Cancel
+      </button>
+    </template>
+  </modal>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { mapState, useStore } from 'vuex'
 import { RootState } from '~/store/interfaces'
 import { stateKey, StoreModulePath } from '~/store'
@@ -22,9 +45,13 @@ import router from '~/router'
 import Recipe from 'Models/recipe'
 import { AxiosError, AxiosResponse } from 'axios'
 import { FlashActionTypes } from '~/store/modules/flash'
+import Modal from '@/modal.vue'
 
 export default defineComponent({
   name: 'RecipeListHeader',
+  components: {
+    Modal,
+  },
   setup() {
     const getters = mapState('sessions', { signedIn: 'signedIn' })
     const store = useStore<RootState>(stateKey)
@@ -34,12 +61,14 @@ export default defineComponent({
       ...getters,
       recipe: computed(() => Recipe.find(id)),
       recipeName: '',
+      showModal: ref(false),
     }
   },
   methods: {
     async destroy() {
       // need to save this because it can't be referenced after recipe is destroyed
       if (this.recipe) this.recipeName = this.recipe.name ?? 'Unnamed Recipe'
+      this.resetModal()
       await this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.DESTROY, this.recipe)
         .then((response) => this.destroySuccessful(response))
         .catch((error) => this.destroyError(error))
@@ -70,6 +99,12 @@ export default defineComponent({
       this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
         flash: { alert: errorText || 'An unknown error occurred.' },
       })
+    },
+    confirmDestroy() {
+      this.showModal = true
+    },
+    resetModal() {
+      this.showModal = false
     },
   },
 })
