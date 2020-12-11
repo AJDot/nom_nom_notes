@@ -122,7 +122,6 @@ input[type="submit"] {
   &:focus {
     border-bottom-width: 2px;
     cursor: pointer;
-    //text-decoration: underline;
   }
 
   &.lg {
@@ -665,15 +664,9 @@ dl.description::before {
 .material-icons + span,
 .icon + span {
   display: inline-block;
-  text-indent: -100%;
   overflow: hidden;
   white-space: nowrap;
   vertical-align: top;
-}
-
-.material-icons:hover + span,
-.icon:hover + span {
-  text-indent: 0;
 }
 
 .spin:hover {

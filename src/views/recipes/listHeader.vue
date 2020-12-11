@@ -1,9 +1,12 @@
 <template>
   <ul>
     <li v-if="signedIn">
-      <router-link :to="{ name: $routerExtension.names.NewRecipe }">
+      <router-link
+        :to="{ name: $routerExtension.names.NewRecipe }"
+        class="safe"
+      >
         <i class="material-icons spin">add_circle_outline</i>
-        <span class="safe">New Recipe</span>
+        <span>New Recipe</span>
       </router-link>
     </li>
   </ul>
