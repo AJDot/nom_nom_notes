@@ -71,7 +71,9 @@
       <h2>Notes</h2>
       <ul class="notes">
         <!--        <% split_lines(make_link(@recipe.note)).each do |note| %>-->
-        <li><pre>{{ recipe.note }}</pre></li>
+        <li>
+          <pre>{{ recipe.note }}</pre>
+        </li>
         <!--        <% end %>-->
       </ul>
     </section>
@@ -80,23 +82,31 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useStore } from 'vuex'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath } from '~/store'
 import router from '~/router'
-import { RootState } from '~/store/interfaces'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
+import { FlashActionTypes } from '~/store/modules/flash'
+import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
   name: 'Recipe',
   setup() {
-    const store = useStore<RootState>(stateKey)
-    store.dispatch(
-      StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-      router.currentRoute.value.params.id,
-    )
     return {
       recipe: computed(() => Recipe.find(router.currentRoute.value.params.id)),
+    }
+  },
+  async beforeCreate() {
+    try {
+      await this.$store.dispatch(
+        StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
+        router.currentRoute.value.params.id,
+      )
+    } catch (e) {
+      if (!this.recipe) {
+        await this.$router.push({ name: RouteName.Home })
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, { flash: { alert: 'The specified recipe was not found.' } })
+      }
     }
   },
 })
