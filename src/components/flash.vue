@@ -25,9 +25,14 @@
         <span>
           <button
             type="button"
-            @click="close(type)"
+            class="btn-clear"
           >
-            x
+            <i
+              class="material-icons"
+              @click="close(type)"
+            >
+              close
+            </i>
             <span class="sr-only">Dismiss Alert Button</span>
           </button>
         </span>
