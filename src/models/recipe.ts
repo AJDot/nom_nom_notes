@@ -4,6 +4,7 @@ import { Nameable, RRecord } from 'Interfaces/model_interfaces'
 export type RecipeAttributes = Nameable
 
 export interface RRecipe extends RRecord, RecipeAttributes {
+  cookTime: number
 }
 
 export default class Recipe extends Model implements RRecipe {
@@ -14,10 +15,12 @@ export default class Recipe extends Model implements RRecipe {
       id: this.attr(null),
       name: this.string(''),
       description: this.string(''),
+      cookTime: this.number(0),
       note: this.string(''),
     }
   }
 
-  id: string | undefined
+  id!: string
   name: string | undefined
+  cookTime!: number
 }
