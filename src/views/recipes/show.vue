@@ -32,8 +32,8 @@
       <h1>{{ recipe.name }}</h1>
 
       <ul>
-        <li v-if="recipe.cook_interval">
-          Cook Time: {{ recipe.cook_interval }}
+        <li v-if="recipe.cookTime">
+          Cook Time: {{ $filters.duration(recipe.cookTime) }}
         </li>
       </ul>
 

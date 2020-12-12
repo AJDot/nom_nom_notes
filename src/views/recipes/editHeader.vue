@@ -2,7 +2,7 @@
   <ul>
     <li>
       <router-link
-        :to="{name: $routerExtension.names.Recipe, params: {id: recipe.id}}"
+        :to="{name: $routerExtension.names.Recipe}"
         class="cancel"
       >
         <i class="material-icons wiggle">receipt</i>

@@ -47,15 +47,18 @@
         <h3><label for="hours">Hours</label></h3>
         <input
           id="hours"
+          v-model="cookTime.hours"
           type="number"
           name="hours"
           min="0"
+          max="191"
         >
       </dd>
       <dd class="grid-1-2 last">
-        <h3><label for="minutes" />Minutes</h3>
+        <h3><label for="minutes">Minutes</label></h3>
         <input
           id="minutes"
+          v-model="cookTime.minutes"
           type="number"
           name="minutes"
           min="0"
@@ -160,6 +163,7 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import { DurationFilter } from '~/plugins/filters/durationFilter'
 
 interface Data {
   tRecipe: Recipe | null
@@ -172,6 +176,7 @@ export default defineComponent({
     return {
       tRecipe: null,
       recipe: null,
+      cookTime: { hours: null, minutes: null },
     }
   },
   async beforeMount() {
@@ -186,11 +191,15 @@ export default defineComponent({
         ...this.recipe.$toJson(),
         id: 't_' + this.recipe.id,
       })
+      const parsed = new DurationFilter().parseSeconds(this.tRecipe.cookTime, 'hours', 'minutes')
+      this.cookTime.hours = parsed.find(d => d.unit.one === 'hour')?.amount ?? 0
+      this.cookTime.minutes = parsed.find(d => d.unit.one === 'minute')?.amount ?? 0
     }
   },
   methods: {
     save() {
       if (!this.tRecipe || !this.recipe) return
+      this.tRecipe.cookTime = new DurationFilter().toSeconds(this.cookTime)
       const json = this.tRecipe.$toJson()
       json.id = this.recipe.id
       delete json.id
