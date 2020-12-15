@@ -174,7 +174,7 @@ export default defineComponent({
       }
       this.$router.push({
         name: this.$routerExtension.names.Recipe,
-        params: { id: this.recipe.id ?? '' },
+        params: { clientId: this.recipe.clientId ?? '' },
       })
     },
     createFailed(error: AxiosResponse) {

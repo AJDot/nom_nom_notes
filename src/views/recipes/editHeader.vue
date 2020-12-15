@@ -65,11 +65,11 @@ export default defineComponent({
   setup() {
     const getters = mapState('sessions', { signedIn: 'signedIn' })
     const store = useStore<RootState>(stateKey)
-    const id = router.currentRoute.value.params.id
-    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, id)
+    const clientId = router.currentRoute.value.params.clientId
+    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId)
     return {
       ...getters,
-      recipe: computed(() => Recipe.find(id)),
+      recipe: computed(() => Recipe.find(clientId)),
       recipeName: '',
       showModal: ref(false),
     }

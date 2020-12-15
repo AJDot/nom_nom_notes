@@ -17,7 +17,7 @@ const mutations: MutationTree<RecipesState> & RecipeMutations = {
     // delete all recipes that don't match the incoming ids
     Recipe.query()
       .where((recipe: Recipe) => {
-        return !recipes.some((r) => r.id === recipe.id)
+        return !recipes.some((r) => r.clientId === recipe.clientId)
       })
       .get()
       .forEach((recipe) => recipe.$delete())

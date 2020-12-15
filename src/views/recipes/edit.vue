@@ -118,15 +118,39 @@
       </dd>
     </dl>
     <dl>
-      <dt><label for="steps">Directions</label></dt>
+      <dt>Directions</dt>
       <dd>
-        <textarea
-          id="steps"
-          name="steps"
-          cols="80"
-          rows="10"
-          placeholder="Put each step on its own line."
-        />
+        <ul>
+          <li
+            v-for="(step, i) in unmarkedSteps"
+            :key="step.clientId"
+          >
+            <label :for="`step-${i}-description`">{{ i }}</label>
+            <input
+              :id="`step-${i}`"
+              v-model="step.description"
+              type="text"
+              :name="`step-${i}-description`"
+              placeholder="Next step..."
+            >
+            <button
+              class="btn"
+              type="button"
+              @click="destroyStep(step)"
+            >
+              x
+            </button>
+          </li>
+          <li>
+            <button
+              class="btn"
+              type="button"
+              @click="addStep"
+            >
+              + Add Step
+            </button>
+          </li>
+        </ul>
       </dd>
     </dl>
     <dl>
@@ -164,10 +188,12 @@ import { AxiosError, AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
+import Step from 'Models/step'
 
 interface Data {
   tRecipe: Recipe | null
   recipe: Recipe | null
+  cookTime: { hours: number, minutes: number }
 }
 
 export default defineComponent({
@@ -176,21 +202,28 @@ export default defineComponent({
     return {
       tRecipe: null,
       recipe: null,
-      cookTime: { hours: null, minutes: null },
+      cookTime: {
+        hours: 0,
+        minutes: 0,
+      },
     }
+  },
+  computed: {
+    unmarkedSteps(): Array<Step> {
+      return this.tRecipe?.steps.filter(s => !s.markedForDestruction) ?? []
+    },
   },
   async beforeMount() {
     const store = useStore<RootState>(stateKey)
-    const id = router.currentRoute.value.params.id
-    this.recipe = await store.dispatch(
+    const clientId = router.currentRoute.value.params.clientId
+    await store.dispatch(
       StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-      id,
+      clientId,
     )
+    this.recipe = Recipe.query().whereId(clientId).with('steps').first()
     if (this.recipe) {
-      this.tRecipe = new Recipe({
-        ...this.recipe.$toJson(),
-        id: 't_' + this.recipe.id,
-      })
+      this.tRecipe = new Recipe(this.recipe.$toJson())
+      this.tRecipe.steps = this.recipe.steps
       const parsed = new DurationFilter().parseSeconds(this.tRecipe.cookTime, 'hours', 'minutes')
       this.cookTime.hours = parsed.find(d => d.unit.one === 'hour')?.amount ?? 0
       this.cookTime.minutes = parsed.find(d => d.unit.one === 'minute')?.amount ?? 0
@@ -202,15 +235,15 @@ export default defineComponent({
       this.tRecipe.cookTime = new DurationFilter().toSeconds(this.cookTime)
       const json = this.tRecipe.$toJson()
       json.id = this.recipe.id
-      delete json.id
+      json.clientId = this.recipe.clientId
       this.$http.secured
-        .patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.id), {
+        .patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.clientId), {
           recipe: json,
         })
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
     },
-    updateSuccessful(response: AxiosResponse) {
+    async updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {
         this.updateFailed(response)
         return
@@ -218,10 +251,18 @@ export default defineComponent({
       if (this.tRecipe && this.recipe) {
         const json = this.tRecipe.$toJson()
         delete json.id
-        this.recipe.$update(json)
-        this.$router.push({
+        delete json.clientId
+        await this.recipe.$update(json)
+        await this.tRecipe.steps.forEach(s => {
+          if (s.markedForDestruction) {
+            Step.delete(s.clientId)
+          } else {
+            Step.insertOrUpdate({ data: s.$toJson() })
+          }
+        })
+        await this.$router.push({
           name: this.$routerExtension.names.Recipe,
-          params: { id: this.recipe.id ?? '' },
+          params: { clientId: this.recipe.clientId ?? '' },
         })
       }
     },
@@ -230,7 +271,7 @@ export default defineComponent({
     },
     updateError(error: AxiosError) {
       const errorText = error.response?.data.error
-      const opts: {signOut: boolean | null} = { signOut: null }
+      const opts: { signOut: boolean | null } = { signOut: null }
       switch (error.response?.status) {
         case (HttpStatusCode.Forbidden):
           opts.signOut = true
@@ -248,6 +289,14 @@ export default defineComponent({
           flash: { alert: errorText },
         })
       }
+    },
+    async addStep() {
+      const step = await Step.new() as Step
+      step.recipeId = this.recipe?.clientId
+      this.tRecipe?.steps.push(step)
+    },
+    destroyStep(step: Step) {
+      step.markForDestruction()
     },
   },
 })

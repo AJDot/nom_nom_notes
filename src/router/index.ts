@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.Recipe,
-    path: '/recipes/:id',
+    path: '/recipes/:clientId',
     components: {
       default: ShowRecipe,
       'secondary-header': ShowRecipeHeader,
@@ -64,7 +64,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.EditRecipe,
-    path: '/recipes/:id/edit',
+    path: '/recipes/:clientId/edit',
     components: {
       default: EditRecipe,
       'secondary-header': EditRecipeHeader,

@@ -6,6 +6,7 @@ import { ServerData, ServerResponse } from 'Interfaces/server_interfaces'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 import { securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
+import { Hash } from 'Interfaces/util_interfaces'
 
 export enum RecipeActionTypes {
   FETCH = 'FETCH',
@@ -22,9 +23,15 @@ type RecipeActions = {
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
     const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipe(id))
+    const rels: Hash = {}
+    response.data.included?.forEach((value) => {
+      if (!rels[value.type]) rels[value.type] = []
+      rels[value.type].push({ id: value.id, ...value.attributes })
+    })
     commit(RecipeMutationTypes.ADD, {
       id: response.data.data.id,
       ...response.data.data.attributes,
+      ...rels,
     })
     return response
   },
@@ -51,12 +58,11 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.post(RoutePath.apiBase() + RoutePath.recipes(), {
       recipe: recipe.$toJson(),
     })
-    recipe.id = response.data.data.id
     await recipe.$update({ data: response.data.data.attributes })
     return response
   },
   async [RecipeActionTypes.DESTROY](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.delete(RoutePath.apiBase() + RoutePath.recipe(recipe.id))
+    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.delete(RoutePath.apiBase() + RoutePath.recipe(recipe.clientId))
     await recipe.$delete()
     return response
   },

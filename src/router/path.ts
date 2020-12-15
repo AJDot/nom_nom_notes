@@ -31,8 +31,8 @@ class Path {
     return '/recipes'
   }
 
-  recipe(recipeId: RRecord['id']) {
-    return Path.buildPath('/recipes/:id', { id: recipeId })
+  recipe(recipeClientId: RRecord['clientId']) {
+    return Path.buildPath('/recipes/:clientId', { clientId: recipeClientId })
   }
 
   private static buildPath(path: string, wildcards: Hash) {
@@ -42,7 +42,7 @@ class Path {
       if (typeof value === 'string') {
         val = value
       } else {
-        val = value.id
+        val = value.clientId
       }
       result = result.replace(`:${key}`, val)
     }
