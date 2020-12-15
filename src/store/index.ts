@@ -5,7 +5,7 @@ import recipes from '~/store/modules/recipes'
 import sessions from '~/store/modules/sessions'
 import flash from '~/store/modules/flash'
 import VuexORM from '@vuex-orm/core'
-import Recipe from 'Models/recipe'
+import database from '~/store/database'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -16,9 +16,6 @@ export enum StoreModulePath {
   Session = 'sessions/',
   Flash = 'flash/',
 }
-
-const database = new VuexORM.Database()
-database.register(Recipe)
 
 export const store = createStore<RootState>({
   plugins: [VuexORM.install(database)],

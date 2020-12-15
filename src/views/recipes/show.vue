@@ -20,7 +20,7 @@
 
   <article
     v-if="recipe"
-    :key="recipe.id"
+    :key="recipe.clientId"
     class="recipe"
   >
     <header>
@@ -62,9 +62,12 @@
     <section>
       <h2>Directions</h2>
       <ol class="steps">
-        <!--        <% @recipe.steps.each do |step| %>-->
-        <!--        <li><%= step.description %></li>-->
-        <!--        <% end %>-->
+        <li
+          v-for="step in recipe.steps"
+          :key="step.clientId"
+        >
+          {{ step.description }}
+        </li>
       </ol>
     </section>
     <section>
@@ -83,7 +86,6 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { StoreModulePath } from '~/store'
-import router from '~/router'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
 import { FlashActionTypes } from '~/store/modules/flash'
@@ -91,16 +93,18 @@ import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
   name: 'Recipe',
-  setup() {
+  data() {
     return {
-      recipe: computed(() => Recipe.find(router.currentRoute.value.params.id)),
+      recipe: computed(() => {
+        return Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps').first()
+      }),
     }
   },
   async beforeCreate() {
     try {
       await this.$store.dispatch(
         StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-        router.currentRoute.value.params.id,
+        this.$router.currentRoute.value.params.clientId,
       )
     } catch (e) {
       if (!this.recipe) {

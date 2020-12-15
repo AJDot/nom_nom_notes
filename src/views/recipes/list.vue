@@ -22,7 +22,7 @@
       <ul class="card-list">
         <li
           v-for="recipe in sortedRecipes"
-          :key="recipe.id"
+          :key="recipe.clientId"
         >
           <article>
             <h1>{{ recipe.name }}</h1>
@@ -34,7 +34,7 @@
               <!--              <% end %>-->
               <div class="content">
                 <router-link
-                  :to="{ name: $routerExtension.names.Recipe, params: { id: recipe.id } }"
+                  :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
                   class="view-recipe"
                 >
                   <i class="material-icons">receipt</i>View Recipe
@@ -42,7 +42,7 @@
                 <ul class="categories">
                   <li
                     v-for="category in recipe.categories"
-                    :key="category.id"
+                    :key="category.clientId"
                   >
                     {{ category.name }}
                   </li>
