@@ -124,22 +124,29 @@
           <li
             v-for="(step, i) in unmarkedSteps"
             :key="step.clientId"
+            class="row"
           >
-            <label :for="`step-${i}-description`">{{ i }}</label>
-            <input
-              :id="`step-${i}`"
-              v-model="step.description"
-              type="text"
-              :name="`step-${i}-description`"
-              placeholder="Next step..."
-            >
-            <button
-              class="btn"
-              type="button"
-              @click="destroyStep(step)"
-            >
-              x
-            </button>
+            <div class="cell">
+              <label :for="`step-${i}-description`">{{ i }}</label>
+            </div>
+            <div class="cell grow-2">
+              <textarea
+                :id="`step-${i}-description`"
+                v-model="step.description"
+                type="text"
+                :name="`step-${i}-description`"
+                placeholder="Next step..."
+              />
+            </div>
+            <div class="cell">
+              <button
+                class="btn"
+                type="button"
+                @click="destroyStep(step)"
+              >
+                x
+              </button>
+            </div>
           </li>
           <li>
             <button
