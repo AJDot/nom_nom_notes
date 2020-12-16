@@ -6,7 +6,7 @@ import { ServerData, ServerResponse } from 'Interfaces/server_interfaces'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 import { securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
-import { Hash } from 'Interfaces/util_interfaces'
+import { StoreUtils } from '~/utils/storeUtils'
 
 export enum RecipeActionTypes {
   FETCH = 'FETCH',
@@ -23,16 +23,12 @@ type RecipeActions = {
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
     const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipe(id))
-    const rels: Hash = {}
-    response.data.included?.forEach((value) => {
-      if (!rels[value.type]) rels[value.type] = []
-      rels[value.type].push({ id: value.id, ...value.attributes })
-    })
+
     commit(RecipeMutationTypes.ADD, {
       id: response.data.data.id,
       ...response.data.data.attributes,
-      ...rels,
     })
+    await StoreUtils.processIncluded(Recipe, response.data.included)
     return response
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
@@ -43,6 +39,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
         return { id: x.id, ...x.attributes }
       }),
     )
+    await StoreUtils.processIncluded(Recipe, response.data.included)
     return response
   },
   async [RecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {

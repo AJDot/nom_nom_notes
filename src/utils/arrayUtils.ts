@@ -1,4 +1,5 @@
 import { InstanceUtils } from '~/utils/instanceUtils'
+import { Hash } from 'Interfaces/util_interfaces'
 
 export const ArrayUtils = {
   sort<T>(arr: Array<T>, callback: (_a: T, _b: T) => number): Array<T> {
@@ -29,5 +30,17 @@ export const ArrayUtils = {
       default:
         return `${items.slice(0, lastIndex).join(separator)}${separator} ${lastSeparator} ${items[lastIndex]}`
     }
+  },
+  gatherBy<T extends Hash>(array: T[], key: string, props: string | Array<string> = [], spreads: string | Array<string> = []): Hash<Array<T>> {
+    const gathered: Hash = {}
+    ArrayUtils.wrap(array).forEach((item) => {
+      const val = item[key]
+      if (!gathered[val]) gathered[val] = []
+      const hash: Hash = {}
+      this.wrap(props).forEach(p => { hash[p] = item[p] })
+      this.wrap(spreads).forEach(s => { Object.assign(hash, item[s]) })
+      gathered[val].push(hash)
+    })
+    return gathered
   },
 }
