@@ -1,5 +1,6 @@
 import { InstanceUtils } from '~/utils/instanceUtils'
 import { Hash } from 'Interfaces/util_interfaces'
+import { NumberUtils } from '~/utils/numberUtils'
 
 export const ArrayUtils = {
   sort<T>(arr: Array<T>, callback: (_a: T, _b: T) => number): Array<T> {
@@ -42,5 +43,47 @@ export const ArrayUtils = {
       gathered[val].push(hash)
     })
     return gathered
+  },
+  remove<T>(items: T[], item: T): T[] {
+    for (let i = items.length - 1; i >= 0; i--) {
+      if (items[i] === item) items.splice(i, 1)
+    }
+    return items
+  },
+  add<T>(items: T[], item: T, position?: number): T[] {
+    if (items.includes(item)) {
+      if (position !== null) {
+        this.move(items, item, position)
+      } // don't do anything if included in array but no position provided
+    } else {
+      position = NumberUtils.isInteger(position) ? position : items.length
+      items.splice(position, 0, item)
+    }
+    return items
+  },
+  toggle<T>(items: T[], item: T): T[] {
+    if (items.includes(item)) {
+      return this.remove(items, item)
+    } else {
+      return this.add(items, item)
+    }
+  },
+  // if new index is greater than length then just add as last item
+  moveIndex<T>(items: T[], oldIndex: number, newIndex: number): T[] {
+    if (newIndex >= items.length) newIndex = items.length
+    items.splice(newIndex, 0, items.splice(oldIndex, 1)[0])
+    return items
+  },
+  move: function<T>(items: T[], item: T, newIndex: number = items.length): T[] {
+    const oldIndex = items.indexOf(item)
+    return this.moveIndex(items, oldIndex, newIndex)
+  },
+  moveUp: function<T>(items: T[], item: T): T[] {
+    const oldIndex = items.indexOf(item)
+    return this.moveIndex(items, oldIndex, oldIndex - 1)
+  },
+  moveDown: function<T>(items: T[], item: T): T[] {
+    const oldIndex = items.indexOf(item)
+    return this.moveIndex(items, oldIndex, oldIndex + 1)
   },
 }
