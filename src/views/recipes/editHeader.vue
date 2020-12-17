@@ -21,8 +21,8 @@
     </li>
   </ul>
   <modal
-    v-if="showModal"
-    @close="showModal = false"
+    :state="modalState"
+    @close="resetModal"
   >
     <template #header>
       <h3>Are you sure?</h3>
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { mapState, useStore } from 'vuex'
 import { RootState } from '~/store/interfaces'
 import { stateKey, StoreModulePath } from '~/store'
@@ -56,6 +56,7 @@ import Recipe from 'Models/recipe'
 import { AxiosError, AxiosResponse } from 'axios'
 import { FlashActionTypes } from '~/store/modules/flash'
 import Modal from '@/modal.vue'
+import { ModalId } from '~/enums/modalId'
 
 export default defineComponent({
   name: 'RecipeListHeader',
@@ -71,8 +72,12 @@ export default defineComponent({
       ...getters,
       recipe: computed(() => Recipe.find(clientId)),
       recipeName: '',
-      showModal: ref(false),
     }
+  },
+  computed: {
+    modalState(): boolean {
+      return this.$modal.state(ModalId.DeleteRecipe)
+    },
   },
   methods: {
     async destroy() {
@@ -111,10 +116,10 @@ export default defineComponent({
       })
     },
     confirmDestroy() {
-      this.showModal = true
+      this.$modal.show(ModalId.DeleteRecipe)
     },
     resetModal() {
-      this.showModal = false
+      this.$modal.hide(ModalId.DeleteRecipe)
     },
   },
 })

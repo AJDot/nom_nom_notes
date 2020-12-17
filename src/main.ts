@@ -8,6 +8,7 @@ import VueAxios from 'vue-axios'
 import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import routerExtension from '~/router/routerExtension'
 import filters from '~/plugins/filters'
+import modalStore from '~/plugins/store/modals'
 
 createApp(App)
   .use(router)
@@ -18,4 +19,5 @@ createApp(App)
   })
   .use(routerExtension)
   .use(filters)
+  .use(modalStore)
   .mount('#app')
