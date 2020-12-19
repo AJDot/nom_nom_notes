@@ -20,3 +20,19 @@ export interface Destroyable {
 export interface Sortable {
   sortOrder: number
 }
+
+export interface BRecipe {
+  recipeId: string | undefined
+}
+
+export interface Notable {
+  note: string
+}
+
+export interface CookTime {
+  cookTime: number
+}
+
+export type HasMany<P extends string, T> = {
+  [key in P]: T[]
+}

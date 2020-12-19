@@ -54,9 +54,12 @@
     <section>
       <h2>Ingredients</h2>
       <ul class="ingredients">
-        <!--        <% @recipe.ingredients.each do |ing| %>-->
-        <!--        <li><%= ing.description %></li>-->
-        <!--        <% end %>-->
+        <li
+          v-for="ing in sortedIngredients"
+          :key="ing.clientId"
+        >
+          {{ ing.description }}
+        </li>
       </ul>
     </section>
     <section>
@@ -92,19 +95,23 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
 import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
+import Ingredient from 'Models/ingredient'
 
 export default defineComponent({
   name: 'Recipe',
   data() {
     return {
       recipe: computed(() => {
-        return Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps').first()
+        return Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps|ingredients').first()
       }),
     }
   },
   computed: {
     sortedSteps(): Array<Step> {
       return new Sorter().sort(this.recipe.steps)
+    },
+    sortedIngredients(): Array<Ingredient> {
+      return new Sorter().sort(this.recipe.ingredients)
     },
   },
   async beforeCreate() {

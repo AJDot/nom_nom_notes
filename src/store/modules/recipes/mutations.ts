@@ -2,7 +2,7 @@ import { Mutation, MutationTree } from 'vuex'
 import Recipe from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
 import { RecipesState } from '~/store/interfaces'
-import { RRecord } from 'Interfaces/model_interfaces'
+import { RRecord } from 'Interfaces/modelInterfaces'
 
 export enum RecipeMutationTypes {
   SET = 'SET',

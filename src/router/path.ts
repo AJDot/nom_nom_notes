@@ -1,5 +1,5 @@
 import router from './index'
-import { RRecord } from 'Interfaces/model_interfaces'
+import { RRecord } from 'Interfaces/modelInterfaces'
 import { Hash } from 'Interfaces/util_interfaces'
 
 class Path {

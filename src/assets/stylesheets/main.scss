@@ -95,6 +95,10 @@ input[type="submit"] {
   border: 0;
 }
 
+button {
+  color: $color-black;
+}
+
 /*
 *************************
   LOGO
@@ -213,8 +217,8 @@ input[type="number"]:focus,
 input[type="password"]:focus,
 select:focus,
 textarea:focus {
-  background: #f8f8f8;
-  box-shadow: 0 0 1px 0 #333333;
+  background: $color-gray-lt-v;
+  box-shadow: 0 0 1px 0 $color-black;
 }
 
 /*
