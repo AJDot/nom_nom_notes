@@ -63,10 +63,10 @@
       <h2>Directions</h2>
       <ol class="steps">
         <li
-          v-for="step in recipe.steps"
+          v-for="step in sortedSteps"
           :key="step.clientId"
         >
-          {{ step.description }}
+          <pre class="inline">{{ step.description }}</pre>
         </li>
       </ol>
     </section>
@@ -90,6 +90,8 @@ import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
+import Step from 'Models/step'
+import Sorter from 'Models/concerns/sorter'
 
 export default defineComponent({
   name: 'Recipe',
@@ -99,6 +101,11 @@ export default defineComponent({
         return Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps').first()
       }),
     }
+  },
+  computed: {
+    sortedSteps(): Array<Step> {
+      return new Sorter().sort(this.recipe.steps)
+    },
   },
   async beforeCreate() {
     try {

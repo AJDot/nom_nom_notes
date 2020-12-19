@@ -6,6 +6,7 @@ module.exports = {
     node: true,
     browser: true,
     es6: true,
+    jquery: true,
   },
   plugins: [
     'vue',

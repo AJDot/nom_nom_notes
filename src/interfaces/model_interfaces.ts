@@ -16,3 +16,7 @@ export interface Destroyable {
   _destroy: boolean
   markedForDestruction: boolean
 }
+
+export interface Sortable {
+  sortOrder: number
+}
