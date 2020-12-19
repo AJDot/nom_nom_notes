@@ -1,0 +1,37 @@
+@import "mixins";
+@import "color";
+
+.dropdown {
+  display: flex;
+  flex-flow: column nowrap;
+  white-space: nowrap;
+  justify-content: flex-start;
+  justify-items: flex-start;
+  padding: 10px 0;
+  border-radius: 15px;
+
+  &-item {
+    flex-direction: column;
+    text-align: left;
+    padding: 5px 15px;
+
+    &:focus-within {
+      background-color: $color-gray-lt;
+    }
+
+    &:hover {
+      background-color: $color-gray;
+    }
+  }
+
+  &-btn {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+  }
+}

@@ -8,13 +8,22 @@
   justify-content: flex-start;
   justify-items: flex-start;
   align-items: center;
+
+  &.vert {
+    flex-direction: column;
+  }
 }
 
 .col {
   display: flex;
   flex-shrink: 1;
+  padding: 5px;
 
   @include eachClass(flex-grow, "&.grow", 1, 6);
+  & > * {
+    display: flex;
+    margin: 0;
+  }
 }
 
 @media (max-width: 480px) {

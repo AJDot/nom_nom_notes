@@ -122,30 +122,35 @@
       <dd>
         <ul>
           <li
-            v-for="(step, i) in unmarkedSteps"
+            v-for="(step, i) in unmarkedSortedSteps"
             :key="step.clientId"
             class="row"
           >
-            <div class="cell">
-              <label :for="`step-${i}-description`">{{ i }}</label>
+            <div class="col">
+              <label :for="`step-${i}-description`">{{ i + 1 }}</label>
             </div>
-            <div class="cell grow-2">
+            <div class="col grow-2">
               <textarea
                 :id="`step-${i}-description`"
                 v-model="step.description"
-                type="text"
                 :name="`step-${i}-description`"
                 placeholder="Next step..."
               />
             </div>
-            <div class="cell">
-              <button
-                class="btn"
-                type="button"
-                @click="destroyStep(step)"
-              >
-                x
-              </button>
+            <div class="col">
+              <div class="row">
+                <div class="col">
+                  <button
+                    class="btn"
+                    type="button"
+                    @click="openStepContextMenu($event, step)"
+                  >
+                    <span class="material-icons">
+                      more_vert
+                    </span>
+                  </button>
+                </div>
+              </div>
             </div>
           </li>
           <li>
@@ -178,6 +183,47 @@
       type="submit"
       value="Update Recipe"
     >
+    <context-menu
+      ref="menu"
+      :display="showContextMenu"
+      @close="resetStepContextMenu"
+    >
+      <ul class="dropdown">
+        <li
+          v-if="!isFirst(tRecipe.steps, contextStep)"
+          class="dropdown-item"
+        >
+          <button
+            class="dropdown-btn"
+            type="button"
+            @click="moveUp(contextStep)"
+          >
+            Up
+          </button>
+        </li>
+        <li
+          v-if="!isLast(tRecipe.steps, contextStep)"
+          class="dropdown-item"
+        >
+          <button
+            class="dropdown-btn"
+            type="button"
+            @click="moveDown(contextStep)"
+          >
+            Down
+          </button>
+        </li>
+        <li class="dropdown-item">
+          <button
+            class="dropdown-btn"
+            type="button"
+            @click="destroyStep(contextStep)"
+          >
+            Delete
+          </button>
+        </li>
+      </ul>
+    </context-menu>
   </form>
 </template>
 
@@ -196,11 +242,14 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
 import Step from 'Models/step'
+import Sorter from 'Models/concerns/sorter'
 
 interface Data {
   tRecipe: Recipe | null
   recipe: Recipe | null
   cookTime: { hours: number, minutes: number }
+  showContextMenu: null | MouseEvent
+  contextStep: Step | null
 }
 
 export default defineComponent({
@@ -213,11 +262,14 @@ export default defineComponent({
         hours: 0,
         minutes: 0,
       },
+      showContextMenu: null,
+      contextStep: null,
     }
   },
   computed: {
-    unmarkedSteps(): Array<Step> {
-      return this.tRecipe?.steps.filter(s => !s.markedForDestruction) ?? []
+    unmarkedSortedSteps(): Array<Step> {
+      return (this.tRecipe?.steps.filter(s => !s.markedForDestruction) ?? [])
+        .sort((a, b) => a.sortOrder - b.sortOrder)
     },
   },
   async beforeMount() {
@@ -298,12 +350,35 @@ export default defineComponent({
       }
     },
     async addStep() {
+      if (!this.tRecipe) return
       const step = await Step.new() as Step
+      step.sortOrder = this.tRecipe.steps.length
       step.recipeId = this.recipe?.clientId
-      this.tRecipe?.steps.push(step)
+      this.tRecipe.steps.push(step)
     },
     destroyStep(step: Step) {
       step.markForDestruction()
+    },
+    isFirst(array: Array<Step>, step: Step) {
+      return new Sorter().isFirst(array, step)
+    },
+    isLast(array: Array<Step>, step: Step) {
+      return new Sorter().isLast(array, step)
+    },
+    moveUp(step: Step) {
+      if (!this.tRecipe) return
+      return new Sorter().moveUp(this.tRecipe.steps, step)
+    },
+    moveDown(step: Step) {
+      if (!this.tRecipe) return
+      return new Sorter().moveDown(this.tRecipe.steps, step)
+    },
+    openStepContextMenu(e: MouseEvent, step) {
+      this.contextStep = step
+      this.showContextMenu = e
+    },
+    resetStepContextMenu() {
+      this.contextStep = null
     },
   },
 })

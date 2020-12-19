@@ -9,6 +9,7 @@ import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import routerExtension from '~/router/routerExtension'
 import filters from '~/plugins/filters'
 import modalStore from '~/plugins/store/modals'
+import ContextMenu from '@/context-menu.vue'
 
 createApp(App)
   .use(router)
@@ -20,4 +21,5 @@ createApp(App)
   .use(routerExtension)
   .use(filters)
   .use(modalStore)
+  .component('context-menu', ContextMenu)
   .mount('#app')
