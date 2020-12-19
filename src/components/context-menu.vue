@@ -67,8 +67,8 @@ export default defineComponent({
     },
   },
   watch: {
-    display(newVal, oldVal) {
-      if (newVal !== oldVal) {
+    async display(newVal, oldVal) {
+      if (newVal && newVal !== oldVal) {
         this.open(newVal)
       }
     },
@@ -119,7 +119,10 @@ export default defineComponent({
       this.left = Math.max(Math.min(left, maxWidth), this.edgePadding)
     },
     reposition(event?: MouseEvent | TriggeredEvent) {
-      let newCoords = { top: this.top, left: this.left }
+      let newCoords = {
+        top: this.top,
+        left: this.left,
+      }
       if (event) {
         newCoords = this.recalculatePosition(event)
       }

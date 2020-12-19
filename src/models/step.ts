@@ -1,5 +1,5 @@
 import { Fields } from '@vuex-orm/core'
-import { Description, Sortable } from 'Interfaces/model_interfaces'
+import { Description, Sortable } from 'Interfaces/modelInterfaces'
 import AModel, { AModelAttributes } from 'Models/aModel'
 
 export type StepAttributes = Description & Sortable

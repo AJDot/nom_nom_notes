@@ -1,4 +1,4 @@
-import { Sortable } from 'Interfaces/model_interfaces'
+import { Sortable } from 'Interfaces/modelInterfaces'
 
 export default class Sorter {
   isFirst(items: Array<Sortable>, item: Sortable): boolean {

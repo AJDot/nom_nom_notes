@@ -1,5 +1,5 @@
 import { Fields, Model } from '@vuex-orm/core'
-import { Destroyable, RRecord } from 'Interfaces/model_interfaces'
+import { Destroyable, RRecord } from 'Interfaces/modelInterfaces'
 import Guid from '~/utils/guid'
 
 export type AModelAttributes = RRecord & Destroyable
@@ -26,5 +26,10 @@ export default class AModel extends Model implements AModelAttributes {
 
   get markedForDestruction(): boolean {
     return this._destroy
+  }
+
+  async save(): Promise<void> {
+    if (this.markedForDestruction) await this.$delete()
+    else await this.$update({ data: this.$toJson() })
   }
 }

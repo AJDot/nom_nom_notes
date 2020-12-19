@@ -16,11 +16,11 @@
     padding: 5px 15px;
 
     &:focus-within {
-      background-color: $color-gray-lt;
+      background-color: $color-gray-lt-v;
     }
 
     &:hover {
-      background-color: $color-gray;
+      background-color: $color-gray-lt;
     }
   }
 

@@ -10,6 +10,9 @@ import routerExtension from '~/router/routerExtension'
 import filters from '~/plugins/filters'
 import modalStore from '~/plugins/store/modals'
 import ContextMenu from '@/context-menu.vue'
+import Row from '@/row.vue'
+import Column from '@/column.vue'
+import focus from '~/directives/focus'
 
 createApp(App)
   .use(router)
@@ -22,4 +25,7 @@ createApp(App)
   .use(filters)
   .use(modalStore)
   .component('context-menu', ContextMenu)
+  .component('row', Row)
+  .component('column', Column)
+  .directive('focus', focus)
   .mount('#app')

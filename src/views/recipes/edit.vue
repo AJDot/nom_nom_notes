@@ -1,6 +1,6 @@
 <template>
   <form
-    v-if="tRecipe && recipe"
+    v-if="recipe"
     class="edit-recipe"
     enctype="multipart/form-data"
     @submit.prevent="save"
@@ -29,12 +29,13 @@
         <!--        </label>-->
       </dd>
     </dl>
+
     <dl class="name">
       <dt><label for="name">Name</label></dt>
       <dd>
         <input
           id="name"
-          v-model="tRecipe.name"
+          v-model="recipe.name"
           type="text"
           name="name"
           placeholder="My Super Awesome Recipe"
@@ -66,12 +67,13 @@
         >
       </dd>
     </dl>
+
     <dl class="description">
       <dt><label for="description">Description</label></dt>
       <dd>
         <textarea
           id="description"
-          v-model="tRecipe.description"
+          v-model="recipe.description"
           name="description"
           cols="80"
           rows="10"
@@ -105,45 +107,79 @@
         </dd>
       </dl>
     </div>
+
     <dl>
       <dt><label for="ingredients">Ingredients</label></dt>
       <dd>
-        <textarea
-          id="ingredients"
-          name="ingredients"
-          cols="80"
-          rows="10"
-          placeholder="Put each ingredient on its own line."
-        />
+        <ul>
+          <row
+            v-for="(ing, i) in unmarkedSortedIngredients"
+            :key="ing.clientId"
+            tag="li"
+          >
+            <column>
+              <label :for="`ing-${i}-description`">{{ i + 1 }}</label>
+            </column>
+            <column class="grow-2">
+              <input
+                :id="`ing-${i}-description`"
+                v-model="ing.description"
+                v-focus="focusId === ing.clientId"
+                type="text"
+              >
+            </column>
+            <column>
+              <button
+                class="btn"
+                type="button"
+                @click="openContextMenu($event, recipe.ingredients, ing)"
+              >
+                <span class="material-icons">
+                  more_vert
+                </span>
+              </button>
+            </column>
+          </row>
+          <row tag="li">
+            <button
+              class="btn"
+              type="button"
+              @click="addIngredient"
+            >
+              + Add Ingredient
+            </button>
+          </row>
+        </ul>
       </dd>
     </dl>
     <dl>
-      <dt>Directions</dt>
+      <dt><label for="step-0-description">Directions</label></dt>
       <dd>
         <ul>
-          <li
+          <row
             v-for="(step, i) in unmarkedSortedSteps"
             :key="step.clientId"
-            class="row"
+            tag="li"
           >
-            <div class="col">
+            <column>
               <label :for="`step-${i}-description`">{{ i + 1 }}</label>
-            </div>
-            <div class="col grow-2">
+            </column>
+            <column class="grow-2">
               <textarea
                 :id="`step-${i}-description`"
                 v-model="step.description"
+                v-focus="focusId = step.clientId"
                 :name="`step-${i}-description`"
                 placeholder="Next step..."
               />
-            </div>
-            <div class="col">
+            </column>
+            <column>
               <div class="row">
                 <div class="col">
                   <button
                     class="btn"
                     type="button"
-                    @click="openStepContextMenu($event, step)"
+                    @click="openContextMenu($event, recipe.steps, step)"
                   >
                     <span class="material-icons">
                       more_vert
@@ -151,9 +187,9 @@
                   </button>
                 </div>
               </div>
-            </div>
-          </li>
-          <li>
+            </column>
+          </row>
+          <row tag="li">
             <button
               class="btn"
               type="button"
@@ -161,7 +197,7 @@
             >
               + Add Step
             </button>
-          </li>
+          </row>
         </ul>
       </dd>
     </dl>
@@ -170,7 +206,7 @@
       <dd>
         <textarea
           id="note"
-          v-model="tRecipe.note"
+          v-model="recipe.note"
           name="note"
           cols="80"
           rows="10"
@@ -188,27 +224,30 @@
       :display="showContextMenu"
       @close="resetStepContextMenu"
     >
-      <ul class="dropdown">
+      <ul
+        v-if="showContextMenu"
+        class="dropdown"
+      >
         <li
-          v-if="!isFirst(tRecipe.steps, contextStep)"
+          v-if="!isFirst(contextCollection, contextItem)"
           class="dropdown-item"
         >
           <button
             class="dropdown-btn"
             type="button"
-            @click="moveUp(contextStep)"
+            @click="moveUp(contextCollection, contextItem)"
           >
             Up
           </button>
         </li>
         <li
-          v-if="!isLast(tRecipe.steps, contextStep)"
+          v-if="!isLast(contextCollection, contextItem)"
           class="dropdown-item"
         >
           <button
             class="dropdown-btn"
             type="button"
-            @click="moveDown(contextStep)"
+            @click="moveDown(contextCollection, contextItem)"
           >
             Down
           </button>
@@ -217,7 +256,7 @@
           <button
             class="dropdown-btn"
             type="button"
-            @click="destroyStep(contextStep)"
+            @click="destroyItem(contextItem)"
           >
             Delete
           </button>
@@ -243,32 +282,40 @@ import { HttpStatusCode } from '~/utils/httpUtils'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
 import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
+import Ingredient from 'Models/ingredient'
+import { Sortable } from 'Interfaces/modelInterfaces'
 
 interface Data {
-  tRecipe: Recipe | null
   recipe: Recipe | null
   cookTime: { hours: number, minutes: number }
   showContextMenu: null | MouseEvent
-  contextStep: Step | null
+  contextItem: Sortable | null
+  contextCollection: Array<Sortable>
+  focusId: string | null
 }
 
 export default defineComponent({
   name: 'RecipeEdit',
   data(): Data {
     return {
-      tRecipe: null,
       recipe: null,
       cookTime: {
         hours: 0,
         minutes: 0,
       },
       showContextMenu: null,
-      contextStep: null,
+      contextItem: null,
+      contextCollection: [],
+      focusId: null,
     }
   },
   computed: {
     unmarkedSortedSteps(): Array<Step> {
-      return (this.tRecipe?.steps.filter(s => !s.markedForDestruction) ?? [])
+      return (this.recipe?.steps.filter(s => !s.markedForDestruction) ?? [])
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+    },
+    unmarkedSortedIngredients(): Array<Ingredient> {
+      return (this.recipe?.ingredients.filter(s => !s.markedForDestruction) ?? [])
         .sort((a, b) => a.sortOrder - b.sortOrder)
     },
   },
@@ -279,20 +326,18 @@ export default defineComponent({
       StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
       clientId,
     )
-    this.recipe = Recipe.query().whereId(clientId).with('steps').first()
+    this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
     if (this.recipe) {
-      this.tRecipe = new Recipe(this.recipe.$toJson())
-      this.tRecipe.steps = this.recipe.steps
-      const parsed = new DurationFilter().parseSeconds(this.tRecipe.cookTime, 'hours', 'minutes')
+      const parsed = new DurationFilter().parseSeconds(this.recipe.cookTime, 'hours', 'minutes')
       this.cookTime.hours = parsed.find(d => d.unit.one === 'hour')?.amount ?? 0
       this.cookTime.minutes = parsed.find(d => d.unit.one === 'minute')?.amount ?? 0
     }
   },
   methods: {
     save() {
-      if (!this.tRecipe || !this.recipe) return
-      this.tRecipe.cookTime = new DurationFilter().toSeconds(this.cookTime)
-      const json = this.tRecipe.$toJson()
+      if (!this.recipe) return
+      this.recipe.cookTime = new DurationFilter().toSeconds(this.cookTime)
+      const json = this.recipe.$toJson()
       json.id = this.recipe.id
       json.clientId = this.recipe.clientId
       this.$http.secured
@@ -307,16 +352,20 @@ export default defineComponent({
         this.updateFailed(response)
         return
       }
-      if (this.tRecipe && this.recipe) {
-        const json = this.tRecipe.$toJson()
-        delete json.id
-        delete json.clientId
-        await this.recipe.$update(json)
-        await this.tRecipe.steps.forEach(s => {
+      if (this.recipe) {
+        await this.recipe.save()
+        await this.recipe.steps.forEach(s => {
           if (s.markedForDestruction) {
             Step.delete(s.clientId)
           } else {
             Step.insertOrUpdate({ data: s.$toJson() })
+          }
+        })
+        await this.recipe.ingredients.forEach(ing => {
+          if (ing.markedForDestruction) {
+            Ingredient.delete(ing.clientId)
+          } else {
+            Ingredient.insertOrUpdate({ data: ing.$toJson() })
           }
         })
         await this.$router.push({
@@ -350,35 +399,45 @@ export default defineComponent({
       }
     },
     async addStep() {
-      if (!this.tRecipe) return
+      if (!this.recipe) return
       const step = await Step.new() as Step
-      step.sortOrder = this.tRecipe.steps.length
+      step.sortOrder = this.recipe.steps.length
       step.recipeId = this.recipe?.clientId
-      this.tRecipe.steps.push(step)
+      this.focusId = step.clientId
+      this.recipe.steps.push(step)
     },
-    destroyStep(step: Step) {
-      step.markForDestruction()
+    async addIngredient() {
+      if (!this.recipe) return
+      const ingredient = await Ingredient.new() as Ingredient
+      ingredient.sortOrder = this.recipe.ingredients.length
+      ingredient.recipeId = this.recipe?.clientId
+      this.focusId = ingredient.clientId
+      this.recipe.ingredients.push(ingredient)
     },
-    isFirst(array: Array<Step>, step: Step) {
-      return new Sorter().isFirst(array, step)
+    destroyItem<T>(item: T) {
+      item.markForDestruction()
     },
-    isLast(array: Array<Step>, step: Step) {
-      return new Sorter().isLast(array, step)
+    isFirst<T>(items: Array<T>, item: T) {
+      return new Sorter().isFirst(items, item)
     },
-    moveUp(step: Step) {
-      if (!this.tRecipe) return
-      return new Sorter().moveUp(this.tRecipe.steps, step)
+    isLast<T>(items: Array<T>, item: T) {
+      return new Sorter().isLast(items, item)
     },
-    moveDown(step: Step) {
-      if (!this.tRecipe) return
-      return new Sorter().moveDown(this.tRecipe.steps, step)
+    moveUp<T>(items: Array<T>, item: T) {
+      return new Sorter().moveUp(items, item)
     },
-    openStepContextMenu(e: MouseEvent, step) {
-      this.contextStep = step
+    moveDown<T>(items: Array<T>, item: T) {
+      return new Sorter().moveDown(items, item)
+    },
+    openContextMenu(e: MouseEvent, collection, item) {
+      this.contextItem = item
+      this.contextCollection = collection
       this.showContextMenu = e
     },
     resetStepContextMenu() {
-      this.contextStep = null
+      this.contextItem = null
+      this.contextCollection = null
+      this.showContextMenu = null
     },
   },
 })
