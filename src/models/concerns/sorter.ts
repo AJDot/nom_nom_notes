@@ -1,15 +1,15 @@
 import { Sortable } from 'Interfaces/modelInterfaces'
 
 export default class Sorter {
-  isFirst(items: Array<Sortable>, item: Sortable): boolean {
+  isFirst<T extends Sortable>(items: Array<T>, item: T): boolean {
     return this.sort(items)[0] === item
   }
 
-  isLast(items: Array<Sortable>, item: Sortable): boolean {
+  isLast<T extends Sortable>(items: Array<T>, item: T): boolean {
     return this.sort(items)[items.length - 1] === item
   }
 
-  moveUp(items: Array<Sortable>, item: Sortable): void {
+  moveUp<T extends Sortable>(items: Array<T>, item: T): void {
     const sorted = this.sort(items)
     const thisIndex = sorted.indexOf(item)
     const thisSortOrder = item.sortOrder
@@ -18,7 +18,7 @@ export default class Sorter {
     otherItem.sortOrder = thisSortOrder
   }
 
-  moveDown(items: Array<Sortable>, item: Sortable): void {
+  moveDown<T extends Sortable>(items: Array<T>, item: T): void {
     const sorted = this.sort(items)
     const thisIndex = sorted.indexOf(item)
     const thisSortOrder = item.sortOrder
@@ -27,7 +27,7 @@ export default class Sorter {
     otherItem.sortOrder = thisSortOrder
   }
 
-  sort(items: Array<Sortable>): Array<Sortable> {
+  sort<T extends Sortable>(items: Array<T>): Array<T> {
     return items.slice().sort((a, b) => a.sortOrder - b.sortOrder)
   }
 }

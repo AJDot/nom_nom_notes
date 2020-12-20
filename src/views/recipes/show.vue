@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import { StoreModulePath } from '~/store'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
@@ -99,19 +99,18 @@ import Ingredient from 'Models/ingredient'
 
 export default defineComponent({
   name: 'Recipe',
-  data() {
-    return {
-      recipe: computed(() => {
-        return Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps|ingredients').first()
-      }),
-    }
-  },
   computed: {
+    recipe(): Recipe | null {
+      const r = Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps|ingredients').first()
+      return r
+    },
     sortedSteps(): Array<Step> {
-      return new Sorter().sort(this.recipe.steps)
+      if (this.recipe) return new Sorter().sort(this.recipe.steps)
+      else return []
     },
     sortedIngredients(): Array<Ingredient> {
-      return new Sorter().sort(this.recipe.ingredients)
+      if (this.recipe) return new Sorter().sort(this.recipe.ingredients)
+      else return []
     },
   },
   async beforeCreate() {

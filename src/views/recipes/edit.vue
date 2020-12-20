@@ -48,7 +48,7 @@
         <h3><label for="hours">Hours</label></h3>
         <input
           id="hours"
-          v-model="cookTime.hours"
+          v-model.number="cookTime.hours"
           type="number"
           name="hours"
           min="0"
@@ -59,7 +59,7 @@
         <h3><label for="minutes">Minutes</label></h3>
         <input
           id="minutes"
-          v-model="cookTime.minutes"
+          v-model.number="cookTime.minutes"
           type="number"
           name="minutes"
           min="0"
@@ -109,7 +109,7 @@
     </div>
 
     <dl>
-      <dt><label for="ingredients">Ingredients</label></dt>
+      <dt><label for="ing-0-description">Ingredients</label></dt>
       <dd>
         <ul>
           <row
@@ -283,7 +283,7 @@ import { DurationFilter } from '~/plugins/filters/durationFilter'
 import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
-import { Sortable } from 'Interfaces/modelInterfaces'
+import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 
 interface Data {
   recipe: Recipe | null
@@ -319,6 +319,16 @@ export default defineComponent({
         .sort((a, b) => a.sortOrder - b.sortOrder)
     },
   },
+  watch: {
+    cookTime: {
+      deep: true,
+      handler(newVal: Data['cookTime'], _oldVal: Data['cookTime']) {
+        if (this.recipe) {
+          this.recipe.cookTime = new DurationFilter().toSeconds(newVal)
+        }
+      },
+    },
+  },
   async beforeMount() {
     const store = useStore<RootState>(stateKey)
     const clientId = router.currentRoute.value.params.clientId
@@ -327,19 +337,12 @@ export default defineComponent({
       clientId,
     )
     this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
-    if (this.recipe) {
-      const parsed = new DurationFilter().parseSeconds(this.recipe.cookTime, 'hours', 'minutes')
-      this.cookTime.hours = parsed.find(d => d.unit.one === 'hour')?.amount ?? 0
-      this.cookTime.minutes = parsed.find(d => d.unit.one === 'minute')?.amount ?? 0
-    }
+    if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime)
   },
   methods: {
-    save() {
+    async save() {
       if (!this.recipe) return
-      this.recipe.cookTime = new DurationFilter().toSeconds(this.cookTime)
       const json = this.recipe.$toJson()
-      json.id = this.recipe.id
-      json.clientId = this.recipe.clientId
       this.$http.secured
         .patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.clientId), {
           recipe: json,
@@ -354,6 +357,7 @@ export default defineComponent({
       }
       if (this.recipe) {
         await this.recipe.save()
+        // await Recipe.update({ where: this.recipe.clientId, data: this.recipe.$toJson() })
         await this.recipe.steps.forEach(s => {
           if (s.markedForDestruction) {
             Step.delete(s.clientId)
@@ -414,29 +418,29 @@ export default defineComponent({
       this.focusId = ingredient.clientId
       this.recipe.ingredients.push(ingredient)
     },
-    destroyItem<T>(item: T) {
+    destroyItem<T extends Destroyable>(item: T) {
       item.markForDestruction()
     },
-    isFirst<T>(items: Array<T>, item: T) {
+    isFirst<T extends Sortable>(items: Array<T>, item: T) {
       return new Sorter().isFirst(items, item)
     },
-    isLast<T>(items: Array<T>, item: T) {
+    isLast<T extends Sortable>(items: Array<T>, item: T) {
       return new Sorter().isLast(items, item)
     },
-    moveUp<T>(items: Array<T>, item: T) {
+    moveUp<T extends Sortable>(items: Array<T>, item: T) {
       return new Sorter().moveUp(items, item)
     },
-    moveDown<T>(items: Array<T>, item: T) {
+    moveDown<T extends Sortable>(items: Array<T>, item: T) {
       return new Sorter().moveDown(items, item)
     },
-    openContextMenu(e: MouseEvent, collection, item) {
+    openContextMenu(e: MouseEvent, collection: Array<Sortable & Destroyable>, item: Sortable & Destroyable) {
       this.contextItem = item
       this.contextCollection = collection
       this.showContextMenu = e
     },
     resetStepContextMenu() {
       this.contextItem = null
-      this.contextCollection = null
+      this.contextCollection = []
       this.showContextMenu = null
     },
   },

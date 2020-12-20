@@ -4,10 +4,11 @@ import Guid from '~/utils/guid'
 
 export type AModelAttributes = RRecord & Destroyable
 
-export default class AModel extends Model implements AModelAttributes {
+export default abstract class AModel extends Model implements AModelAttributes {
   id!: string
   clientId!: string
   _destroy!: boolean
+  abstract klass: typeof Model
 
   static primaryKey = 'clientId'
 
@@ -30,6 +31,17 @@ export default class AModel extends Model implements AModelAttributes {
 
   async save(): Promise<void> {
     if (this.markedForDestruction) await this.$delete()
-    else await this.$update({ data: this.$toJson() })
+    else {
+      /**
+       * Wish I could just call this.$save()
+       * or this.$update(this.$toJson())
+       * or this.$update({data: this.$toJson()})
+       * but all seems to not update the object in the store
+       * Instead, must call the static method to update the object
+       */
+      if (!this.klass) throw new Error('klass is undefined!')
+      if (!this.$id) throw new Error('$id is undefined!')
+      await this.klass.update({ where: this.$id, data: this.$toJson() })
+    }
   }
 }
