@@ -30,6 +30,8 @@ export default class Recipe extends AModel implements RRecipe {
     }
   }
 
+  klass = Recipe
+
   name: string | undefined
   description: string | undefined
   cookTime!: number

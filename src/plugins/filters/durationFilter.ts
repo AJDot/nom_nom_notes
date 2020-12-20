@@ -13,6 +13,24 @@ interface Duration {
   unit: Unit
 }
 
+type UnitType = {
+  one: 'day'
+  many: 'days'
+  seconds: 86400
+} | {
+  one: 'hour'
+  many: 'hours'
+  seconds: 3600
+} | {
+  one: 'minute'
+  many: 'minutes'
+  seconds: 60
+} | {
+  one: 'second'
+  many: 'seconds'
+  seconds: 1
+}
+
 export class DurationFilter {
   install(app: App): void {
     app.config.globalProperties.$filters = app.config.globalProperties.$filters ?? {}
@@ -48,6 +66,20 @@ export class DurationFilter {
     return durations
   }
 
+  secondsToHash(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): { [key in UnitType['many']]: number } {
+    const s: string = seconds.toString()
+    let current: number = parseInt(s, 10)
+    const startIndex = DurationFilter.UNITS.findIndex(u => u.many === startUnit)
+    const endIndex = DurationFilter.UNITS.findIndex(u => u.many === endUnit)
+    return DurationFilter.UNITS.slice(startIndex, endIndex + 1).reduce((agg, unit) => {
+      const quotient = Math.floor(current / unit.seconds)
+      const remainder = current % unit.seconds
+      agg[unit.many] = quotient
+      current = remainder
+      return agg
+    }, {} as { [key in UnitType['many']]: number })
+  }
+
   displaySeconds(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): string {
     const displays = this.parseSeconds(seconds, startUnit, endUnit)
       .map(d => `${d.amount} ${d.amount === 1 ? d.unit.one : d.unit.many}`)
@@ -62,16 +94,16 @@ export class DurationFilter {
     }, 0)
   }
 
-  private static UNITS: Array<Unit> = [
+  private static UNITS: Array<UnitType> = [
     {
       one: 'day',
       many: 'days',
-      seconds: 60 * 60 * 24,
+      seconds: 86400,
     },
     {
       one: 'hour',
       many: 'hours',
-      seconds: 60 * 60,
+      seconds: 3600,
     },
     {
       one: 'minute',

@@ -23,4 +23,5 @@ export default class Step extends AModel implements RStep {
   description: string | undefined
   recipeId: string | undefined
   sortOrder!: number
+  klass = Step
 }
