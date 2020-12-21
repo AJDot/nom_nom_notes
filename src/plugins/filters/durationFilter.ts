@@ -1,6 +1,5 @@
 import { App } from 'vue'
 import { ArrayUtils } from '~/utils/arrayUtils'
-import { Hash } from 'Interfaces/util_interfaces'
 
 interface Unit {
   one: string
@@ -31,6 +30,10 @@ type UnitType = {
   seconds: 1
 }
 
+type DurationAmounts = {
+  [key in UnitType['many']]: number
+}
+
 export class DurationFilter {
   install(app: App): void {
     app.config.globalProperties.$filters = app.config.globalProperties.$filters ?? {}
@@ -40,13 +43,13 @@ export class DurationFilter {
     app.config.globalProperties.$filters.duration = this.display.bind(this)
   }
 
-  display(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): string {
+  display(seconds: string | number, startUnit: UnitType['many'] = 'days', endUnit: UnitType['many'] = 'seconds'): string {
     return this.displaySeconds(seconds, startUnit, endUnit)
   }
 
   // assumes positive number
   // Math.floor will round in wrong direction for negative numbers
-  parseSeconds(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): Array<Duration> {
+  parseSeconds(seconds: string | number, startUnit: UnitType['many'] = 'days', endUnit: UnitType['many'] = 'seconds'): Array<Duration> {
     const s: string = seconds.toString()
     const durations: Array<Duration> = []
     let current: number = parseInt(s, 10)
@@ -66,7 +69,7 @@ export class DurationFilter {
     return durations
   }
 
-  secondsToHash(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): { [key in UnitType['many']]: number } {
+  secondsToHash(seconds: string | number, startUnit: UnitType['many'] = 'days', endUnit: UnitType['many'] = 'seconds'): DurationAmounts {
     const s: string = seconds.toString()
     let current: number = parseInt(s, 10)
     const startIndex = DurationFilter.UNITS.findIndex(u => u.many === startUnit)
@@ -80,13 +83,13 @@ export class DurationFilter {
     }, {} as { [key in UnitType['many']]: number })
   }
 
-  displaySeconds(seconds: string | number, startUnit = 'days', endUnit = 'seconds'): string {
+  displaySeconds(seconds: string | number, startUnit: UnitType['many'] = 'days', endUnit: UnitType['many'] = 'seconds'): string {
     const displays = this.parseSeconds(seconds, startUnit, endUnit)
       .map(d => `${d.amount} ${d.amount === 1 ? d.unit.one : d.unit.many}`)
     return ArrayUtils.toSentence(displays, ' ', ' and ')
   }
 
-  toSeconds(durations: Hash<number>): number {
+  toSeconds(durations: DurationAmounts): number {
     return Object.entries(durations).reduce((acc, [key, value]) => {
       const conversion = DurationFilter.UNITS.find(u => u.many === key)?.seconds
       if (conversion) acc += value * conversion

@@ -337,7 +337,7 @@ export default defineComponent({
       clientId,
     )
     this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
-    if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime)
+    if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
   },
   methods: {
     async save() {
