@@ -31,7 +31,7 @@ type UnitType = {
 }
 
 type DurationAmounts = {
-  [key in UnitType['many']]: number
+  [key in UnitType['many']]?: number
 }
 
 export class DurationFilter {
@@ -92,7 +92,7 @@ export class DurationFilter {
   toSeconds(durations: DurationAmounts): number {
     return Object.entries(durations).reduce((acc, [key, value]) => {
       const conversion = DurationFilter.UNITS.find(u => u.many === key)?.seconds
-      if (conversion) acc += value * conversion
+      if (conversion) acc += (value ?? 0) * conversion
       return acc
     }, 0)
   }

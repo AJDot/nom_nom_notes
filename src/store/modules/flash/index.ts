@@ -68,7 +68,7 @@ const actions: ActionTree<FlashState, RootState> & FlashActions = {
 }
 
 const flash: Module<FlashState, RootState> = {
-  namespaced: true,
+  namespaced: true as const,
   state,
   getters,
   mutations,

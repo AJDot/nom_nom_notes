@@ -274,7 +274,6 @@ import router from '~/router'
 import { RootState } from '~/store/interfaces'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import Recipe from 'Models/recipe'
-import RoutePath from '~/router/path'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
@@ -287,7 +286,7 @@ import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 
 interface Data {
   recipe: Recipe | null
-  cookTime: { hours: number, minutes: number }
+  cookTime: { hours?: number, minutes?: number }
   showContextMenu: null | MouseEvent
   contextItem: Sortable | null
   contextCollection: Array<Sortable>
@@ -342,11 +341,7 @@ export default defineComponent({
   methods: {
     async save() {
       if (!this.recipe) return
-      const json = this.recipe.$toJson()
-      this.$http.secured
-        .patch(RoutePath.apiBase() + RoutePath.recipe(this.recipe.clientId), {
-          recipe: json,
-        })
+      this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.UPDATE, this.recipe)
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
     },
@@ -356,22 +351,6 @@ export default defineComponent({
         return
       }
       if (this.recipe) {
-        await this.recipe.save()
-        // await Recipe.update({ where: this.recipe.clientId, data: this.recipe.$toJson() })
-        await this.recipe.steps.forEach(s => {
-          if (s.markedForDestruction) {
-            Step.delete(s.clientId)
-          } else {
-            Step.insertOrUpdate({ data: s.$toJson() })
-          }
-        })
-        await this.recipe.ingredients.forEach(ing => {
-          if (ing.markedForDestruction) {
-            Ingredient.delete(ing.clientId)
-          } else {
-            Ingredient.insertOrUpdate({ data: ing.$toJson() })
-          }
-        })
         await this.$router.push({
           name: this.$routerExtension.names.Recipe,
           params: { clientId: this.recipe.clientId ?? '' },

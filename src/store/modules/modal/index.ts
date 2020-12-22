@@ -82,7 +82,7 @@ const actions: ActionTree<ModalState, RootState> & ModalActions = {
 }
 
 const modal: Module<ModalState, RootState> = {
-  namespaced: true,
+  namespaced: true as const,
   state,
   getters,
   mutations,

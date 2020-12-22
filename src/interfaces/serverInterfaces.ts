@@ -10,4 +10,5 @@ export interface ServerData<T = Record<string, unknown>> {
 export interface ServerResponse<U, T = ServerData<U>> {
   data: T
   included: Array<any>
+  error?: any
 }
