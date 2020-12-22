@@ -6,7 +6,7 @@ import mutations from '~/store/modules/sessions/mutations'
 import actions from '~/store/modules/sessions/actions'
 
 const sessions: Module<SessionsState, RootState> = {
-  namespaced: true,
+  namespaced: true as const,
   state,
   getters,
   mutations,

@@ -28,5 +28,4 @@ export default class Ingredient extends AModel implements RIngredient {
   description: string | undefined
   recipeId: string | undefined
   sortOrder!: number
-  klass = Ingredient
 }

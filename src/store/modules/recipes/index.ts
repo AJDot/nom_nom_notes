@@ -6,7 +6,7 @@ import mutations from '~/store/modules/recipes/mutations'
 import actions from '~/store/modules/recipes/actions'
 
 const recipes: Module<RecipesState, RootState> = {
-  namespaced: true,
+  namespaced: true as const,
   state,
   getters,
   mutations,

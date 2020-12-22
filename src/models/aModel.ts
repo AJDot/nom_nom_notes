@@ -8,7 +8,6 @@ export default abstract class AModel extends Model implements AModelAttributes {
   id!: string
   clientId!: string
   _destroy!: boolean
-  abstract klass: typeof Model
 
   static primaryKey = 'clientId'
 
@@ -39,9 +38,8 @@ export default abstract class AModel extends Model implements AModelAttributes {
        * but all seems to not update the object in the store
        * Instead, must call the static method to update the object
        */
-      if (!this.klass) throw new Error('klass is undefined!')
       if (!this.$id) throw new Error('$id is undefined!')
-      await this.klass.update({ where: this.$id, data: this.$toJson() })
+      await this.$self().update({ where: this.$id, data: this.$toJson() })
     }
   }
 }

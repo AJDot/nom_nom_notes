@@ -30,12 +30,16 @@ export default class Recipe extends AModel implements RRecipe {
     }
   }
 
-  klass = Recipe
-
   name: string | undefined
   description: string | undefined
   cookTime!: number
   note!: string
   steps: Array<Step> = []
   ingredients: Array<Ingredient> = []
+
+  save(): Promise<void> {
+    this.steps.forEach(x => x.save())
+    this.ingredients.forEach(x => x.save())
+    return super.save()
+  }
 }
