@@ -106,6 +106,7 @@ module.exports = {
       Assets: path.resolve(__dirname, 'src/assets'),
       Public: path.resolve(__dirname, 'src/assets/public'),
       Styles: path.resolve(__dirname, 'src/assets/stylesheets'),
+      Views: path.resolve(__dirname, 'src/views'),
     },
     extensions: ['*', '.js', '.ts', '.vue', '.json', '.scss'],
   },
