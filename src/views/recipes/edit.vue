@@ -109,37 +109,18 @@
     </div>
 
     <dl>
-      <dt><label for="ing-0-description">Ingredients</label></dt>
+      <dt><label for="ingredient-0-description">Ingredients</label></dt>
       <dd>
         <ul>
-          <row
+          <ingredient-list-item
             v-for="(ing, i) in unmarkedSortedIngredients"
             :key="ing.clientId"
-            tag="li"
-          >
-            <column>
-              <label :for="`ing-${i}-description`">{{ i + 1 }}</label>
-            </column>
-            <column class="grow-2">
-              <input
-                :id="`ing-${i}-description`"
-                v-model="ing.description"
-                v-focus="focusId === ing.clientId"
-                type="text"
-              >
-            </column>
-            <column>
-              <button
-                class="btn"
-                type="button"
-                @click="openContextMenu($event, recipe.ingredients, ing)"
-              >
-                <span class="material-icons">
-                  more_vert
-                </span>
-              </button>
-            </column>
-          </row>
+            v-model:description="ing.description"
+            :index="i"
+            :client-id="ing.clientId"
+            :focus="focusId"
+            @context-menu="openContextMenu($event, recipe.ingredients, ing)"
+          />
           <row tag="li">
             <button
               class="btn"
@@ -168,7 +149,7 @@
               <textarea
                 :id="`step-${i}-description`"
                 v-model="step.description"
-                v-focus="focusId = step.clientId"
+                v-focus="focusId === step.clientId"
                 :name="`step-${i}-description`"
                 placeholder="Next step..."
               />
@@ -283,6 +264,7 @@ import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
+import IngredientListItem from 'Views/ingredients/listItem.vue'
 
 interface Data {
   recipe: Recipe | null
@@ -295,6 +277,9 @@ interface Data {
 
 export default defineComponent({
   name: 'RecipeEdit',
+  components: {
+    IngredientListItem,
+  },
   data(): Data {
     return {
       recipe: null,
