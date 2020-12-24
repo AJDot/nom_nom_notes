@@ -233,7 +233,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
@@ -273,6 +273,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      recipe: null,
       cookTime: {
         hours: 0,
         minutes: 0,
