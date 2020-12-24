@@ -7,7 +7,6 @@
       <input
         :id="`ingredient-${index}-description`"
         ref="descriptionInput"
-        v-focus="focus === clientId"
         :value="description"
         type="text"
         @input="$emit('update:description', $event.target.value)"
@@ -31,28 +30,19 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'IngredientListItem',
+  name: 'IngredientsListItem',
   props: {
     index: {
       type: Number,
       default: null,
     },
-    clientId: {
-      type: String,
-      default: '',
-    },
     description: {
       type: String,
       default: '',
     },
-    focus: {
-      type: String,
-      default: null,
-    },
   },
   emits: {
     'context-menu': null,
-    input: null,
     'update:description': null,
   },
 })

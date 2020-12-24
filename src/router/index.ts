@@ -1,7 +1,6 @@
 import { createWebHistory, createRouter, RouteRecordRaw, NavigationGuard, RouteRecord } from 'vue-router'
 import ListRecipe from '~/views/recipes/list.vue'
 import ListRecipeHeader from '~/views/recipes/listHeader.vue'
-import NewRecipe from '~/views/recipes/new.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import EditRecipe from '~/views/recipes/edit.vue'
@@ -25,8 +24,9 @@ const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
 
 const checkSignIn: NavigationGuard = (to, _from) => {
   // if a public route, navigate to it
-  if (publicRoutes.includes(to.name) || store.state[StoreModuleType.Session].signedIn) return true
-  else {
+  if (publicRoutes.includes(to.name) || store.state[StoreModuleType.Session].signedIn) {
+    return true
+  } else {
     // if not a publish route, navigate to sign in
     return {
       name: RouteName.SignIn,
@@ -52,7 +52,8 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.NewRecipe,
     path: '/recipe',
-    component: NewRecipe,
+    component: EditRecipe,
+    props: { mode: 'create' },
   },
   {
     name: RouteName.Recipe,
