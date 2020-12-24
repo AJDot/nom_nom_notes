@@ -5,11 +5,11 @@
     enctype="multipart/form-data"
     @submit.prevent="save"
   >
-    <h2>Edit Recipe: {{ recipe.name }}</h2>
+    <h2>{{ headerText }}</h2>
     <input
       class="btn"
       type="submit"
-      value="Update Recipe"
+      :value="submitText"
       placeholder="My Super Awesome Recipe"
     >
     <dl class="image">
@@ -111,26 +111,11 @@
     <dl>
       <dt><label for="ingredient-0-description">Ingredients</label></dt>
       <dd>
-        <ul>
-          <ingredient-list-item
-            v-for="(ing, i) in unmarkedSortedIngredients"
-            :key="ing.clientId"
-            v-model:description="ing.description"
-            :index="i"
-            :client-id="ing.clientId"
-            :focus="focusId"
-            @context-menu="openContextMenu($event, recipe.ingredients, ing)"
-          />
-          <row tag="li">
-            <button
-              class="btn"
-              type="button"
-              @click="addIngredient"
-            >
-              + Add Ingredient
-            </button>
-          </row>
-        </ul>
+        <ingredients-list
+          :ingredients="unmarkedSortedIngredients"
+          @add="addIngredient"
+          @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)"
+        />
       </dd>
     </dl>
     <dl>
@@ -248,7 +233,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
@@ -264,7 +249,7 @@ import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
-import IngredientListItem from 'Views/ingredients/listItem.vue'
+import IngredientsList from 'Views/ingredients/list.vue'
 
 interface Data {
   recipe: Recipe | null
@@ -278,11 +263,16 @@ interface Data {
 export default defineComponent({
   name: 'RecipeEdit',
   components: {
-    IngredientListItem,
+    IngredientsList,
+  },
+  props: {
+    mode: {
+      type: String as () => 'edit' | 'create',
+      default: 'edit',
+    },
   },
   data(): Data {
     return {
-      recipe: null,
       cookTime: {
         hours: 0,
         minutes: 0,
@@ -302,6 +292,20 @@ export default defineComponent({
       return (this.recipe?.ingredients.filter(s => !s.markedForDestruction) ?? [])
         .sort((a, b) => a.sortOrder - b.sortOrder)
     },
+    headerText(): string {
+      if (this.mode === 'create') {
+        return 'Create Recipe'
+      } else {
+        return `Edit Recipe: ${this.recipe.name}`
+      }
+    },
+    submitText(): string {
+      if (this.mode === 'create') {
+        return 'Create'
+      } else {
+        return 'Update Recipe'
+      }
+    },
   },
   watch: {
     cookTime: {
@@ -314,19 +318,29 @@ export default defineComponent({
     },
   },
   async beforeMount() {
-    const store = useStore<RootState>(stateKey)
-    const clientId = router.currentRoute.value.params.clientId
-    await store.dispatch(
-      StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-      clientId,
-    )
-    this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
-    if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
+    if (this.mode === 'create') {
+      this.recipe = new Recipe()
+    } else {
+      const store = useStore<RootState>(stateKey)
+      const clientId = router.currentRoute.value.params.clientId
+      await store.dispatch(
+        StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
+        clientId,
+      )
+      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
+      if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
+    }
   },
   methods: {
     async save() {
       if (!this.recipe) return
-      this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.UPDATE, this.recipe)
+      let action: string
+      if (this.mode === 'create') {
+        action = StoreModulePath.Recipes + RecipeActionTypes.CREATE
+      } else {
+        action = StoreModulePath.Recipes + RecipeActionTypes.UPDATE
+      }
+      this.$store.dispatch(action, this.recipe)
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
     },
@@ -346,15 +360,28 @@ export default defineComponent({
       this.processFailedUpdate(error?.data?.error, { signOut: false })
     },
     updateError(error: AxiosError) {
-      const errorText = error.response?.data.error
+      let errorText = error.response?.data.error
       const opts: { signOut: boolean | null } = { signOut: null }
-      switch (error.response?.status) {
-        case (HttpStatusCode.Forbidden):
-          opts.signOut = true
-          break
-        default:
-          opts.signOut = false
-          break
+      if (this.mode === 'create') {
+        switch (error.response?.status) {
+          case (HttpStatusCode.Forbidden):
+            opts.signOut = true
+            break
+          case (HttpStatusCode.NotFound):
+            errorText = errorText ?? 'An unknown error occurred. Please contact the app admin.'
+            break
+          default:
+            break
+        }
+      } else {
+        switch (error.response?.status) {
+          case (HttpStatusCode.Forbidden):
+            opts.signOut = true
+            break
+          default:
+            opts.signOut = false
+            break
+        }
       }
       this.processFailedUpdate(errorText, opts)
     },
@@ -362,7 +389,7 @@ export default defineComponent({
       if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: errorText },
+          flash: { alert: errorText || 'An unknown error occurred' },
         })
       }
     },
