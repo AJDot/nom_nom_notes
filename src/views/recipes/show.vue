@@ -43,9 +43,12 @@
         <!--        <% end %>-->
       </ul>
       <ul class="categories">
-        <!--        <% @recipe.categories.each do |cat| %>-->
-        <!--        <li><%= cat.name %></li>-->
-        <!--        <% end %>-->
+        <li
+          v-for="cat in recipe.categories"
+          :key="cat.clientId"
+        >
+          {{ cat.name }}
+        </li>
       </ul>
       <p v-if="recipe.description">
         {{ recipe.description }}
@@ -101,16 +104,22 @@ export default defineComponent({
   name: 'Recipe',
   computed: {
     recipe(): Recipe | null {
-      const r = Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps|ingredients').first()
+      const r = Recipe.query().whereId(this.$router.currentRoute.value.params.clientId).with('steps|ingredients|categories').first()
       return r
     },
     sortedSteps(): Array<Step> {
-      if (this.recipe) return new Sorter().sort(this.recipe.steps)
-      else return []
+      if (this.recipe) {
+        return new Sorter().sort(this.recipe.steps)
+      } else {
+        return []
+      }
     },
     sortedIngredients(): Array<Ingredient> {
-      if (this.recipe) return new Sorter().sort(this.recipe.ingredients)
-      else return []
+      if (this.recipe) {
+        return new Sorter().sort(this.recipe.ingredients)
+      } else {
+        return []
+      }
     },
   },
   async beforeCreate() {

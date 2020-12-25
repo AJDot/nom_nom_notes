@@ -1,3 +1,7 @@
+/**
+ * "R" = Record
+ * "B" = BelongsTo
+ */
 export interface RRecord {
   id: string | undefined
   clientId: string | undefined
@@ -23,6 +27,10 @@ export interface Sortable {
 
 export interface BRecipe {
   recipeId: string | undefined
+}
+
+export interface BCategory {
+  categoryId: string | undefined
 }
 
 export interface Notable {
