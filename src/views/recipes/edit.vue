@@ -97,13 +97,7 @@
       <dl class="grid-1-2">
         <dt><label for="categories">Categories</label></dt>
         <dd>
-          <textarea
-            id="categories"
-            name="categories"
-            cols="80"
-            rows="10"
-            placeholder="Put each category on its own line."
-          />
+          <search :searcher="categorySearcher" />
         </dd>
       </dl>
     </div>
@@ -250,6 +244,11 @@ import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import IngredientsList from 'Views/ingredients/list.vue'
+import Category from 'Models/category'
+import Search from '@/search.vue'
+import Searcher from '~/utils/searcher'
+import RoutePath from '~/router/path'
+import { SearchOptions } from 'Interfaces/searchInterfaces'
 
 interface Data {
   recipe: Recipe | null
@@ -263,6 +262,7 @@ interface Data {
 export default defineComponent({
   name: 'RecipeEdit',
   components: {
+    Search,
     IngredientsList,
   },
   props: {
@@ -297,7 +297,7 @@ export default defineComponent({
       if (this.mode === 'create') {
         return 'Create Recipe'
       } else {
-        return `Edit Recipe: ${this.recipe.name}`
+        return `Edit Recipe: ${this.recipe?.name}`
       }
     },
     submitText(): string {
@@ -306,6 +306,23 @@ export default defineComponent({
       } else {
         return 'Update Recipe'
       }
+    },
+    categorySearcher(): Searcher<Category, string> {
+      const options: SearchOptions<Category, string> = {
+        label: 'name',
+        value: 'clientId',
+        valueString: 'clientId',
+        collection: Category.all(),
+        endpoint: RoutePath.apiBase() + RoutePath.categories(),
+      }
+      if (this.recipe) {
+        options.query = {
+          not: {
+            client_id: this.recipe.categories.map(c => c.clientId),
+          },
+        }
+      }
+      return new Searcher(options)
     },
   },
   watch: {
@@ -328,7 +345,7 @@ export default defineComponent({
         StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
         clientId,
       )
-      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients').first()
+      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories').first()
       if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
     }
   },

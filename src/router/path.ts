@@ -35,6 +35,10 @@ class Path {
     return Path.buildPath('/recipes/:clientId', { clientId: recipeClientId })
   }
 
+  categories() {
+    return '/categories'
+  }
+
   private static buildPath(path: string, wildcards: Hash) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {

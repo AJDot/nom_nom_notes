@@ -5,6 +5,9 @@ import { store, StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import { RouteName } from '~/router/routeName'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as qs from 'qs'
 
 /**
  * DO NOT use store to get csrf - go straight to localStorage
@@ -34,6 +37,14 @@ securedAxiosInstance.interceptors.request.use((config) => {
       ...config.headers,
       'X-CSRF-TOKEN': localStorage.csrf,
     }
+  }
+  // Format nested params correctly
+  config.paramsSerializer = params => {
+    // Qs is already included in the Axios package
+    return qs.stringify(params, {
+      arrayFormat: 'brackets',
+      encode: false,
+    })
   }
   return config
 })
