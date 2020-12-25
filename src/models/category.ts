@@ -29,7 +29,7 @@ export default class Category extends AModel implements RCategory {
   }
 
   id!: string
-  name: string | undefined
+  name!: string
   recipeCategories: Array<RecipeCategory> = []
   recipes: Array<Recipe> = []
 }
