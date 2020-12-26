@@ -1,6 +1,9 @@
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 import { KeysOfType } from 'Interfaces/util_interfaces'
 import { securedAxiosInstance } from '~/backend/axios'
+import { AxiosResponse } from 'axios'
+import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
+import { ObjectUtils } from '~/utils/objectUtils'
 
 function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T) => V)): V {
   if (getter instanceof Function) {
@@ -12,23 +15,15 @@ function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T) => V)): V
 
 export default class Searcher<T, V> implements USearcher {
   options: SearchOptions<T, V>
+  results: Array<SearchResult> = []
 
   constructor(options: SearchOptions<T, V>) {
     this.options = options
   }
 
-  get results(): SearchResult[] {
-    return this.options.collection.map(item => {
-      return {
-        label: getValue(item, this.options.label),
-        value: getValue(item, this.options.valueString),
-      }
-    })
-  }
-
   async search(q = ''): Promise<void> {
     if (this.options.endpoint) {
-      const response = await securedAxiosInstance.get(
+      const response: AxiosResponse<ServerResponse<T, Array<ServerData<T>>>> = await securedAxiosInstance.get(
         this.options.endpoint,
         {
           params: {
@@ -38,7 +33,13 @@ export default class Searcher<T, V> implements USearcher {
             this.options.query),
           },
         })
-      console.log(response)
+      this.results = response.data.data.map(item => {
+        const obj = ObjectUtils.combine(item, 'id', 'attributes') as T
+        return {
+          label: getValue(obj, this.options.label),
+          value: getValue(obj, this.options.valueString),
+        }
+      })
     }
   }
 }

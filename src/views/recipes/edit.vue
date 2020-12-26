@@ -97,7 +97,20 @@
       <dl class="grid-1-2">
         <dt><label for="categories">Categories</label></dt>
         <dd>
-          <search :searcher="categorySearcher" />
+          <search
+            :searcher="categorySearcher"
+            @select="addCategory"
+          />
+          <ul>
+            <row
+              v-for="cat in recipe.categories"
+              :key="cat.clientId"
+            >
+              <column>
+                {{ cat.name }}
+              </column>
+            </row>
+          </ul>
         </dd>
       </dl>
     </div>
@@ -180,7 +193,6 @@
       value="Update Recipe"
     >
     <context-menu
-      ref="menu"
       :display="showContextMenu"
       @close="resetStepContextMenu"
     >
@@ -248,7 +260,7 @@ import Category from 'Models/category'
 import Search from '@/search.vue'
 import Searcher from '~/utils/searcher'
 import RoutePath from '~/router/path'
-import { SearchOptions } from 'Interfaces/searchInterfaces'
+import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
 
 interface Data {
   recipe: Recipe | null
@@ -451,6 +463,9 @@ export default defineComponent({
       this.contextItem = null
       this.contextCollection = []
       this.showContextMenu = null
+    },
+    addCategory(item: {data: SearchResult}): void {
+      console.log(item)
     },
   },
 })
