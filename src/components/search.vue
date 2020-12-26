@@ -1,24 +1,52 @@
 <template>
   <input
+    ref="search"
     v-model="q"
     type="search"
+    @keyup="search"
+    @keydown.enter.prevent
   >
-  <ul>
-    <li
-      v-for="item in results"
-      :key="item.value"
-    >
-      {{ item.label }}
-    </li>
-  </ul>
+  <context-menu
+    ref="menu"
+    :display="menuEvent"
+    :focus="false"
+    :width="$refs.search"
+    @close="hideResults"
+  >
+    <ul class="dropdown">
+      <template v-if="hasResults">
+        <li
+          v-for="item in results"
+          :key="item.value"
+          class="dropdown-item"
+          @click.capture="select(item)"
+        >
+          <button
+            type="button"
+            class="dropdown-btn"
+          >
+            {{ item.label }}
+          </button>
+        </li>
+      </template>
+      <li
+        v-else
+        class="dropdown-item"
+      >
+        No results found.
+      </li>
+    </ul>
+  </context-menu>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 
 interface Data {
   q: string
+  results: Array<SearchResult>
+  menuEvent: KeyboardEvent | null
 }
 
 export default defineComponent({
@@ -29,22 +57,36 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: {},
+  emits: {
+    select: null,
+  },
   data(): Data {
     return {
       q: '',
+      results: [],
+      menuEvent: null,
     }
   },
   computed: {
-    results(): Array<SearchResult> {
-      return this.searcher.results
+    hasResults(): boolean {
+      return Boolean(this.results.length)
     },
   },
-  watch: {
-    async q(newVal: string, oldVal: string) {
-      if (newVal !== oldVal) {
-        await this.searcher.search(newVal)
-      }
+  methods: {
+    async search(evt: KeyboardEvent): Promise<void> {
+      await this.searcher.search(this.q)
+      this.results = this.searcher.results
+      this.showResults(evt)
+    },
+    showResults(evt: KeyboardEvent): void {
+      this.menuEvent = evt
+    },
+    async hideResults(): Promise<void> {
+      await nextTick()
+      this.menuEvent = null
+    },
+    select(item: SearchResult): void {
+      this.$emit('select', { data: item })
     },
   },
 })

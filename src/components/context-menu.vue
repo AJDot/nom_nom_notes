@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="show"
+    ref="mask"
     class="context-menu-mask"
     tabindex="-1"
     @click.self="handleOutsideClick"
@@ -24,18 +25,31 @@ import { defineComponent, nextTick } from 'vue'
 // eslint-disable-next-line no-undef
 import TriggeredEvent = JQuery.TriggeredEvent
 
-interface Data {
-  left: number
-  top: number
-  edgePadding: number
+interface Position<T = number> {
+  top: T
+  left: T
+}
+
+interface Style {
+  top: string
+  left: string
+  width?: string
+}
+
+interface Data extends Position {
   show: boolean
   timeout: number | null
 }
 
+type ContextMenuEvent = MouseEvent | KeyboardEvent
+
 export default defineComponent({
   name: 'ContextMenu',
   props: {
-    display: MouseEvent, // prop detect if we should show context menu
+    display: {
+      type: Object as () => ContextMenuEvent, // prop detect if we should show context menu
+      default: null,
+    },
     outsideClick: {
       type: Boolean,
       default: true,
@@ -43,6 +57,18 @@ export default defineComponent({
     fixed: {
       type: Boolean,
       default: false,
+    },
+    focus: {
+      type: Boolean,
+      default: false,
+    },
+    width: {
+      type: HTMLElement,
+      default: null,
+    },
+    edge: {
+      type: Number,
+      default: 50,
     },
   },
   emits: {
@@ -52,24 +78,28 @@ export default defineComponent({
     return {
       left: 0, // left position
       top: 0, // top position
-      edgePadding: 50,
       show: false, // affect display of context menu
       timeout: null,
     }
   },
   computed: {
     // get position of context menu
-    style(): { top: string, left: string } {
-      return {
+    style(): Style {
+      const style: Style = {
         top: this.top + 'px',
         left: this.left + 'px',
       }
+      if (this.width) {
+        const maxWidth = window.innerWidth - this.left
+        style.width = Math.min(this.width.offsetWidth, maxWidth) + 'px'
+      }
+      return style
     },
   },
   watch: {
     async display(newVal, oldVal) {
-      if (newVal && newVal !== oldVal) {
-        this.open(newVal)
+      if (newVal !== oldVal) {
+        newVal ? this.open(newVal) : this.close()
       }
     },
   },
@@ -94,16 +124,17 @@ export default defineComponent({
       this.left = 0
       this.top = 0
     },
-    async open(evt: MouseEvent) {
+    async open(evt: ContextMenuEvent) {
       this.show = true
       await nextTick()
       const position = this.getPositionFromEvent(evt)
       this.setPosition(position.top, position.left)
-      this.focus()
+      this.giveFocus()
     },
-    focus() {
+    giveFocus() {
+      if (!this.focus) return
       const input = $(this.$el).find(':input').get(0);
-      (input || this.$el).focus()
+      (input || this.$refs.mask || this.$refs.context)?.focus()
     },
     setPosition(top: number, left: number) {
       const menu: HTMLElement = this.$refs.context as HTMLElement
@@ -111,15 +142,15 @@ export default defineComponent({
       let maxWidth = 0
       const minimumHeight = 0
       if (menu) {
-        maxHeight = window.innerHeight - minimumHeight - this.edgePadding
-        maxWidth = window.innerWidth - menu.offsetWidth - this.edgePadding
+        maxHeight = window.innerHeight - minimumHeight
+        maxWidth = window.innerWidth - menu.offsetWidth
       }
 
-      this.top = Math.max(Math.min(top, maxHeight), this.edgePadding)
-      this.left = Math.max(Math.min(left, maxWidth), this.edgePadding)
+      this.top = Math.min(top, maxHeight)
+      this.left = Math.min(left, maxWidth)
     },
-    reposition(event?: MouseEvent | TriggeredEvent) {
-      let newCoords = {
+    reposition(event?: ContextMenuEvent | TriggeredEvent) {
+      let newCoords: Position = {
         top: this.top,
         left: this.left,
       }
@@ -128,29 +159,40 @@ export default defineComponent({
       }
       this.setPosition(newCoords.top, newCoords.left)
     },
-    getPositionFromEvent(event: MouseEvent | TriggeredEvent): { top: number, left: number } {
-      const position = {
-        top: event.clientY || 0,
-        left: event.clientX || 0,
-      }
-      if (this.fixed || (!position.top && !position.left)) {
-        let target: Element | null = null
-        if ('relatedTarget' in event) {
-          target = (event.target || event.relatedTarget) as Element
-        } else {
-          target = event.target as Element
+    getPositionFromEvent(event: ContextMenuEvent | TriggeredEvent): Position {
+      let position: Position
+      if (event instanceof KeyboardEvent) {
+        position = this.getBoundingClientPosition(event)
+      } else {
+        position = {
+          top: event.clientY || 0,
+          left: event.clientX || 0,
         }
-        const rect = target.getBoundingClientRect()
-        position.top = rect.bottom
-        position.left = rect.left
+        if (this.fixed || (!position.top && !position.left)) {
+          position = this.getBoundingClientPosition(event)
+        }
       }
       return position
     },
-    recalculatePosition(event: MouseEvent | TriggeredEvent) {
+    recalculatePosition(event: ContextMenuEvent | TriggeredEvent) {
       return this.getPositionFromEvent(event)
     },
     handleOutsideClick() {
       if (this.outsideClick) this.close()
+    },
+    getBoundingClientPosition(event: ContextMenuEvent | TriggeredEvent): Position {
+      let target: Element | null = null
+      if ('relatedTarget' in event) {
+        target = (event.target || event.relatedTarget) as Element
+      } else {
+        target = event.target as Element
+      }
+
+      const position = target.getBoundingClientRect()
+      return {
+        top: position.bottom,
+        left: position.left,
+      }
     },
   },
 })
