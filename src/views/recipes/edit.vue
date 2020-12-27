@@ -101,11 +101,21 @@
           />
           <ul>
             <row
-              v-for="cat in recipe.categories"
+              v-for="cat in unmarkedCategories"
               :key="cat.clientId"
             >
-              <column>
+              <column class="grow-2">
                 {{ cat.name }}
+              </column>
+
+              <column>
+                <button
+                  type="button"
+                  class="btn-link"
+                  @click="destroyRecipeCategory(cat)"
+                >
+                  <i class="material-icons wiggle">delete</i>
+                </button>
               </column>
             </row>
           </ul>
@@ -250,6 +260,7 @@ import Searcher from '~/utils/searcher'
 import RoutePath from '~/router/path'
 import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
 import RecipeCategory from 'Models/recipeCategory'
+import Logger from '~/utils/logger'
 
 interface Data {
   recipe: Recipe | null
@@ -293,6 +304,12 @@ export default defineComponent({
     unmarkedSortedIngredients(): Array<Ingredient> {
       return (this.recipe?.ingredients.filter(s => !s.markedForDestruction) ?? [])
         .sort((a, b) => a.sortOrder - b.sortOrder)
+    },
+    unmarkedCategories(): Array<Category> {
+      return this.recipe?.categories.filter(c => {
+        const rc = this.recipe?.recipeCategories.find(rc => rc.categoryId === c.$id)
+        return !rc?.markedForDestruction
+      }) || []
     },
     headerText(): string {
       if (this.mode === 'create') {
@@ -346,7 +363,7 @@ export default defineComponent({
         StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
         clientId,
       )
-      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories').first()
+      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories|recipeCategories').first()
       if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
     }
   },
@@ -450,6 +467,16 @@ export default defineComponent({
     },
     destroyItem<T extends Destroyable>(item: T) {
       item.markForDestruction()
+    },
+    destroyRecipeCategory(item: Category) {
+      if (this.recipe) {
+        const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
+        if (rc) {
+          rc?.markForDestruction()
+        } else {
+          Logger.warn('RecipeCategory not found!')
+        }
+      }
     },
     isFirst<T extends Sortable>(items: Array<T>, item: T) {
       return new Sorter().isFirst(items, item)
