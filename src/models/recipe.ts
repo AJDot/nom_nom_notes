@@ -48,6 +48,7 @@ export default class Recipe extends AModel implements RRecipe {
   save(): Promise<void> {
     this.steps.forEach(x => x.save())
     this.ingredients.forEach(x => x.save())
+    this.recipeCategories.forEach(x => x.save())
     return super.save()
   }
 }
