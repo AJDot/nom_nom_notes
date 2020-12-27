@@ -256,11 +256,12 @@ import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import IngredientsList from 'Views/ingredients/list.vue'
-import Category from 'Models/category'
+import Category, { RCategory } from 'Models/category'
 import Search from '@/search.vue'
 import Searcher from '~/utils/searcher'
 import RoutePath from '~/router/path'
 import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
+import RecipeCategory from 'Models/recipeCategory'
 
 interface Data {
   recipe: Recipe | null
@@ -439,6 +440,26 @@ export default defineComponent({
       this.focusId = ingredient.clientId
       this.recipe.ingredients.push(ingredient)
     },
+    async addCategory(item: { data: SearchResult<RCategory> }) {
+      if (!this.recipe) return
+      await Category.insertOrUpdate({ data: item.data.raw })
+      const cat = Category.find(item.data.value)
+      if (cat) {
+        this.recipe.categories.push(cat)
+
+        await RecipeCategory.insertOrUpdate({
+          data: {
+            recipeId: this.recipe.clientId,
+            categoryId: cat.clientId,
+          },
+        })
+        const rc = RecipeCategory.query()
+          .where('recipeId', this.recipe.clientId)
+          .where('categoryId', cat.clientId)
+          .first()
+        if (rc) this.recipe.recipeCategories.push(rc)
+      }
+    },
     destroyItem<T extends Destroyable>(item: T) {
       item.markForDestruction()
     },
@@ -463,9 +484,6 @@ export default defineComponent({
       this.contextItem = null
       this.contextCollection = []
       this.showContextMenu = null
-    },
-    addCategory(item: {data: SearchResult}): void {
-      console.log(item)
     },
   },
 })

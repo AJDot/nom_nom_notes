@@ -13,9 +13,9 @@ function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T) => V)): V
   }
 }
 
-export default class Searcher<T, V> implements USearcher {
+export default class Searcher<T, V> implements USearcher<T> {
   options: SearchOptions<T, V>
-  results: Array<SearchResult> = []
+  results: Array<SearchResult<T>> = []
 
   constructor(options: SearchOptions<T, V>) {
     this.options = options
@@ -38,6 +38,7 @@ export default class Searcher<T, V> implements USearcher {
         return {
           label: getValue(obj, this.options.label),
           value: getValue(obj, this.options.valueString),
+          raw: obj,
         }
       })
     }

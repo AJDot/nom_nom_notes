@@ -1,12 +1,13 @@
 import { Hash, KeysOfType } from 'Interfaces/util_interfaces'
 
-export interface SearchResult {
+export interface SearchResult<T> {
   label: string
   value: string
+  raw: T
 }
 
-export interface USearcher {
-  results: Array<SearchResult>
+export interface USearcher<T> {
+  results: Array<SearchResult<T>>
   search(q: string): Promise<void>
 }
 
