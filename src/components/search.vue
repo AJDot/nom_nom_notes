@@ -45,7 +45,7 @@ import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 
 interface Data {
   q: string
-  results: Array<SearchResult>
+  results: Array<SearchResult<never>>
   menuEvent: KeyboardEvent | null
 }
 
@@ -53,7 +53,7 @@ export default defineComponent({
   name: 'Search',
   props: {
     searcher: {
-      type: Object as () => USearcher,
+      type: Object as () => USearcher<never>,
       required: true,
     },
   },
@@ -85,7 +85,7 @@ export default defineComponent({
       await nextTick()
       this.menuEvent = null
     },
-    select(item: SearchResult): void {
+    select(item: SearchResult<never>): void {
       this.$emit('select', { data: item })
     },
   },
