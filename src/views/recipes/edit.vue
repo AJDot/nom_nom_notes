@@ -83,14 +83,12 @@
     </dl>
     <div class="grid">
       <dl class="grid-1-2">
-        <dt><label for="ethnicities">Ethnicities</label></dt>
+        <dt><label for="ingredient-0-description">Ingredients</label></dt>
         <dd>
-          <textarea
-            id="ethnicities"
-            name="ethnicities"
-            cols="80"
-            rows="10"
-            placeholder="Put each ethnicity on its own line."
+          <ingredients-list
+            :ingredients="unmarkedSortedIngredients"
+            @add="addIngredient"
+            @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)"
           />
         </dd>
       </dl>
@@ -115,16 +113,6 @@
       </dl>
     </div>
 
-    <dl>
-      <dt><label for="ingredient-0-description">Ingredients</label></dt>
-      <dd>
-        <ingredients-list
-          :ingredients="unmarkedSortedIngredients"
-          @add="addIngredient"
-          @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)"
-        />
-      </dd>
-    </dl>
     <dl>
       <dt><label for="step-0-description">Directions</label></dt>
       <dd>
