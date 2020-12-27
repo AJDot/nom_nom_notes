@@ -436,14 +436,12 @@ ul.card-list .content p {
   margin: 10px 0;
 }
 
-.recipe ul.categories > li,
-.recipe ul.ethnicities > li {
+.recipe ul.categories > li {
   display: inline-block;
   font-size: .85em;
 }
 
-.recipe ul.categories > li + li::before,
-.recipe ul.ethnicities > li + li::before {
+.recipe ul.categories > li + li::before {
   content: " | ";
 }
 

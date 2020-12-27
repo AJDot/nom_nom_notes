@@ -37,11 +37,6 @@
         </li>
       </ul>
 
-      <ul class="ethnicities">
-        <!--        <% @recipe.ethnicities.each do |eth| %>-->
-        <!--        <li><%= eth.name %></li>-->
-        <!--        <% end %>-->
-      </ul>
       <ul class="categories">
         <li
           v-for="cat in recipe.categories"
