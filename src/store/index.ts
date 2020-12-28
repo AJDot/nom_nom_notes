@@ -8,6 +8,7 @@ import sessions from '~/store/modules/sessions'
 import flash from '~/store/modules/flash'
 import modal from '~/store/modules/modal'
 import loading from '~/store/modules/loading'
+import categories from '~/store/modules/categories'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -15,6 +16,7 @@ export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
 export enum StoreModulePath {
   Root = '',
   Recipes = 'recipes/',
+  Categories = 'categories/',
   Session = 'sessions/',
   Flash = 'flash/',
   Modal = 'modal/',
@@ -25,6 +27,7 @@ export const store = createStore<RootState>({
   plugins: [VuexORM.install(database)],
   modules: {
     recipes,
+    categories,
     sessions,
     flash,
     modal,

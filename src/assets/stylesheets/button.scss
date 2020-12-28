@@ -24,6 +24,11 @@
     background: #44dd9f;
   }
 
+  &:hover,
+  &:focus {
+    cursor: pointer;
+  }
+
   &-link {
     font: inherit;
     background: none;
@@ -35,7 +40,6 @@
     &:hover,
     &:focus {
       border-bottom-width: 2px;
-      cursor: pointer;
     }
 
     &.lg {
@@ -47,6 +51,7 @@
   &-clear {
     background: none;
     border: none;
+    cursor: pointer;
   }
 }
 

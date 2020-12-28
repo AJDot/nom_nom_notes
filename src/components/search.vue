@@ -2,6 +2,7 @@
   <input
     ref="search"
     v-model="q"
+    v-bind="$attrs"
     type="search"
     @keyup="search"
     @keydown.enter.prevent
@@ -86,6 +87,7 @@ export default defineComponent({
       this.menuEvent = null
     },
     select(item: SearchResult<never>): void {
+      this.q = item.label
       this.$emit('select', { data: item })
     },
   },
