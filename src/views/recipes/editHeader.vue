@@ -57,12 +57,16 @@ import { AxiosError, AxiosResponse } from 'axios'
 import { FlashActionTypes } from '~/store/modules/flash'
 import Modal from '@/modal.vue'
 import { ModalId } from '~/enums/modalId'
+import loading from '~/mixins/loading'
 
 export default defineComponent({
   name: 'RecipeListHeader',
   components: {
     Modal,
   },
+  mixins: [
+    loading,
+  ],
   setup() {
     const getters = mapState('sessions', { signedIn: 'signedIn' })
     const store = useStore<RootState>(stateKey)
@@ -84,9 +88,11 @@ export default defineComponent({
       // need to save this because it can't be referenced after recipe is destroyed
       if (this.recipe) this.recipeName = this.recipe.name ?? 'Unnamed Recipe'
       this.resetModal()
-      await this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.DESTROY, this.recipe)
-        .then((response) => this.destroySuccessful(response))
-        .catch((error) => this.destroyError(error))
+      this.loading(async () => {
+        await this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.DESTROY, this.recipe)
+          .then((response) => this.destroySuccessful(response))
+          .catch((error) => this.destroyError(error))
+      })
     },
     async destroySuccessful(response: AxiosResponse) {
       if (response.data.error) {
