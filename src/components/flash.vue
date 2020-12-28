@@ -1,44 +1,45 @@
 <template>
-  <div
-    v-if="hasMessages"
-    :key="$route.fullPath"
+  <transition-group
+    appear
+    name="modal"
   >
-    <transition-group
+    <div
       v-for="(messages, type) in fullMessages"
       :key="type.toString()"
-      appear
+      class="flash"
+      :class="type"
+      role="alert"
     >
-      <div
-        :key="type.toString()"
-        class="flash"
-        :class="type"
-        role="alert"
-      >
-        <ul>
+      <row>
+        <column
+          tag="ul"
+          class="grow-2 f-direction-column"
+        >
           <li
             v-for="(m, i) in messages"
             :key="`${type}-${i}`"
+            class="f-justify-content-center"
           >
             {{ m }}
           </li>
-        </ul>
-        <span>
+        </column>
+        <column tag="span">
           <button
             type="button"
             class="btn-clear"
+            @click="close(type)"
           >
             <i
               class="material-icons"
-              @click="close(type)"
             >
               close
             </i>
             <span class="sr-only">Dismiss Alert Button</span>
           </button>
-        </span>
-      </div>
-    </transition-group>
-  </div>
+        </column>
+      </row>
+    </div>
+  </transition-group>
 </template>
 
 <script lang="ts">
@@ -51,6 +52,7 @@ import { FlashHash } from 'Interfaces/flashInterfaces'
 interface Data {
   flash: FlashHash
 }
+
 export default defineComponent({
   props: {
     fixed: {

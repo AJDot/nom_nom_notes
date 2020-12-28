@@ -1,0 +1,18 @@
+@import "color";
+
+.flash {
+  padding: .625em;
+  margin: .625em 0;
+  text-align: center;
+  color: $color-white;
+  background: $color-blue; /* blue */
+}
+
+.flash.error {
+  background: $color-orange; /* red */
+}
+
+.flash.success {
+  background: $color-green; /* green */
+}
+

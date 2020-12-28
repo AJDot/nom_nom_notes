@@ -1,0 +1,13 @@
+.f {
+  &-justify-content {
+    &-center {
+      justify-content: center;
+    }
+  }
+
+  &-direction {
+    &-column {
+      flex-direction: column;
+    }
+  }
+}

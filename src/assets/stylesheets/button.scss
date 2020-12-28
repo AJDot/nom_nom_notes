@@ -43,6 +43,11 @@
       border-bottom-width: 5px;
     }
   }
+
+  &-clear {
+    background: none;
+    border: none;
+  }
 }
 
 input[type="submit"].btn {
