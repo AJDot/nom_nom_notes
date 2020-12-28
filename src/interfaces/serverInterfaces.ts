@@ -1,4 +1,4 @@
-import { Hash } from 'Interfaces/util_interfaces'
+import { Hash } from 'Interfaces/utilInterfaces'
 
 export interface ServerData<T = Record<string, unknown>> {
   id: string

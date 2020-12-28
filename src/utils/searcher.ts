@@ -1,5 +1,5 @@
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
-import { KeysOfType } from 'Interfaces/util_interfaces'
+import { KeysOfType } from 'Interfaces/utilInterfaces'
 import { securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
 import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'

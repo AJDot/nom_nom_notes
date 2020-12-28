@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Hash } from 'Interfaces/util_interfaces'
+import { Hash } from 'Interfaces/utilInterfaces'
 
 export default defineComponent({
   props: {

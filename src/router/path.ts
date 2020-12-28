@@ -1,6 +1,6 @@
 import router from './index'
 import { RRecord } from 'Interfaces/modelInterfaces'
-import { Hash } from 'Interfaces/util_interfaces'
+import { Hash } from 'Interfaces/utilInterfaces'
 
 class Path {
   apiBase(): string {

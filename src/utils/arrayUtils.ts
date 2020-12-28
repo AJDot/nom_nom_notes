@@ -1,5 +1,5 @@
 import { InstanceUtils } from '~/utils/instanceUtils'
-import { Hash } from 'Interfaces/util_interfaces'
+import { Hash } from 'Interfaces/utilInterfaces'
 import { NumberUtils } from '~/utils/numberUtils'
 
 export const ArrayUtils = {
