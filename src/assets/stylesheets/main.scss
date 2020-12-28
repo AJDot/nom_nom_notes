@@ -572,28 +572,6 @@ dl.description::before {
 
 /*
 *************************
-  FLASH MESSAGES
-*************************
-*/
-
-.flash {
-  padding: .625em;
-  margin: .625em 0;
-  text-align: center;
-  color: #ffffff;
-  background: #4d9ad9; /* blue */
-}
-
-.flash.error {
-  background: #ff834e; /* red */
-}
-
-.flash.success {
-  background: #44dd9f; /* green */
-}
-
-/*
-*************************
   ICONS WITH SLIDE-IN TEXT
 *************************
 */
