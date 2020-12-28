@@ -14,19 +14,17 @@
     >
     <dl class="image">
       <dt>
-        <!--        <% if params[:image] %>-->
-        <!--        <img src="#" alt="<%= params[:image][:filename] %>" title="<%= params[:image][:filename] %>" id="image" />-->
-        <!--        <% elsif @recipe.image.url %>-->
-        <!--        <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" id="image" />-->
-        <!--        <% else %>-->
-        <!--        <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' id="image" />-->
-        <!--        <% end %>-->
+        <img v-bind="imageAttrs">
       </dt>
       <dd>
-        <!--        <label class="choose-file btn">-->
-        <!--          Choose File-->
-        <!--          <input type="file" name="image" data-for="#image" />-->
-        <!--        </label>-->
+        <label class="choose-file btn">
+          Choose File
+          <input
+            type="file"
+            name="image"
+            @change="setImage"
+          >
+        </label>
       </dd>
     </dl>
 
@@ -261,6 +259,9 @@ import RoutePath from '~/router/path'
 import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
 import RecipeCategory from 'Models/recipeCategory'
 import Logger from '~/utils/logger'
+import Uploader from '~/uploaders/uploader'
+import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
+import { ImageSource } from 'Interfaces/imageInterfaces'
 
 interface Data {
   recipe: Recipe | null
@@ -269,6 +270,14 @@ interface Data {
   contextItem: Sortable | null
   contextCollection: Array<Sortable>
   focusId: string | null
+  tmpImage: { image?: ImageSource, raw?: File }
+}
+
+interface ImageAttrs {
+  src?: ImageSource
+  alt: string
+  id?: string
+  class?: string
 }
 
 export default defineComponent({
@@ -294,6 +303,7 @@ export default defineComponent({
       contextItem: null,
       contextCollection: [],
       focusId: null,
+      tmpImage: {},
     }
   },
   computed: {
@@ -342,6 +352,26 @@ export default defineComponent({
       }
       return new Searcher(options)
     },
+    imageAttrs(): ImageAttrs {
+      if (this.tmpImage.image) {
+        return {
+          src: this.tmpImage.image,
+          alt: 'Upload an Image',
+        }
+      } else if (this.recipe?.image.url) {
+        return {
+          src: this.recipe.image.url,
+          alt: 'Upload an Image',
+        }
+      } else {
+        return {
+          id: 'image',
+          class: 'img-placeholder',
+          src: ImagePlaceholder,
+          alt: 'Upload an Image',
+        }
+      }
+    },
   },
   watch: {
     cookTime: {
@@ -386,6 +416,19 @@ export default defineComponent({
         return
       }
       if (this.recipe) {
+        // if image uploaded, then upload it
+        if (this.tmpImage.raw) {
+          const uploader = new Uploader(RoutePath.apiBase() + RoutePath.recipe(this.recipe.clientId))
+          const imageResponse = await uploader.patch({
+            root: 'recipe',
+            data: {
+              clientId: this.recipe.clientId,
+              id: this.recipe.id,
+              image: this.tmpImage.raw,
+            },
+          })
+          await this.recipe.$update({ image: imageResponse.data.data.attributes.image })
+        }
         await this.$router.push({
           name: this.$routerExtension.names.Recipe,
           params: { clientId: this.recipe.clientId ?? '' },
@@ -499,6 +542,32 @@ export default defineComponent({
       this.contextItem = null
       this.contextCollection = []
       this.showContextMenu = null
+    },
+    setImage(event: Event) {
+      if (this.recipe) {
+        this.onFileChange(this.recipe, event)
+      } else {
+        Logger.warn('Recipe or File does not exist!')
+      }
+    },
+    onFileChange(recipe: Recipe, e: Event) {
+      const target = e.target as HTMLInputElement
+      const files = target.files
+      if (!files?.length) return
+      this.createImage(recipe, files[0])
+    },
+    createImage(recipe: Recipe, file: File) {
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        this.tmpImage.image = e.target?.result
+      }
+
+      this.tmpImage = {
+        image: null,
+        raw: file,
+      }
+      reader.readAsDataURL(file)
     },
   },
 })

@@ -2,6 +2,8 @@
  * "R" = Record
  * "B" = BelongsTo
  */
+import { Uploader } from 'Interfaces/imageInterfaces'
+
 export interface RRecord {
   id: string | undefined
   clientId: string | undefined
@@ -43,4 +45,8 @@ export interface CookTime {
 
 export type HasMany<P extends string, T> = {
   [key in P]: T[]
+}
+
+export type HasUploader<K extends string> = {
+  [key in K]: Uploader
 }

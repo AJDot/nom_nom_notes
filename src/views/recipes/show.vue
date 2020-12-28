@@ -1,34 +1,11 @@
 <template>
-  <!--  <% content_for :header_links do %>-->
-  <!--  <ul>-->
-  <!--    <li>-->
-  <!--      <a href="/">-->
-  <!--        <i class="material-icons wiggle">view_comfy</i>-->
-  <!--        <span class="safe">Recipe Cards</span>-->
-  <!--      </a>-->
-  <!--    </li>-->
-  <!--    <% if current_user? %>-->
-  <!--    <li>-->
-  <!--      <a href="/recipe/<%= @recipe_id %>/edit">-->
-  <!--        <i class="material-icons wiggle">edit</i>-->
-  <!--        <span class="safe">Edit Recipe</span>-->
-  <!--      </a>-->
-  <!--    </li>-->
-  <!--    <% end %>-->
-  <!--  </ul>-->
-  <!--  <% end %>-->
-
   <article
     v-if="recipe"
     :key="recipe.clientId"
     class="recipe"
   >
     <header>
-      <!--      <% if @recipe.image.url.present? %>-->
-      <!--      <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" />-->
-      <!--      <% else %>-->
-      <!--      <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />-->
-      <!--      <% end %>-->
+      <img v-bind="imageAttrs">
       <h1>{{ recipe.name }}</h1>
 
       <ul>
@@ -94,6 +71,15 @@ import { RouteName } from '~/router/routeName'
 import Step from 'Models/step'
 import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
+import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
+import { ImageSource } from 'Interfaces/imageInterfaces'
+
+interface ImageAttrs {
+  src: ImageSource
+  alt?: string
+  title?: string
+  class?: string
+}
 
 export default defineComponent({
   name: 'Recipe',
@@ -114,6 +100,21 @@ export default defineComponent({
         return new Sorter().sort(this.recipe.ingredients)
       } else {
         return []
+      }
+    },
+    imageAttrs(): ImageAttrs {
+      if (this.recipe?.image.url) {
+        return {
+          src: this.recipe.image.url,
+          alt: this.recipe.name,
+          title: this.recipe.name,
+        }
+      } else {
+        return {
+          class: 'img-placeholder',
+          src: ImagePlaceholder,
+          alt: this.recipe?.name,
+        }
       }
     },
   },
