@@ -434,7 +434,7 @@ export default defineComponent({
           params: { clientId: this.recipe.clientId ?? '' },
         })
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { success: `${this.recipe.name} was updated successfully.` },
+          flash: { success: `${this.recipe.name} was ${this.mode === 'create' ? 'created' : 'updated'} successfully.` },
         })
       }
     },
