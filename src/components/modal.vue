@@ -1,7 +1,7 @@
 <template>
   <transition
     appear
-    name="modal"
+    name="fade"
   >
     <aside
       v-if="state"
