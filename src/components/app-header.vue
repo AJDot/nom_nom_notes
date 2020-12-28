@@ -2,21 +2,16 @@
   <header class="app-header">
     <div class="primary-header row">
       <h1 class="row">
-        <a
-          href="/"
+        <router-link
+          :to="{name: $routerExtension.names.Home}"
           aria-label="Go to Nom Nom Notes Home"
         >
-          <!--        <a href="/" aria-label="Go to <%= context_dig('app.header.title') %> Home">-->
           <img
             src="~Public/logo-512x512.png"
             alt="Nom Nom Notes"
             class="logo-n3"
           >
-          <!--          <img src="/logo-512x512.png" alt="<%= context_dig('app.header.title') %>" class="logo-n3">-->
-          <!--          <% if %w[/ /sign_in /sign_up].include?(request.path_info) %>-->
-          <!--          <span><%= context_dig('app.header.title') %></span>-->
-          <!--          <% end %>-->
-        </a>
+        </router-link>
       </h1>
       <ul class="suffix s-200-em horizontal j-slash">
         <!--        <% if current_user.blank? %>-->

@@ -232,6 +232,7 @@
       </ul>
     </context-menu>
   </form>
+  <loading v-if="isLoading" />
 </template>
 
 <script lang="ts">
@@ -262,6 +263,7 @@ import Logger from '~/utils/logger'
 import Uploader from '~/uploaders/uploader'
 import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
 import { ImageSource } from 'Interfaces/imageInterfaces'
+import loading from '~/mixins/loading'
 
 interface Data {
   recipe: Recipe | null
@@ -286,6 +288,9 @@ export default defineComponent({
     Search,
     IngredientsList,
   },
+  mixins: [
+    loading,
+  ],
   props: {
     mode: {
       type: String as () => 'edit' | 'create',
@@ -406,9 +411,11 @@ export default defineComponent({
       } else {
         action = StoreModulePath.Recipes + RecipeActionTypes.UPDATE
       }
-      this.$store.dispatch(action, this.recipe)
-        .then((response) => this.updateSuccessful(response))
-        .catch((error) => this.updateError(error))
+      this.loading(async () => {
+        await this.$store.dispatch(action, this.recipe)
+          .then((response) => this.updateSuccessful(response))
+          .catch((error) => this.updateError(error))
+      })
     },
     async updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {
