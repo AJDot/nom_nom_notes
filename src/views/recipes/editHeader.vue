@@ -99,7 +99,7 @@ export default defineComponent({
       })
       if (this.recipeName) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { success: `${this.recipeName} was successfully deleted.` },
+          flash: { success: `${this.recipeName} was deleted successfully.` },
         })
       }
     },

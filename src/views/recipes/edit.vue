@@ -433,6 +433,9 @@ export default defineComponent({
           name: this.$routerExtension.names.Recipe,
           params: { clientId: this.recipe.clientId ?? '' },
         })
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { success: `${this.recipe.name} was updated successfully.` },
+        })
       }
     },
     updateFailed(error: AxiosResponse) {
