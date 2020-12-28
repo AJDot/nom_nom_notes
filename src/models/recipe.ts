@@ -28,9 +28,9 @@ export default class Recipe extends AModel implements RRecipe {
     return {
       ...super.fields(),
       name: this.string(''),
-      description: this.string(''),
+      description: this.string('').nullable(),
       cookTime: this.number(0),
-      note: this.string(''),
+      note: this.string('').nullable(),
       steps: this.hasMany(Step, 'recipeId'),
       ingredients: this.hasMany(Ingredient, 'recipeId'),
       recipeCategories: this.hasMany(RecipeCategory, 'recipeId'),
@@ -39,8 +39,8 @@ export default class Recipe extends AModel implements RRecipe {
     }
   }
 
-  name: string | undefined
-  description: string | undefined
+  name!: string
+  description!: string
   cookTime!: number
   note!: string
   steps!: Array<Step>
