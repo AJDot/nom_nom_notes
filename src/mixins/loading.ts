@@ -1,5 +1,12 @@
 import { defineComponent } from 'vue'
 import Loading from '@/loading.vue'
+import { store, StoreModulePath } from '~/store'
+import { LoadingActionTypes } from '~/store/modules/loading'
+import { StoreModuleType } from '~/store/interfaces'
+
+interface LoadingOptions {
+  local?: boolean
+}
 
 export default defineComponent({
   components: {
@@ -8,23 +15,34 @@ export default defineComponent({
   data() {
     return {
       loadingCount: 0,
-      isLoading: false,
+      isLoadingLocal: false,
     }
   },
   methods: {
-    setLoading(isLoading: boolean) {
-      if (isLoading) {
-        this.loadingCount++
-        this.isLoading = true
-      } else if (this.loadingCount > 0) {
-        this.loadingCount--
-        this.isLoading = this.loadingCount > 0
+    isLoading({ local }: LoadingOptions = {}): boolean {
+      if (local) {
+        return this.isLoadingLocal
+      } else {
+        return store.state[StoreModuleType.Loading].loading
       }
     },
-    async loading(callback: () => unknown): Promise<void> {
-      this.setLoading(true)
+    async setLoading(loading: boolean, { local }: LoadingOptions = {}) {
+      if (local) {
+        if (loading) {
+          this.loadingCount++
+          this.isLoadingLocal = true
+        } else if (this.loadingCount > 0) {
+          this.loadingCount--
+          this.isLoadingLocal = this.loadingCount > 0
+        }
+      } else {
+        await store.dispatch(StoreModulePath.Loading + LoadingActionTypes.SET, loading)
+      }
+    },
+    async loading(callback: () => unknown, { local }: { local?: boolean } = {}): Promise<void> {
+      await this.setLoading(true, { local })
       await callback()
-      this.setLoading(false)
+      await this.setLoading(false, { local })
     },
   },
 })

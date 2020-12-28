@@ -232,7 +232,6 @@
       </ul>
     </context-menu>
   </form>
-  <loading v-if="isLoading" />
 </template>
 
 <script lang="ts">

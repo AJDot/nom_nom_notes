@@ -1,5 +1,6 @@
 <template>
   <div>
+    <loading v-if="isLoading()" />
     <app-header />
     <router-view />
     <footer>
@@ -38,10 +39,14 @@
 
 <script lang="ts">
 import AppHeader from '~/components/app-header.vue'
+import loading from '~/mixins/loading'
 
 export default {
   components: {
     AppHeader,
   },
+  mixins: [
+    loading,
+  ],
 }
 </script>
