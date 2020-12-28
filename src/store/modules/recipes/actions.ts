@@ -56,7 +56,8 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.post(RoutePath.apiBase() + RoutePath.recipes(), {
       recipe: recipe.$toJson(),
     })
-    await recipe.$update({ data: response.data.data.attributes })
+    recipe.id = response.data.data.id
+    await recipe.$update({ data: { id: recipe.id, ...response.data.data.attributes } })
     return response
   },
   async [RecipeActionTypes.UPDATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
