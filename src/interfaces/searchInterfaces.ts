@@ -1,4 +1,4 @@
-import { Hash, KeysOfType } from 'Interfaces/util_interfaces'
+import { Hash, KeysOfType } from 'Interfaces/utilInterfaces'
 
 export interface SearchResult<T> {
   label: string

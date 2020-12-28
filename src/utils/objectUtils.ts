@@ -1,4 +1,4 @@
-import { Hash } from 'Interfaces/util_interfaces'
+import { Hash } from 'Interfaces/utilInterfaces'
 import { ArrayUtils } from '~/utils/arrayUtils'
 
 export const ObjectUtils = {
