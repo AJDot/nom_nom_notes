@@ -27,11 +27,7 @@
           <article>
             <h1>{{ recipe.name }}</h1>
             <section>
-              <!--              <% if recipe.image.url.present? %>-->
-              <!--              <img src="<%= recipe.image.url %>" alt="<%= recipe.name %>" />-->
-              <!--              <% else %>-->
-              <!--              <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />-->
-              <!--              <% end %>-->
+              <img v-bind="imageAttrs(recipe)">
               <div class="content">
                 <router-link
                   :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
@@ -61,9 +57,18 @@
 import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
-import Recipe from 'Models/recipe'
+import Recipe, { RRecipe } from 'Models/recipe'
 import { ArrayUtils } from '~/utils/arrayUtils'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
+import { ImageSource } from 'Interfaces/imageInterfaces'
+
+interface ImageAttrs {
+  src: ImageSource
+  alt?: string
+  title?: string
+  class?: string
+}
 
 export default defineComponent({
   name: 'RecipesIndex',
@@ -85,6 +90,23 @@ export default defineComponent({
         if (nameA < nameB) return -1
         return 0
       })
+    },
+  },
+  methods: {
+    imageAttrs(recipe: RRecipe): ImageAttrs {
+      if (recipe.image.url) {
+        return {
+          src: recipe.image.url,
+          alt: recipe.name,
+          title: recipe.name,
+        }
+      } else {
+        return {
+          class: 'img-placeholder',
+          src: ImagePlaceholder,
+          alt: recipe.name,
+        }
+      }
     },
   },
 })
