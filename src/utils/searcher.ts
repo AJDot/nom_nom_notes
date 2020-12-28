@@ -23,6 +23,7 @@ export default class Searcher<T, V> implements USearcher<T> {
 
   async search(q = ''): Promise<void> {
     if (this.options.endpoint) {
+      // search against API
       const response: AxiosResponse<ServerResponse<T, Array<ServerData<T>>>> = await securedAxiosInstance.get(
         this.options.endpoint,
         {
@@ -41,6 +42,19 @@ export default class Searcher<T, V> implements USearcher<T> {
           raw: obj,
         }
       })
+    } else {
+      // search locally
+      this.results = this.options.collection.reduce((agg, item) => {
+        const label: string = getValue(item, this.options.label)
+        if (label.match(q)) {
+          agg.push({
+            label: label,
+            value: getValue(item, this.options.valueString),
+            raw: item,
+          })
+        }
+        return agg
+      }, [] as Searcher<T, V>['results'])
     }
   }
 }
