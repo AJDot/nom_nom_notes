@@ -1,7 +1,7 @@
 <template>
   <transition-group
     appear
-    name="modal"
+    name="fade-slide-vert"
   >
     <div
       v-for="(messages, type) in fullMessages"
