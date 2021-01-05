@@ -87,7 +87,6 @@ import { ImageSource } from 'Interfaces/imageInterfaces'
 import Searcher from '~/utils/searcher'
 import Category from 'Models/category'
 import Search from '@/search.vue'
-import { CategoryActionTypes } from '~/store/modules/categories/actions'
 import { SearchResult } from 'Interfaces/searchInterfaces'
 
 interface ImageAttrs {
@@ -105,7 +104,6 @@ export default defineComponent({
   setup() {
     const store = useStore(stateKey)
     store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH_ALL)
-    store.dispatch(StoreModulePath.Categories + CategoryActionTypes.FETCH_ALL)
     const showFilters = ref(false)
     const recipeFilters = ref<{ categoryName: string | null }>({ categoryName: null })
     return {
