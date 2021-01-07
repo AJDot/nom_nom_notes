@@ -1,10 +1,11 @@
 import router from './index'
 import { RRecord } from 'Interfaces/modelInterfaces'
 import { Hash } from 'Interfaces/utilInterfaces'
+import AppConfig from '~/appConfig'
 
 class Path {
   apiBase(): string {
-    return 'http://localhost:3000/api/v1'
+    return AppConfig.API_URL + '/api/v1'
   }
 
   root() {
