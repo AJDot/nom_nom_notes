@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: 'off' */
 const path = require('path')
 const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
@@ -5,6 +6,7 @@ const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = {
   entry: './src/main.ts',
+  // mode: 'development',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
@@ -114,6 +116,7 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true,
     overlay: true,
+    port: process.env.NODE_ENV === 'test' ? 8081 : 8080,
   },
   performance: {
     hints: false,

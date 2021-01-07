@@ -87,7 +87,8 @@
     "./src/**/*.vue"
   ],
   "exclude": [
-    "./node-modules"
+    "./node-modules",
+    "./webpack.config.js"
   ],
   "files": [
     "src/shims/vue-shim.d.ts",

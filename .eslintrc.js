@@ -21,6 +21,7 @@ module.exports = {
     'plugin:vue/base',
     'plugin:@typescript-eslint/recommended',
     'plugin:vue/vue3-recommended',
+    'plugin:cypress/recommended',
     'standard',
   ],
   rules: {
