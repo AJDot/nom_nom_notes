@@ -23,3 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('resetDb', () => {
+  cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
+})
