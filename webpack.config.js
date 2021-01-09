@@ -6,7 +6,7 @@ const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = {
   entry: './src/main.ts',
-  // mode: 'development',
+  mode: 'development',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
@@ -124,7 +124,28 @@ module.exports = {
   devtool: '#eval-source-map',
 }
 
+if (process.env.NODE_ENV === 'development') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"development"',
+      },
+    }),
+  ])
+}
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"test"',
+      },
+    }),
+  ])
+}
+
 if (process.env.NODE_ENV === 'production') {
+  module.exports.mode = 'production'
   module.exports.devtool = '#source-map'
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
