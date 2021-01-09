@@ -10,12 +10,26 @@ describe('Recipes List', () => {
     })
 
     it('shows recipe details', () => {
-      cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/recipes').its('body').as('currentRecipe')
+      cy.apiRequest('POST', '/testing/api/v1/recipes', {
+        recipe: {
+          name: 'Pasta',
+        },
+        recipes: [
+          {
+            name: 'Noodle',
+          },
+          {
+            name: 'Penne',
+          },
+        ],
+      }).its('body').as('currentRecipe')
         .then(function() {
-          console.log(this.currentRecipe)
+          cy.visit('/')
+          // recipes are in alphabetical order by name
+          cy.get('.card-list > li:nth-child(1)').should('contain', 'Noodle')
+          cy.get('.card-list > li:nth-child(2)').should('contain', 'Pasta')
+          cy.get('.card-list > li:nth-child(3)').should('contain', 'Penne')
         })
-      cy.visit('/')
-      cy.get('header').should('contain', 'New Recipe')
     })
   })
 })

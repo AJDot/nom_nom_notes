@@ -24,6 +24,16 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+import HttpMethod = Cypress.HttpMethod
+import RequestBody = Cypress.RequestBody
+
+Cypress.Commands.add('apiRequest', (method: HttpMethod, url: string, body?: RequestBody) => {
+  cy.request(method, Cypress.env('api_url') + url, body)
+    .then(response => {
+      expect(response.status).to.eq(200)
+    })
+})
+
 Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
