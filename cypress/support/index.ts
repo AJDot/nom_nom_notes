@@ -18,3 +18,7 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+beforeEach(() => {
+  // Prepare the database
+  cy.resetDb()
+})
