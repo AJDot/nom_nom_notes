@@ -12,10 +12,21 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+// import webpackPreprocessor from '@cypress/webpack-preprocessor'
+
 /**
  * @type {Cypress.PluginConfig}
  */
 module.exports = (_on, _config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+
+  // const options = {
+  // send in the options from your webpack.config.js, so it works the same
+  // as your app's code
+  // webpackOptions: config,
+  // watchOptions: {},
+  // }
+  //
+  // on('file:preprocessor', webpackPreprocessor(options))
 }
