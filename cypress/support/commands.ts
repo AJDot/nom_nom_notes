@@ -37,3 +37,11 @@ Cypress.Commands.add('apiRequest', (method: HttpMethod, url: string, body?: Requ
 Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
+
+Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
+  if (typeof indexOrName === 'number') {
+    return cy.get(`.card-list > li:nth-child(${indexOrName - 1})`)
+  } else {
+    return cy.contains('.card-list > li', indexOrName)
+  }
+})

@@ -41,6 +41,7 @@
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-3": "^6.24.1",
+    "chrome-remote-interface": "^0.29.0",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "cypress": "^6.2.1",
