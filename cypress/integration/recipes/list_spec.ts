@@ -70,5 +70,65 @@ describe('Recipes List', () => {
           })
         })
     })
+
+    it('can be filtered by recipe category', () => {
+      cy.apiRequest('POST', '/testing/api/v1/categories', {
+        categories: [
+          { name: 'Italian' },
+          { name: 'American' },
+          { name: 'Chinese' },
+        ],
+      }).its('body').as('categories')
+        .then(function() {
+          const itCat = this.categories.data.find(c => c.attributes.name === 'Italian')
+          const chCat = this.categories.data.find(c => c.attributes.name === 'Chinese')
+          cy.apiRequest('POST', '/testing/api/v1/recipes', {
+            recipe: {
+              name: 'Pasta',
+              recipeCategoriesAttributes: [
+                {
+                  categoryId: itCat.attributes.clientId,
+                },
+                {
+                  categoryId: chCat.attributes.clientId,
+                },
+              ],
+            },
+            recipes: [
+              {
+                name: 'Noodle',
+              },
+              {
+                name: 'Penne',
+                recipeCategoriesAttributes: [
+                  {
+                    categoryId: chCat.attributes.clientId,
+                  },
+                ],
+              },
+            ],
+          }).its('body').as('recipes')
+        })
+        .then(function() {
+          cy.visit('/')
+          cy.get('.filters-toggle').click()
+          const filter = '#filter-category'
+          cy.get(filter).type('i')
+          // Italian and Chinese categories show as results
+          cy.getDropdownItem('Italian').should('exist')
+          cy.getDropdownItem('Chinese').click()
+
+          cy.getRecipeCard(0).should('contain', 'Pasta')
+          cy.getRecipeCard(1).should('contain', 'Penne')
+          // Noodle is filtered out
+          cy.getRecipeCard(2).should('not.exist')
+          cy.get(filter).clear().type('It')
+          cy.getDropdownItem('Chinese').should('not.exist')
+          cy.getDropdownItem('Italian').click()
+          cy.getRecipeCard(0).should('contain', 'Pasta')
+          // Penne and Noodle are filtered out
+          cy.getRecipeCard(1).should('not.exist')
+        })
+    })
   })
 })

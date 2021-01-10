@@ -40,8 +40,12 @@ Cypress.Commands.add('resetDb', () => {
 
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
   if (typeof indexOrName === 'number') {
-    return cy.get(`.card-list > li:nth-child(${indexOrName - 1})`)
+    return cy.get(`.card-list > li:nth-child(${indexOrName + 1})`)
   } else {
     return cy.contains('.card-list > li', indexOrName)
   }
+})
+
+Cypress.Commands.add('getDropdownItem', (label: string) => {
+  cy.contains('.dropdown-item', label)
 })
