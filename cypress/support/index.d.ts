@@ -18,4 +18,10 @@ declare namespace Cypress {
      * @param body {Cypress.RequestBody}
      */
     apiRequest(method: HttpMethod, url: string, body?: RequestBody): Chainable<Response>
+
+    /**
+     * Get the recipe card on the list page
+     * @param indexOrName {string, number} index of card or name of recipe
+     */
+    getRecipeCard(indexOrName: string | number): Chainable<Response>
 }
