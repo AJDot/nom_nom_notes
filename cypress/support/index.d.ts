@@ -24,4 +24,10 @@ declare namespace Cypress {
      * @param indexOrName {string, number} index of card or name of recipe
      */
     getRecipeCard(indexOrName: string | number): Chainable<Response>
+
+    /**
+     * Get a list item in a dropdown
+     * @param indexOrName {string} label of the dropdown item
+     */
+    getDropdownItem(label: string)
 }
