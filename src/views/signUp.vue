@@ -75,7 +75,7 @@ export default defineComponent({
       this.$http.plain
         .post(RoutePath.signup(), { ...this.formData })
         .then((response) => this.signupSuccessful(response))
-        .catch((error) => this.signupFailed(error))
+        .catch((error) => this.signupError(error))
     },
     signupSuccessful(response: AxiosResponse) {
       if (!response.data.csrf) {

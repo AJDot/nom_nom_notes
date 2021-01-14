@@ -30,4 +30,19 @@ declare namespace Cypress {
      * @param indexOrName {string} label of the dropdown item
      */
     getDropdownItem(label: string)
+
+    /**
+     * Create Bob Vance in database
+     * @example
+     * cy.createBob()
+     */
+    createBob(): Chainable<any>
+
+    /**
+     * Sign In user
+     * @example
+     * cy.forceSignIn({email: 'bob@vance.com', password: 'ah123456'})
+     */
+    forceSignIn(user: { email: string, password: string }): Chainable<any>
+  }
 }
