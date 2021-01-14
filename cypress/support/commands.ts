@@ -49,3 +49,28 @@ Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
 Cypress.Commands.add('getDropdownItem', (label: string) => {
   cy.contains('.dropdown-item', label)
 })
+
+Cypress.Commands.add('createBob', () => {
+  cy.apiRequest('POST', '/testing/api/v1/users', {
+    user: {
+      // first_name: 'Bob',
+      // last_name: 'Vance',
+      email: 'bob@vance.com',
+      password: 'ah123456',
+      password_confirmation: 'ah123456',
+    },
+  })
+    .its('body.data.0')
+    .as('currentUser')
+})
+
+Cypress.Commands.add('forceSignIn', (user: { email: string, password: string }) => {
+  cy.apiRequest('POST', '/signin', {
+    email: user.email,
+    password: user.password,
+  }).its('body').as('signIn')
+    .then((response) => {
+      localStorage.setItem('csrf', response.csrf)
+      localStorage.setItem('signedIn', 'true')
+    })
+})

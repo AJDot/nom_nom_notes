@@ -11,6 +11,8 @@ module.exports = {
   plugins: [
     'vue',
     '@typescript-eslint',
+    'cypress',
+    'chai-friendly',
   ],
   parserOptions: {
     parser: '@typescript-eslint/parser',
@@ -22,6 +24,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:vue/vue3-recommended',
     'plugin:cypress/recommended',
+    'plugin:chai-friendly/recommended',
     'standard',
   ],
   rules: {
@@ -65,5 +68,7 @@ module.exports = {
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
     '@typescript-eslint/no-empty-interface': ['off'],
+    'no-unused-expressions': 0,
+    'chai-friendly/no-unused-expressions': 0,
   },
 }
