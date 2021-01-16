@@ -3,21 +3,32 @@
 /// <reference types="cypress" />
 
 declare namespace Cypress {
+
+  export interface Hash<T = any> {
+    [key: string]: T
+
+    [key: number]: T
+  }
+
+  interface ModelResponse {
+    attributes: Hash
+  }
+
   interface Chainable<Subject> {
     /**
      * Wipes the database and sets up for next test
      * @example
      * cy.resetDb()
      */
-    resetDb(): Chainable<any>
+    resetDb(): Chainable<Subject>
 
     /**
      * Wrapper to provide similar syntax to cy.request but for making api requests
-     * @param method {Cypress.HttpMethod}
+     * @param method {HttpMethod}
      * @param url {string}
-     * @param body {Cypress.RequestBody}
+     * @param body {RequestBody}
      */
-    apiRequest(method: HttpMethod, url: string, body?: RequestBody): Chainable<Response>
+    apiRequest(method: string, url: string, body?: string | Record<string, unknown>): Chainable<Response>
 
     /**
      * Get the recipe card on the list page
@@ -32,17 +43,31 @@ declare namespace Cypress {
     getDropdownItem(label: string)
 
     /**
-     * Create Bob Vance in database
+     * Create a user in database
      * @example
-     * cy.createBob()
+     * cy.createUser({email: 'philip@fry.futurama', password: 'ah123456'})
      */
-    createBob(): Chainable<any>
+    createUser(user: { email: string, password: string }): Chainable<ModelResponse>
+
+    /**
+     * Create Philip Fry in database
+     * @example
+     * cy.createFry()
+     */
+    createFry(): Chainable<ModelResponse>
 
     /**
      * Sign In user
      * @example
-     * cy.forceSignIn({email: 'bob@vance.com', password: 'ah123456'})
+     * cy.forceSignIn({email: 'philip@fry.futurama', password: 'ah123456'})
      */
-    forceSignIn(user: { email: string, password: string }): Chainable<any>
+    forceSignIn(user: { email: string, password: string }): Chainable<ModelResponse>
+
+    /**
+     * Get the DOM element in the alert section with text 'Not Valid'
+     * @example
+     * cy.getAlert('Not Valid')
+     */
+    getFlash(text: string): Chainable<Subject>
   }
 }

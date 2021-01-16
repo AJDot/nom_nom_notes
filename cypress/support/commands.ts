@@ -50,18 +50,23 @@ Cypress.Commands.add('getDropdownItem', (label: string) => {
   cy.contains('.dropdown-item', label)
 })
 
-Cypress.Commands.add('createBob', () => {
+Cypress.Commands.add('createUser', (user: { email: string, password: string }) => {
   cy.apiRequest('POST', '/testing/api/v1/users', {
     user: {
-      // first_name: 'Bob',
-      // last_name: 'Vance',
-      email: 'bob@vance.com',
-      password: 'ah123456',
-      password_confirmation: 'ah123456',
+      email: user.email,
+      password: user.password,
+      password_confirmation: user.password,
     },
   })
     .its('body.data.0')
     .as('currentUser')
+})
+
+Cypress.Commands.add('createFry', () => {
+  cy.createUser({
+    email: 'philip@fry.futurama',
+    password: 'ah123456',
+  })
 })
 
 Cypress.Commands.add('forceSignIn', (user: { email: string, password: string }) => {
@@ -73,4 +78,8 @@ Cypress.Commands.add('forceSignIn', (user: { email: string, password: string }) 
       localStorage.setItem('csrf', response.csrf)
       localStorage.setItem('signedIn', 'true')
     })
+})
+
+Cypress.Commands.add('getFlash', (text: string) => {
+  cy.get('.flash').contains('li', text)
 })
