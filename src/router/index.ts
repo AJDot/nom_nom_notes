@@ -51,7 +51,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.NewRecipe,
-    path: '/recipe',
+    path: '/recipes/new',
     component: EditRecipe,
     props: { mode: 'create' },
   },

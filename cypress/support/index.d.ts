@@ -61,7 +61,7 @@ declare namespace Cypress {
      * @example
      * cy.forceSignIn({email: 'philip@fry.futurama', password: 'ah123456'})
      */
-    forceSignIn(user: { email: string, password: string }): Chainable<ModelResponse>
+    forceSignIn(user?: { email?: string, password?: string }): Chainable<ModelResponse>
 
     /**
      * Get the DOM element in the alert section with text 'Not Valid'
