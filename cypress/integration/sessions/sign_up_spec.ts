@@ -56,11 +56,11 @@ describe('Sign Up', () => {
   })
 
   it('allows sign up if email provided is not already taken', () => {
-    cy.createBob()
+    cy.createFry()
       .then(() => {
         cy.visit('/sign_up')
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('bob@vance.com')
+          cy.contains('label', 'Email').type('philip@fry.futurama')
           cy.contains('label', /^Password$/).type('AH1234')
           cy.contains('label', 'Confirm Password').type('AH1234')
           cy.contains('Sign Up').click()
@@ -75,11 +75,11 @@ describe('Sign Up', () => {
       })
   })
 
-  it.only('is not possible to sign up when already signed in', () => {
-    cy.createBob().as('bob')
-      .then((bob) => {
+  it('is not possible to sign up when already signed in', () => {
+    cy.createFry().as('fry')
+      .then((fry) => {
         cy.forceSignIn({
-          email: bob.attributes.email,
+          email: fry.attributes.email,
           password: 'ah123456',
         })
       })
