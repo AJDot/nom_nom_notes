@@ -69,5 +69,19 @@ declare namespace Cypress {
      * cy.getAlert('Not Valid')
      */
     getFlash(text: string): Chainable<Subject>
+
+    /**
+     * Get the DOM element according to data-test HTML attribute
+     * @example
+     * cy.getTest('ingredient-0')
+     */
+    getTest(text: string): Chainable<Subject>
+
+    /**
+     * Get the DOM element according to its label text
+     * @example
+     * cy.getByLabel('ingredient-0').clear().type('input stuff')
+     */
+    getByLabel(text: string): Chainable<Subject>
   }
 }

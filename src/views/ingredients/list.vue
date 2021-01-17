@@ -5,6 +5,7 @@
       :key="ing.clientId"
       v-model:description="ing.description"
       :index="i"
+      :data-test="`ingredient-${i}`"
       @context-menu="openContextMenu($event, ing)"
     />
     <row tag="li">
