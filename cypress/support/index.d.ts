@@ -4,6 +4,7 @@
 
 declare type AssertInputOptionTypes = import('./test_typings').AssertInputOptionTypes
 declare type AssertTextOptionTypes = import('./test_typings').AssertTextOptionTypes
+declare type AssertUrlOptionType = import('./test_typings').AssertUrlOptionType
 
 declare namespace Cypress {
   export interface Hash<T = any> {
@@ -80,6 +81,15 @@ declare namespace Cypress {
     getTest(text: string): Chainable<Subject>
 
     /**
+     * Get the DOM element for the modal
+     *
+     * @example
+     * cy.getModal()
+     *
+     */
+    getModal(): Chainable<Subject>
+
+    /**
      * Get the DOM element according to its label text
      * @example
      * cy.getByLabel('ingredient-0').clear().type('input stuff')
@@ -105,5 +115,14 @@ declare namespace Cypress {
      *
      */
     assertText(options: AssertTextOptionTypes): Chainable<Subject>
+
+    /**
+     * Test url, possibly exactly
+     *
+     * @example
+     * cy.assertUrl('/recipes', {exact: true})
+     *
+     */
+    assertUrl(path: string, options?: AssertUrlOptionType): Chainable<Subject>
   }
 }

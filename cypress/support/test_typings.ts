@@ -21,3 +21,9 @@ interface AssertTextDefaultOptions {
 }
 
 export type AssertTextOptionTypes = AssertTextDefaultOptions
+
+interface AssertUrlOption {
+  exact?: boolean
+}
+
+export type AssertUrlOptionType = AssertUrlOption

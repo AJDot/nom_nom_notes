@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import { AssertInputOptionTypes, AssertTextOptionTypes } from './test_typings'
+import { AssertInputOptionTypes, AssertTextOptionTypes, AssertUrlOptionType } from './test_typings'
 import HttpMethod = Cypress.HttpMethod
 import RequestBody = Cypress.RequestBody
 
@@ -89,6 +89,10 @@ Cypress.Commands.add('getTest', (text: string) => {
   cy.get(`[data-test="${text}"]`)
 })
 
+Cypress.Commands.add('getModal', () => {
+  cy.get('.modal')
+})
+
 Cypress.Commands.add('getByLabel', (text: string) => {
   return cy.contains('label', text).invoke('attr', 'for')
     .then(labelFor => {
@@ -127,4 +131,9 @@ Cypress.Commands.add('assertText', (options: AssertTextOptionTypes) => {
       cy.log(`assertText "by": ${options} not configured.`)
       break
   }
+})
+
+Cypress.Commands.add('assertUrl', (path: string, options?: AssertUrlOptionType) => {
+  const exp = options?.exact === false ? 'contain' : 'eq'
+  cy.url().should(exp, Cypress.config().baseUrl + path)
 })
