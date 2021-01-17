@@ -397,12 +397,23 @@ export default defineComponent({
     } else {
       const store = useStore<RootState>(stateKey)
       const clientId = router.currentRoute.value.params.clientId
-      await store.dispatch(
-        StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-        clientId,
-      )
-      this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories|recipeCategories').first()
-      if (this.recipe) this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
+      try {
+        await store.dispatch(
+          StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
+          clientId,
+        )
+        this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories|recipeCategories').first()
+        if (this.recipe) {
+          this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
+        }
+      } catch {
+        await this.$router.push({
+          name: this.$routerExtension.names.Home,
+        })
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: 'Recipe not found.' },
+        })
+      }
     }
   },
   methods: {
