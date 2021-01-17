@@ -2,8 +2,10 @@
 // load type definitions that come with Cypress module
 /// <reference types="cypress" />
 
-declare namespace Cypress {
+declare type AssertInputOptionTypes = import('./test_typings').AssertInputOptionTypes
+declare type AssertTextOptionTypes = import('./test_typings').AssertTextOptionTypes
 
+declare namespace Cypress {
   export interface Hash<T = any> {
     [key: string]: T
 
@@ -83,5 +85,25 @@ declare namespace Cypress {
      * cy.getByLabel('ingredient-0').clear().type('input stuff')
      */
     getByLabel(text: string): Chainable<Subject>
+
+    /**
+     * Test form field values
+     *
+     * @example
+     * cy.assertInput({by: 'label', label: 'My Label', value: 'A Value'})
+     *
+     * @example
+     * cy.assertInput({by: 'locator', method: 'getTest', tag: 'textarea', value: 'A Value'})
+     */
+    assertInput(options: AssertInputOptionTypes): Chainable<Subject>
+
+    /**
+     * Test text on page
+     *
+     * @example
+     * cy.assertText({by: 'text', value: 'A Value'})
+     *
+     */
+    assertText(options: AssertTextOptionTypes): Chainable<Subject>
   }
 }

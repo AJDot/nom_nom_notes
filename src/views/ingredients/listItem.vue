@@ -14,7 +14,7 @@
     </column>
     <column>
       <button
-        class="btn"
+        class="btn more"
         type="button"
         @click="$emit('context-menu', $event)"
       >
