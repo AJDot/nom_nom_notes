@@ -83,3 +83,14 @@ Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string 
 Cypress.Commands.add('getFlash', (text: string) => {
   cy.get('.flash').contains('li', text)
 })
+
+Cypress.Commands.add('getTest', (text: string) => {
+  cy.get(`[data-test="${text}"]`)
+})
+
+Cypress.Commands.add('getByLabel', (text: string) => {
+  return cy.contains('label', text).invoke('attr', 'for')
+    .then(labelFor => {
+      cy.get(`#${labelFor}`)
+    })
+})

@@ -94,6 +94,7 @@
         <dt><label for="categories">Categories</label></dt>
         <dd>
           <search
+            id="categories"
             :searcher="categorySearcher"
             @select="addCategory"
           />
@@ -129,6 +130,7 @@
             v-for="(step, i) in unmarkedSortedSteps"
             :key="step.clientId"
             tag="li"
+            :data-test="`step-${i}`"
           >
             <column>
               <label :for="`step-${i}-description`">{{ i + 1 }}</label>
