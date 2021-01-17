@@ -31,7 +31,7 @@ describe('Create Recipe', () => {
       cy.wait('@createRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
-          cy.wrap(data).its('response.body.data').as('thing')
+          cy.wrap(data).its('response.body.data')
             .then(function(recipe) {
               cy.url().should('contain', `/recipes/${recipe.attributes.clientId}`)
             })
@@ -62,7 +62,7 @@ describe('Create Recipe', () => {
         })
     })
 
-    it.only('allows recipe creation with all data', () => {
+    it('allows recipe creation with all data', () => {
       cy.apiRequest('POST', '/testing/api/v1/categories', {
         categories: [
           { name: 'Italian' },
@@ -98,6 +98,10 @@ describe('Create Recipe', () => {
       // Add Note
       cy.contains('label', 'Notes').type('Or ignore everything I said.')
 
+      // Add cook time
+      cy.contains('label', 'Hours').type('1')
+      cy.contains('label', 'Minutes').type('2')
+
       cy.contains('input', 'Create').click()
 
       const checkData = () => {
@@ -111,6 +115,9 @@ describe('Create Recipe', () => {
           'Grab a chicken.',
           'Put all ingredients on it.',
           'Or ignore everything I said.',
+          '1 hour and 2 minutes',
+          'Italian',
+          'Chinese',
         ].forEach(text => {
           cy.contains(text).should('exist')
         })
@@ -119,7 +126,7 @@ describe('Create Recipe', () => {
       cy.wait('@createRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
-          cy.wrap(data).its('response.body.data').as('thing')
+          cy.wrap(data).its('response.body.data')
             .then(function(recipe) {
               cy.url().should('contain', `/recipes/${recipe.attributes.clientId}`)
               checkData()

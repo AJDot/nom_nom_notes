@@ -102,6 +102,7 @@
             <row
               v-for="cat in unmarkedCategories"
               :key="cat.clientId"
+              :data-test="`category-${cat.name}`"
             >
               <column class="grow-2">
                 {{ cat.name }}
@@ -111,6 +112,7 @@
                 <button
                   type="button"
                   class="btn-link"
+                  data-test="category-destroy"
                   @click="destroyRecipeCategory(cat)"
                 >
                   <i class="material-icons wiggle">delete</i>
@@ -148,7 +150,7 @@
               <div class="row">
                 <div class="col">
                   <button
-                    class="btn"
+                    class="btn more"
                     type="button"
                     @click="openContextMenu($event, recipe.steps, step)"
                   >
