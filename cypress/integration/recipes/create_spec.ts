@@ -102,6 +102,11 @@ describe('Create Recipe', () => {
       cy.contains('label', 'Hours').type('1')
       cy.contains('label', 'Minutes').type('2')
 
+      // Add image
+      cy.uploadFile({
+        path: 'images/super-cute-puppy.jpeg',
+        type: 'image/jpeg',
+      })
       cy.contains('input', 'Create').click()
 
       const checkData = () => {
@@ -121,6 +126,10 @@ describe('Create Recipe', () => {
         ].forEach(text => {
           cy.contains(text).should('exist')
         })
+
+        cy.get('[src$="super-cute-puppy.jpeg"]').should('exist')
+          .and('have.attr', 'alt', 'Space Soup')
+          .and('have.attr', 'title', 'Space Soup')
       }
 
       cy.wait('@createRecipe')
@@ -132,7 +141,7 @@ describe('Create Recipe', () => {
               checkData()
             })
         })
-      cy.reload().then(() => checkData())
+      cy.reload().then(checkData)
     })
   })
 })
