@@ -245,5 +245,19 @@ describe('Edit Recipe', () => {
             })
         })
     })
+
+    it('allows editing image', function() {
+      const recipeId = this.recipe.attributes.clientId
+      cy.visit(`/recipes/${recipeId}/edit`)
+      cy.uploadFile({
+        path: 'images/super-cute-puppy.jpeg',
+        type: 'image/jpeg',
+      })
+      cy.contains('input', 'Update Recipe').click()
+      cy.assertUrl(`/recipes/${recipeId}`)
+      cy.get('[src$="super-cute-puppy.jpeg"]').should('exist')
+        .and('have.attr', 'alt', 'Space Soup')
+        .and('have.attr', 'title', 'Space Soup')
+    })
   })
 })

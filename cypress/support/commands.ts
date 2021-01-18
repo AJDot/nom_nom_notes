@@ -137,3 +137,23 @@ Cypress.Commands.add('assertUrl', (path: string, options?: AssertUrlOptionType) 
   const exp = options?.exact === false ? 'contain' : 'eq'
   cy.url().should(exp, Cypress.config().baseUrl + path)
 })
+
+Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => {
+  // programmatically upload the logo
+  cy.fixture(options.path).as(options.path)
+  cy.get('input[type=file]').then(function(el) {
+    // convert the logo base64 string to a blob
+    const blob = Cypress.Blob.base64StringToBlob(this[options.path], 'image/jpeg')
+
+    const file = new File([blob], options.path, { type: options.type })
+    const list = new DataTransfer()
+
+    list.items.add(file)
+    const myFileList = list.files
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    el[0].files = myFileList
+    el[0].dispatchEvent(new Event('change', { bubbles: true }))
+  })
+})

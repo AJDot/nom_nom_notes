@@ -124,5 +124,14 @@ declare namespace Cypress {
      *
      */
     assertUrl(path: string, options?: AssertUrlOptionType): Chainable<Subject>
+
+    /**
+     * Upload file to html file upload field
+     *
+     * @example
+     * cy.uploadFile({path: 'images/super-cute-puppy.jpeg', type: 'image/jpeg'})
+     *
+     */
+    uploadFile(options: { path: string, type: string }): Chainable<Subject>
   }
 }
