@@ -88,15 +88,11 @@
     "./src/**/*.ts",
     "./src/**/*.vue"
   ],
-  "exclude": [
-    "./node_modules",
-    "./webpack.config.js"
-  ],
   "files": [
     "src/shims/vue-shim.d.ts",
     "src/shims/vuex-shim.d.ts",
     "src/shims/axios-plugin.d.ts",
     "src/shims/router-extension-plugin.d.ts",
     "src/shims/custom-shim.d.ts"
-  ]
+  ],
 }
