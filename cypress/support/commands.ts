@@ -51,12 +51,13 @@ Cypress.Commands.add('getDropdownItem', (label: string) => {
   cy.contains('.dropdown-item', label)
 })
 
-Cypress.Commands.add('createUser', (user: { email: string, password: string }) => {
+Cypress.Commands.add('createUser', (user: { email: string, password: string, username: string }) => {
   return cy.apiRequest('POST', '/testing/api/v1/users', {
     user: {
       email: user.email,
       password: user.password,
       password_confirmation: user.password,
+      username: user.username,
     },
   })
     .its('body.data.0')
@@ -65,15 +66,17 @@ Cypress.Commands.add('createUser', (user: { email: string, password: string }) =
 
 Cypress.Commands.add('createFry', () => {
   return cy.createUser({
-    email: 'philip@fry.futurama',
+    email: 'philip.fry@planet-express.com',
     password: 'ah123456',
+    username: 'orangejoe',
   })
 })
 
-Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string }) => {
+Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string, username?: string }) => {
   cy.apiRequest('POST', '/signin', {
-    email: user?.email || 'philip@fry.futurama',
+    email: user?.email || 'philip.fry@planet-express.com',
     password: user?.password || 'ah123456',
+    username: user?.username || 'orangejoe',
   }).its('body').as('signIn')
     .then((response) => {
       localStorage.setItem('csrf', response.csrf)
@@ -93,7 +96,7 @@ Cypress.Commands.add('getModal', () => {
   cy.get('.modal')
 })
 
-Cypress.Commands.add('getByLabel', (text: string) => {
+Cypress.Commands.add('getByLabel', (text: string | RegExp) => {
   return cy.contains('label', text).invoke('attr', 'for')
     .then(labelFor => {
       cy.get(`#${labelFor}`)

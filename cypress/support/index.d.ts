@@ -48,9 +48,9 @@ declare namespace Cypress {
     /**
      * Create a user in database
      * @example
-     * cy.createUser({email: 'philip@fry.futurama', password: 'ah123456'})
+     * cy.createUser({email: 'philip.fry@planet-express.com', password: 'ah123456'})
      */
-    createUser(user: { email: string, password: string }): Chainable<ModelResponse>
+    createUser(user: { email: string, password: string, username: string }): Chainable<ModelResponse>
 
     /**
      * Create Philip Fry in database
@@ -62,7 +62,7 @@ declare namespace Cypress {
     /**
      * Sign In user
      * @example
-     * cy.forceSignIn({email: 'philip@fry.futurama', password: 'ah123456'})
+     * cy.forceSignIn({email: 'philip.fry@planet-express.com', password: 'ah123456'})
      */
     forceSignIn(user?: { email?: string, password?: string }): Chainable<ModelResponse>
 
@@ -94,7 +94,7 @@ declare namespace Cypress {
      * @example
      * cy.getByLabel('ingredient-0').clear().type('input stuff')
      */
-    getByLabel(text: string): Chainable<Subject>
+    getByLabel(text: string | RegExp): Chainable<Subject>
 
     /**
      * Test form field values

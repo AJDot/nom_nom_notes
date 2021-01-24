@@ -12,6 +12,7 @@ import modalStore from '~/plugins/store/modals'
 import ContextMenu from '@/context-menu.vue'
 import Row from '@/row.vue'
 import Column from '@/column.vue'
+import AInput from '@/structure/a-input.vue'
 import focus from '~/directives/focus'
 
 createApp(App)
@@ -27,5 +28,6 @@ createApp(App)
   .component('context-menu', ContextMenu)
   .component('row', Row)
   .component('column', Column)
+  .component('a-input', AInput)
   .directive('focus', focus)
   .mount('#app')
