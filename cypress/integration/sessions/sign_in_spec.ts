@@ -8,7 +8,7 @@ describe('Sign In', () => {
         cy.contains('a', 'Sign In').click()
         cy.url().should('include', '/sign_in')
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('philip@fry.futurama')
+          cy.contains('label', 'Email').type('philip.fry@planet-express.com')
           cy.contains('label', /^Password$/).type('ah123456')
           cy.contains('input', 'Sign In').click()
         })
@@ -34,13 +34,13 @@ describe('Sign In', () => {
         cy.getFlash('Email can\'t be blank').should('exist')
 
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('philip@fry')
+          cy.contains('label', 'Email').type('philip.fry@planet-express')
           cy.contains('input', 'Sign In').click()
         })
         cy.getFlash('Email is invalid').should('exist')
 
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('.futurama')
+          cy.contains('label', 'Email').type('.com')
           cy.contains('input', 'Sign In').click()
         })
         cy.getFlash('Password can\'t be blank').should('exist')

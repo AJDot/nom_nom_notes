@@ -6,9 +6,10 @@ describe('Sign Up', () => {
     cy.contains('a', 'Sign Up').click()
     cy.url().should('include', '/sign_up')
     cy.get('form').within(() => {
-      cy.contains('label', 'Email').type('philip@fry.futurama')
-      cy.contains('label', /^Password$/).type('i.c. wiener')
-      cy.contains('label', 'Confirm Password').type('i.c. wiener')
+      cy.getByLabel('Email').type('philip.fry@planet-express.com')
+      cy.getByLabel('Username').type('orangejoe')
+      cy.getByLabel(/^Password$/).type('i.c. wiener')
+      cy.getByLabel('Confirm Password').type('i.c. wiener')
       cy.contains('Sign Up').click()
     })
       .then(() => {
@@ -29,6 +30,7 @@ describe('Sign Up', () => {
       cy.contains('Sign Up').click()
     })
       .then(() => {
+        cy.contains('Username can\'t be blank').should('exist')
         cy.contains('Password can\'t be blank').should('exist')
         cy.contains('Password confirmation can\'t be blank').should('exist')
         cy.contains('Email can\'t be blank').should('exist')
@@ -36,11 +38,13 @@ describe('Sign Up', () => {
       })
 
     cy.get('form').within(() => {
-      cy.contains('label', 'Email').type('philip@fry')
-      cy.contains('label', /^Password$/).type('i.c. wiener')
-      cy.contains('label', 'Confirm Password').type('i.c. wiener!')
+      cy.getByLabel('Email').type('philip@fry')
+      cy.getByLabel('Username').type('orangejoe')
+      cy.getByLabel(/^Password$/).type('i.c. wiener')
+      cy.getByLabel('Confirm Password').type('i.c. wiener!')
       cy.contains('Sign Up').click()
     })
+    cy.contains('Username can\'t be blank').should('not.exist')
     cy.contains('Password can\'t be blank').should('not.exist')
     cy.contains('Password confirmation can\'t be blank').should('not.exist')
     cy.contains('Email can\'t be blank').should('not.exist')
@@ -55,20 +59,23 @@ describe('Sign Up', () => {
     cy.url().should('include', '/recipes')
   })
 
-  it('allows sign up if email provided is not already taken', () => {
+  it('allows sign up if email or username provided is not already taken', () => {
     cy.createFry()
       .then(() => {
         cy.visit('/sign_up')
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('philip@fry.futurama')
-          cy.contains('label', /^Password$/).type('AH1234')
-          cy.contains('label', 'Confirm Password').type('AH1234')
+          cy.getByLabel('Email').type('philip.fry@planet-express.com')
+          cy.getByLabel('Username').type('orangejoe')
+          cy.getByLabel(/^Password$/).type('AH1234')
+          cy.getByLabel('Confirm Password').type('AH1234')
           cy.contains('Sign Up').click()
         })
         cy.contains('Email has already been taken').should('exist')
+        cy.contains('Username has already been taken').should('exist')
 
         cy.get('form').within(() => {
-          cy.contains('label', 'Email').type('a')
+          cy.getByLabel('Email').type('a')
+          cy.getByLabel('Username').type('a')
           cy.contains('Sign Up').click()
         })
         cy.url().should('include', '/recipes')

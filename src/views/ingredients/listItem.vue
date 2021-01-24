@@ -6,7 +6,6 @@
     <column class="grow-2">
       <input
         :id="`ingredient-${index}-description`"
-        ref="descriptionInput"
         :value="description"
         type="text"
         @input="$emit('update:description', $event.target.value)"

@@ -15,6 +15,16 @@
         >
       </dd>
     </dl>
+    <a-input
+      id="username"
+      v-model="formData.username"
+      type="text"
+      name="username"
+    >
+      <template #label-text>
+        Username
+      </template>
+    </a-input>
     <dl class="password">
       <dt><label for="password">Password</label></dt>
       <dd>
@@ -59,6 +69,7 @@ export default defineComponent({
     return {
       formData: {
         email: null,
+        username: null,
         password: null,
         passwordConfirmation: null,
       },
