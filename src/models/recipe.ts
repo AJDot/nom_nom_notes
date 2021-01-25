@@ -1,11 +1,11 @@
 import { CookTime, Description, HasUploader, HasMany, Nameable, Notable } from 'Interfaces/modelInterfaces'
 import Step from 'Models/step'
 import AModel, { AModelAttributes } from 'Models/aModel'
-import Attribute from '@vuex-orm/core/lib/attributes/Attribute'
 import Ingredient from 'Models/ingredient'
 import Category from 'Models/category'
 import RecipeCategory from 'Models/recipeCategory'
 import { Uploader } from 'Interfaces/imageInterfaces'
+import { Attribute, Fields } from '@vuex-orm/core'
 
 export type RecipeAttributes = Nameable & Description & CookTime & Notable &
 HasMany<'steps', Step> &
@@ -17,7 +17,7 @@ HasUploader<'image'>
 export interface RRecipe extends AModelAttributes, RecipeAttributes {
 }
 
-type RecipeFields = {
+type RecipeFields = Fields & {
   [key in keyof RecipeAttributes]: Attribute
 }
 

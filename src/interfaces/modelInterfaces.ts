@@ -43,10 +43,12 @@ export interface CookTime {
   cookTime: number
 }
 
-export type HasMany<P extends string, T> = {
-  [key in P]: T[]
+export type HasOne<K extends string, T> = {
+  [key in K]: T
 }
 
-export type HasUploader<K extends string> = {
-  [key in K]: Uploader
+export type HasMany<K extends string, T> = {
+  [key in K]: T[]
 }
+
+export type HasUploader<K extends string> = HasOne<K, Uploader>
