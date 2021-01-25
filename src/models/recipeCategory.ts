@@ -1,6 +1,5 @@
-import { Fields } from '@vuex-orm/core'
+import { Attribute, Fields } from '@vuex-orm/core'
 import AModel, { AModelAttributes } from 'Models/aModel'
-import Attribute from '@vuex-orm/core/lib/attributes/Attribute'
 import { BCategory, BRecipe } from 'Interfaces/modelInterfaces'
 
 export type RecipeCategoryAttributes = BRecipe & BCategory

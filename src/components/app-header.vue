@@ -14,30 +14,22 @@
         </router-link>
       </h1>
       <ul class="suffix s-200-em horizontal j-slash">
-        <!--        <% if current_user.blank? %>-->
-        <!--        <% if request.path_info != '/sign_in' %>-->
         <li v-if="!signedIn">
           <router-link :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }">
             Sign In
           </router-link>
         </li>
-        <!--        <% end %>-->
-        <!--        <% if request.path_info != '/sign_up' %>-->
         <li v-if="!signedIn">
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
         </li>
-        <!--        <% end %>-->
-        <!--        <% end %>-->
-        <!--        <% if current_user.present? %>-->
         <li v-if="signedIn">
           <a
             href="#"
             @click.prevent="signOut"
           >Sign Out</a>
         </li>
-        <!--        <% end %>-->
       </ul>
     </div>
     <div class="secondary-header">
