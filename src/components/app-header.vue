@@ -43,18 +43,19 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { StoreModulePath } from '~/store'
 import Flash from '@/flash.vue'
 import { FlashActionTypes } from '~/store/modules/flash'
 import RoutePath from '~/router/path'
 import { AxiosError } from 'axios'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   components: { Flash },
   computed: {
-    ...mapState('sessions', { signedIn: 'signedIn' }),
+    ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
   },
   methods: {
     setError(error: AxiosError, text: string): void {
