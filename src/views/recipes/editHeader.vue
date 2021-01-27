@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { mapState, useStore } from 'vuex'
+import { mapGetters, useStore } from 'vuex'
 import { RootState } from '~/store/interfaces'
 import { stateKey, StoreModulePath } from '~/store'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
@@ -58,6 +58,7 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import Modal from '@/modal.vue'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'RecipeListHeader',
@@ -68,7 +69,7 @@ export default defineComponent({
     loading,
   ],
   setup() {
-    const getters = mapState('sessions', { signedIn: 'signedIn' })
+    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
     const clientId = router.currentRoute.value.params.clientId
     store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId)

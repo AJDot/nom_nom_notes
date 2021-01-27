@@ -23,12 +23,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'ShowRecipeHeader',
   setup() {
-    const getters = mapState('sessions', { signedIn: 'signedIn' })
+    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     return {
       ...getters,
     }
