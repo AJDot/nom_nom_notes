@@ -14,6 +14,7 @@ import Row from '@/structure/row.vue'
 import Column from '@/structure/column.vue'
 import AInput from '@/structure/a-input.vue'
 import focus from '~/directives/focus'
+import currentUserMixin from '~/mixins/currentUserMixin'
 
 createApp(App)
   .use(router)
@@ -29,5 +30,6 @@ createApp(App)
   .component('row', Row)
   .component('column', Column)
   .component('a-input', AInput)
+  .mixin(currentUserMixin)
   .directive('focus', focus)
   .mount('#app')

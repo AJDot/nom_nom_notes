@@ -5,6 +5,9 @@ import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import { UserActionTypes } from '~/store/modules/users/actions'
+import { UserMutationTypes } from '~/store/modules/users/mutations'
+import { StoreModulePath } from '~/store'
 
 export enum SessionActionTypes {
   CREATE = 'CREATE',
@@ -16,14 +19,22 @@ type SessionActions = {
 }
 
 const actions: ActionTree<SessionsState, RootState> & SessionActions = {
-  async [SessionActionTypes.CREATE](_store, payload: {email: string, password: string}): Promise<AxiosResponse> {
-    return plainAxiosInstance
-      .post(RoutePath.signin(), payload)
+  async [SessionActionTypes.CREATE]({
+    commit,
+    dispatch,
+  }, payload: { email: string, password: string }): Promise<AxiosResponse> {
+    const response = await plainAxiosInstance.post(RoutePath.signin(), payload)
+    if (response.data.csrf) {
+      commit(SessionMutationTypes.SIGN_IN, response.data.csrf)
+      dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT, null, { root: true })
+    }
+    return response
   },
   async [SessionActionTypes.DESTROY]({ commit }): Promise<AxiosResponse> {
     const response = await securedAxiosInstance.delete(RoutePath.signin())
     if (response.status === HttpStatusCode.Ok) {
       commit(SessionMutationTypes.SIGN_OUT)
+      commit(StoreModulePath.Users + UserMutationTypes.UNSET_CURRENT, null, { root: true })
     }
     return response
   },
