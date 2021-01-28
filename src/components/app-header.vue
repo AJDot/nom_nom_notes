@@ -14,8 +14,13 @@
         </router-link>
       </h1>
       <ul class="suffix s-200-em horizontal j-slash">
+        <li v-if="currentUser">
+          {{ currentUser.username }}
+        </li>
         <li v-if="!signedIn">
-          <router-link :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }">
+          <router-link
+            :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }"
+          >
             Sign In
           </router-link>
         </li>
@@ -44,13 +49,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { StoreModulePath } from '~/store'
 import Flash from '@/flash.vue'
 import { FlashActionTypes } from '~/store/modules/flash'
-import RoutePath from '~/router/path'
-import { AxiosError } from 'axios'
+import { AxiosError, AxiosResponse } from 'axios'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
+import { SessionActionTypes } from '~/store/modules/sessions/actions'
 
 export default defineComponent({
   components: { Flash },
@@ -69,15 +73,29 @@ export default defineComponent({
       }
     },
     signOut(): void {
-      this.$http.secured
-        .delete(RoutePath.signin())
-        .then((_response) => {
-          this.$store.commit(
-            StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
-          )
-          this.$router.replace({ name: this.$routerExtension.names.Home })
+      this.$store.dispatch(StoreModulePath.Session + SessionActionTypes.DESTROY)
+        .then((response: AxiosResponse) => this.signOutSuccessful(response))
+        .catch((error: AxiosError) => this.signOutError(error))
+    },
+    signOutSuccessful(response: AxiosResponse) {
+      if (this.signedIn) {
+        this.signOutFailed(response)
+        return
+      }
+      this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
+    },
+    signOutFailed(error: AxiosResponse) {
+      this.processFailedSignOut(error?.data?.error)
+    },
+    signOutError(error: AxiosError) {
+      this.processFailedSignOut(error.response?.data.error || 'Cannot sign out')
+    },
+    processFailedSignOut(errorText: string | null | undefined) {
+      if (errorText) {
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: errorText },
         })
-        .catch((error) => this.setError(error, 'Cannot sign out'))
+      }
     },
   },
 })

@@ -41,9 +41,17 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionActionTypes } from '~/store/modules/sessions/actions'
+import { mapGetters } from 'vuex'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'SignIn',
+  setup() {
+    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
+    return {
+      ...getters,
+    }
+  },
   data() {
     return {
       formData: {
@@ -51,6 +59,9 @@ export default defineComponent({
         password: null,
       },
     }
+  },
+  computed: {
+    ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
   },
   created() {
     this.checkSignedIn()
@@ -65,14 +76,10 @@ export default defineComponent({
         .catch((error: AxiosError) => this.signinError(error))
     },
     signinSuccessful(response: AxiosResponse) {
-      if (!response.data.csrf) {
+      if (!this.signedIn) {
         this.signinFailed(response)
         return
       }
-      this.$store.commit(
-        StoreModulePath.Session + SessionMutationTypes.SIGN_IN,
-        response.data.csrf,
-      )
       this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
     },
     signinFailed(error: AxiosResponse) {
