@@ -1,6 +1,7 @@
 import { FlashState } from '~/store/modules/flash'
 import { ModalState } from '~/store/modules/modal'
 import { LoadingState } from '~/store/modules/loading'
+import User from 'Models/user'
 
 export interface RecipesState {
 }
@@ -13,8 +14,16 @@ export interface SessionsState {
   signedIn: boolean | null
 }
 
+export interface UsersState {
+  current: User | null
+}
+
+export interface SignupsState {
+}
+
 export enum StoreModuleType {
   Session = 'sessions',
+  Users = 'users',
   Flash = 'flash',
   Modal = 'modal',
   Loading = 'loading',
@@ -29,4 +38,5 @@ export interface RootState {
   [StoreModuleType.Loading]: LoadingState
   [StoreModuleType.Recipes]: RecipesState
   [StoreModuleType.Categories]: CategoriesState
+  [StoreModuleType.Users]: UsersState
 }

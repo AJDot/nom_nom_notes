@@ -28,6 +28,10 @@ class Path {
     return '/refresh'
   }
 
+  currentUser() {
+    return '/current_user'
+  }
+
   recipes() {
     return '/recipes'
   }
@@ -45,6 +49,8 @@ class Path {
     for (const [key, value] of Object.entries(wildcards)) {
       let val
       if (typeof value === 'string') {
+        val = value
+      } else if (typeof value === 'undefined') {
         val = value
       } else {
         val = value.clientId

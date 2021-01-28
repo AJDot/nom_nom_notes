@@ -60,8 +60,8 @@ import { defineComponent } from 'vue'
 import { StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
-import RoutePath from '~/router/path'
 import { AxiosError, AxiosResponse } from 'axios'
+import { SignupActionTypes } from '~/store/modules/signups/actions'
 
 export default defineComponent({
   name: 'SignUp',
@@ -83,8 +83,7 @@ export default defineComponent({
   },
   methods: {
     signup() {
-      this.$http.plain
-        .post(RoutePath.signup(), { ...this.formData })
+      this.$store.dispatch(StoreModulePath.Signup + SignupActionTypes.CREATE, this.formData)
         .then((response) => this.signupSuccessful(response))
         .catch((error) => this.signupError(error))
     },
@@ -93,10 +92,6 @@ export default defineComponent({
         this.signupFailed(response)
         return
       }
-      this.$store.commit(
-        StoreModulePath.Session + SessionMutationTypes.SIGN_IN,
-        response.data.csrf,
-      )
       this.$router.replace({ name: this.$routerExtension.names.Home })
     },
     signupFailed(error: AxiosResponse) {
