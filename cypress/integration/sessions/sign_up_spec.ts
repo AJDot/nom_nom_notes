@@ -18,6 +18,7 @@ describe('Sign Up', () => {
         cy.url().should('include', '/recipes')
         cy.contains('a', 'Sign Up').should('not.exist')
         cy.contains('a', 'Sign Out').should('exist')
+        cy.contains('orangejoe').should('exist')
       })
   })
 
@@ -32,7 +33,8 @@ describe('Sign Up', () => {
       .then(() => {
         cy.contains('Username can\'t be blank').should('exist')
         cy.contains('Password can\'t be blank').should('exist')
-        cy.contains('Password confirmation can\'t be blank').should('exist')
+        // confirmation error only shows when password is given
+        cy.contains('Password confirmation can\'t be blank').should('not.exist')
         cy.contains('Email can\'t be blank').should('exist')
         cy.contains('Email is invalid').should('exist')
       })
@@ -79,6 +81,7 @@ describe('Sign Up', () => {
           cy.contains('Sign Up').click()
         })
         cy.url().should('include', '/recipes')
+        cy.contains('orangejoe').should('exist')
       })
   })
 
@@ -94,6 +97,7 @@ describe('Sign Up', () => {
         // trying to sign up when already signed in redirects to recipes list
         cy.visit('/sign_up')
         cy.url().should('include', '/recipes')
+        cy.contains('orangejoe').should('exist')
       })
   })
 })

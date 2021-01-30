@@ -18,6 +18,8 @@ describe('Sign In', () => {
             cy.url().should('include', '/recipes')
             cy.contains('a', 'Sign Up').should('not.exist')
             cy.contains('a', 'Sign Out').should('exist')
+            // username is displayed in app header
+            cy.contains('orangejoe').should('exist')
           })
       })
   })

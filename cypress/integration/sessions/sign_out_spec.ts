@@ -9,10 +9,13 @@ describe('Sign Out', () => {
       })
       .then(() => {
         cy.visit('/')
+        // username should show
+        cy.contains('orangejoe').should('exist')
       })
     cy.contains('a', 'Sign Out').click()
       .then(() => {
         cy.contains('a', 'Sign Out').should('not.exist')
+        cy.contains('orangejoe').should('not.exist')
         expect(localStorage.getItem('csrf')).to.be.null
         expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
       })
