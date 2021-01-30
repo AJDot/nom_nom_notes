@@ -1,10 +1,6 @@
 import Guid from '../../../src/utils/guid'
 
 describe('Recipes List', () => {
-  beforeEach(() => {
-    cy.task('resetCRI')
-  })
-
   context('Not logged in', () => {
     it('makes recipes collection request successfully', () => {
       cy.intercept('GET', '/api/v1/recipes').as('getRecipes')
@@ -57,12 +53,12 @@ describe('Recipes List', () => {
           cy.get('.card-list > li:nth-child(2)').should('contain', 'Pasta')
           cy.get('.card-list > li:nth-child(3)').should('contain', 'Penne')
 
-          cy.getRecipeCard('Pasta').within(() => {
+          cy.getRecipeCard('Pasta').within((response) => {
             // recipe shows categories
             cy.contains('Italian').should('exist')
             // recipe shows link to show page
             cy.contains('View Recipe').should('not.be.visible')
-            cy.task('activateHoverPseudo', { selector: '.card-list > li:nth-child(2)' })
+            cy.wrap(response).trigger('mouseover')
             cy.contains('View Recipe').should('be.visible')
             // link works
             cy.contains('View Recipe').click()

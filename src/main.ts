@@ -13,8 +13,9 @@ import ContextMenu from '@/context-menu.vue'
 import Row from '@/structure/row.vue'
 import Column from '@/structure/column.vue'
 import AInput from '@/structure/a-input.vue'
-import focus from '~/directives/focus'
+import { Focus } from '~/directives/focus'
 import currentUserMixin from '~/mixins/currentUserMixin'
+import { Hover } from '~/directives/hover'
 
 createApp(App)
   .use(router)
@@ -31,5 +32,6 @@ createApp(App)
   .component('column', Column)
   .component('a-input', AInput)
   .mixin(currentUserMixin)
-  .directive('focus', focus)
+  .directive('focus', Focus)
+  .directive('hover', Hover)
   .mount('#app')

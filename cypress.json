@@ -4,5 +4,6 @@
   "pluginsFile": "cypress/plugins/index.ts",
   "env": {
     "api_url": "http://localhost:3001"
-  }
+  },
+  "videoUploadOnPasses": false
 }
