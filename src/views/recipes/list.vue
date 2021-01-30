@@ -45,12 +45,15 @@
         <li
           v-for="recipe in recipesForList"
           :key="recipe.clientId"
+          v-hover="pullDetails"
         >
           <article>
             <h1>{{ recipe.name }}</h1>
             <section>
               <img v-bind="imageAttrs(recipe)">
-              <div class="content">
+              <div
+                class="content hidden-y"
+              >
                 <router-link
                   :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
                   class="view-recipe"
@@ -165,6 +168,11 @@ export default defineComponent({
     },
     clearCategoryFilter(): void {
       this.recipeFilters.categoryName = null
+    },
+    pullDetails(event: MouseEvent, hovering: boolean): void {
+      const cssClass = 'hidden-y'
+      const $el = $(event.currentTarget).find('.content')
+      hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },
   },
 })

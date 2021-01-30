@@ -301,15 +301,7 @@ ul.card-list .content {
   color: #ffffff;
   background: rgba(0, 0, 0, .7);
   box-sizing: border-box;
-  transform: translateY(-100%);
   transition: transform .5s ease;
-}
-
-ul.card-list > li:hover .content,
-ul.card-list > li:focus-within .content {
-  position: absolute;
-  padding: 0 1em;
-  transform: translateY(0);
 }
 
 ul.card-list .content a.view-recipe {
@@ -655,4 +647,8 @@ ul.horizontal > li {
 
 .t-align-center {
   text-align: center;
+}
+
+.hidden-y {
+  transform: translateY(-100%);
 }

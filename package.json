@@ -9,7 +9,9 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --progress",
     "dev-build": "cross-env NODE_ENV=development webpack --progress",
     "test": "cross-env NODE_ENV=test webpack-dev-server --progress",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "cy:dev:local:run": "cross-env NODE_ENV=test cypress run",
+    "cy:dev:local:open": "cross-env NODE_ENV=test cypress open"
   },
   "dependencies": {
     "@vuex-orm/core": "^0.36.3",
