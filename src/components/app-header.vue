@@ -24,7 +24,7 @@
             Sign In
           </router-link>
         </li>
-        <li v-if="!signedIn">
+        <li v-if="$flipper.isEnabled(FeatureName.Signup) && !signedIn">
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
@@ -55,11 +55,21 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { SessionActionTypes } from '~/store/modules/sessions/actions'
+import { FeatureActionTypes } from '~/store/modules/features/actions'
+import { FeatureName } from '~/enums/features'
 
 export default defineComponent({
   components: { Flash },
+  data() {
+    return {
+      FeatureName: FeatureName,
+    }
+  },
   computed: {
     ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
+  },
+  async beforeCreate() {
+    this.$store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { name: 'signup' })
   },
   methods: {
     setError(error: AxiosError, text: string): void {

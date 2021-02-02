@@ -21,8 +21,12 @@ export interface UsersState {
 export interface SignupsState {
 }
 
+export interface FeaturesState {
+}
+
 export enum StoreModuleType {
   Session = 'sessions',
+  Features = 'features',
   Users = 'users',
   Flash = 'flash',
   Modal = 'modal',
