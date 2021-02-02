@@ -11,6 +11,7 @@ import loading from '~/store/modules/loading'
 import categories from '~/store/modules/categories'
 import users from '~/store/modules/users'
 import signups from '~/store/modules/signups'
+import features from '~/store/modules/features'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -25,6 +26,7 @@ export enum StoreModulePath {
   Flash = 'flash/',
   Modal = 'modal/',
   Loading = 'loading/',
+  Features = 'features/',
 }
 
 export const store = createStore<RootState>({
@@ -38,6 +40,7 @@ export const store = createStore<RootState>({
     flash,
     modal,
     loading,
+    features,
   },
   state: {} as RootState,
   mutations: {},

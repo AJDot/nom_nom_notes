@@ -16,6 +16,7 @@ import AInput from '@/structure/a-input.vue'
 import { Focus } from '~/directives/focus'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { Hover } from '~/directives/hover'
+import flipper from '~/plugins/flipper'
 
 createApp(App)
   .use(router)
@@ -27,6 +28,7 @@ createApp(App)
   .use(routerExtension)
   .use(filters)
   .use(modalStore)
+  .use(flipper)
   .component('context-menu', ContextMenu)
   .component('row', Row)
   .component('column', Column)

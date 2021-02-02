@@ -44,6 +44,22 @@ class Path {
     return '/categories'
   }
 
+  flipper() {
+    return '/flipper'
+  }
+
+  flipperApi() {
+    return this.flipper() + '/api'
+  }
+
+  features() {
+    return this.flipperApi() + '/features'
+  }
+
+  feature(name: string) {
+    return this.features() + `/${name}`
+  }
+
   private static buildPath(path: string, wildcards: Hash) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {
