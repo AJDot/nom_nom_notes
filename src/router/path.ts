@@ -44,12 +44,12 @@ class Path {
     return '/categories'
   }
 
-  flipper() {
+  flipperBase() {
     return '/flipper'
   }
 
   flipperApi() {
-    return this.flipper() + '/api'
+    return this.flipperBase() + '/api'
   }
 
   features() {
