@@ -16,8 +16,8 @@ type FeatureActions = {
 }
 
 const actions: ActionTree<FeaturesState, RootState> & FeatureActions = {
-  async [FeatureActionTypes.FETCH]({ commit }: ActionContext<FeaturesState, RootState>, { name }: { name: string }) {
-    const response: AxiosResponse<ServerResponse<FeatureAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.feature(name))
+  async [FeatureActionTypes.FETCH]({ commit }: ActionContext<FeaturesState, RootState>, { key }: { key: string }) {
+    const response: AxiosResponse<ServerResponse<FeatureAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.feature(key))
 
     commit(FeatureMutationTypes.ADD, response.data)
     return response

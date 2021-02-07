@@ -3,7 +3,7 @@
     class="sign_up"
     @submit.prevent="signup"
   >
-    <h2>Sign In</h2>
+    <h2>Sign Up</h2>
     <dl class="email">
       <dt><label for="email">Email</label></dt>
       <dd>

@@ -69,7 +69,7 @@ export default defineComponent({
     ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
   },
   async beforeCreate() {
-    this.$store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { name: 'signup' })
+    this.$store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { key: 'signup' })
   },
   methods: {
     setError(error: AxiosError, text: string): void {

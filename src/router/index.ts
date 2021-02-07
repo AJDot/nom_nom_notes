@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter, RouteRecordRaw, NavigationGuard, RouteRecord } from 'vue-router'
+import { createRouter, createWebHistory, NavigationGuard, RouteRecord, RouteRecordRaw } from 'vue-router'
 import ListRecipe from '~/views/recipes/list.vue'
 import ListRecipeHeader from '~/views/recipes/listHeader.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
@@ -10,8 +10,10 @@ import SignUp from '~/views/signUp.vue'
 import NotFound from '~/views/NotFound.vue'
 import { RouteName } from '~/router/routeName'
 import AppConfig from '~/appConfig'
-import { store } from '~/store'
+import { store, StoreModulePath } from '~/store'
 import { StoreModuleType } from '~/store/interfaces'
+import Feature from 'Models/feature'
+import { FlashActionTypes } from '~/store/modules/flash'
 
 const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Home,
@@ -27,12 +29,25 @@ const checkSignIn: NavigationGuard = (to, _from) => {
   if (publicRoutes.includes(to.name) || store.state[StoreModuleType.Session].signedIn) {
     return true
   } else {
-    // if not a publish route, navigate to sign in
+    // if not a public route, navigate to sign in
     return {
       name: RouteName.SignIn,
       params: { originalRequest: to.path },
     }
   }
+}
+
+const checkCanSignUp: NavigationGuard = async (_to, _from) => {
+  if (await Feature.isOff('signup')) {
+    await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+      flash: { alert: 'Unable to sign up. Action is forbidden.' },
+      hold: true,
+    })
+    return {
+      name: RouteName.Recipes,
+    }
+  }
+  return true
 }
 
 const routes: RouteRecordRaw[] & { name: RouteName }[] = [
@@ -80,6 +95,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
     name: RouteName.SignUp,
     path: '/sign_up',
     component: SignUp,
+    beforeEnter: checkCanSignUp,
   },
   {
     name: RouteName.NotFound,

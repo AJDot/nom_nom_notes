@@ -56,8 +56,8 @@ class Path {
     return this.flipperApi() + '/features'
   }
 
-  feature(name: string) {
-    return this.features() + `/${name}`
+  feature(key: string) {
+    return this.features() + `/${key}`
   }
 
   private static buildPath(path: string, wildcards: Hash) {
