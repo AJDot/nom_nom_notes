@@ -50,7 +50,12 @@ export default class Feature extends AModel implements RFeature {
 
   static async isOff(key: FeatureKey): Promise<boolean> {
     if (!Feature.isPresent(key)) await Feature.fetch(key)
-    return Feature.find(key)?.state === FeatureState.Off
+    const feature = await Feature.find(key)
+    // consider off if not able to be fetched
+    return !feature ||
+      feature.state === FeatureState.Off ||
+      // TODO: Features: Support +FeatureState.Conditional+
+      feature.state === FeatureState.Conditional
   }
 
   static isPresent(key: FeatureKey): boolean {
