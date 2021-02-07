@@ -44,7 +44,7 @@ const checkCanSignUp: NavigationGuard = async (_to, _from) => {
       hold: true,
     })
     return {
-      name: RouteName.Recipes,
+      name: RouteName.Home,
     }
   }
   return true
