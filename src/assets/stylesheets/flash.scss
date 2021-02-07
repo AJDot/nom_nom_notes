@@ -5,14 +5,17 @@
   margin: .625em 0;
   text-align: center;
   color: $color-white;
-  background: $color-blue; /* blue */
+  background: $color-blue;
 }
 
 .flash.error {
-  background: $color-orange; /* red */
+  background: $color-orange;
 }
 
 .flash.success {
-  background: $color-green; /* green */
+  background: $color-green;
 }
 
+.flash.alert {
+  background: $color-red;
+}

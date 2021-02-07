@@ -14,6 +14,8 @@ import { FlashHash } from 'Interfaces/flashInterfaces'
 export interface FlashState {
   flash: FlashHash
   trigger: boolean
+  // because sometimes you need to persist flash across a router path change
+  hold: boolean
 }
 
 export enum FlashGetterTypes {}
@@ -39,18 +41,24 @@ type FlashActions = {
 const state: () => FlashState = () => ({
   flash: {},
   trigger: true,
+  hold: false,
 })
 
 const getters: GetterTree<FlashState, RootState> & FlashGetters = {}
 
 const mutations: MutationTree<FlashState> & FlashMutations = {
-  [FlashMutationTypes.SET](state, { flash }: { flash: FlashHash }) {
+  [FlashMutationTypes.SET](state, { flash, hold }: { flash: FlashHash, hold: boolean }) {
     state.flash = flash
     state.trigger = true
+    state.hold = hold
   },
   [FlashMutationTypes.RESET](state) {
-    state.flash = {}
-    state.trigger = false
+    if (state.hold) {
+      state.hold = false
+    } else {
+      state.flash = {}
+      state.trigger = false
+    }
   },
   [FlashMutationTypes.CLOSE](state) {
     state.flash = {}
@@ -61,9 +69,9 @@ const mutations: MutationTree<FlashState> & FlashMutations = {
 const actions: ActionTree<FlashState, RootState> & FlashActions = {
   [FlashActionTypes.SET](
     { commit }: { commit: Commit },
-    { flash }: { flash: FlashHash },
+    { flash, hold }: { flash: FlashHash, hold: boolean },
   ) {
-    commit(FlashMutationTypes.SET, { flash })
+    commit(FlashMutationTypes.SET, { flash, hold })
   },
 }
 
