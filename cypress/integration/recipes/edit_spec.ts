@@ -259,5 +259,42 @@ describe('Edit Recipe', () => {
         .and('have.attr', 'alt', 'Space Soup')
         .and('have.attr', 'title', 'Space Soup')
     })
+
+    it('allows removing and adding back a category', function() {
+      const recipeId = this.recipe.attributes.clientId
+      cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
+      cy.visit(`/recipes/${recipeId}/edit`)
+      // Delete Italian category
+      cy.getTest('category-Italian').within(() => {
+        cy.getTest('category-destroy').click()
+      })
+      // Add Italian category back
+      cy.getByLabel('Categories').type('Ita')
+      cy.getDropdownItem('Italian').click()
+
+      cy.contains('input', 'Update Recipe').click()
+
+      const checkData = () => {
+        cy.assertText({
+          by: 'text',
+          value: 'Italian',
+        })
+      }
+
+      cy.wait('@updateRecipe')
+        .then((data) => {
+          cy.wrap(data).its('response.statusCode').should('eq', 200)
+            .then(function() {
+              // on show page
+              cy.url()
+                .should('contain', `/recipes/${recipeId}`)
+                .and('not.contain', 'edit')
+
+              checkData()
+              // check data has truly persisted
+              cy.reload().then(checkData)
+            })
+        })
+    })
   })
 })

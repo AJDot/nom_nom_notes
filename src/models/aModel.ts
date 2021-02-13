@@ -9,7 +9,7 @@ export default abstract class AModel extends Model implements AModelAttributes {
   clientId!: string
   _destroy!: boolean
 
-  static primaryKey = 'clientId'
+  static primaryKey: string | string[] = 'clientId'
 
   static fields(): Fields {
     return {
@@ -24,13 +24,18 @@ export default abstract class AModel extends Model implements AModelAttributes {
     this._destroy = true
   }
 
+  unmarkForDestruction(): void {
+    this._destroy = false
+  }
+
   get markedForDestruction(): boolean {
     return this._destroy
   }
 
   async save(): Promise<void> {
-    if (this.markedForDestruction) await this.$delete()
-    else {
+    if (this.markedForDestruction) {
+      await this.$delete()
+    } else {
       /**
        * Wish I could just call this.$save()
        * or this.$update(this.$toJson())
@@ -38,8 +43,22 @@ export default abstract class AModel extends Model implements AModelAttributes {
        * but all seems to not update the object in the store
        * Instead, must call the static method to update the object
        */
-      if (!this.$id) throw new Error('$id is undefined!')
-      await this.$self().update({ where: this.$id, data: this.$toJson() })
+      if (this.primaryKey) {
+        await this.selfClass.update({
+          where: this.primaryKey,
+          data: this.$toJson(),
+        })
+      } else {
+        throw new Error('$id is undefined!')
+      }
     }
+  }
+
+  get primaryKey(): never {
+    return this.selfClass.getIdFromRecord(this) as never
+  }
+
+  get selfClass(): typeof Model {
+    return this.$self()
   }
 }

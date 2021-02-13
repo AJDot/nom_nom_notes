@@ -14,6 +14,8 @@ type RecipeCategoryFields = Fields & {
 export default class RecipeCategory extends AModel implements RRecipeCategory {
   static entity = 'recipeCategories'
 
+  static primaryKey = ['recipeId', 'categoryId']
+
   static fields(): RecipeCategoryFields {
     return {
       ...super.fields(),

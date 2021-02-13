@@ -517,7 +517,11 @@ export default defineComponent({
       await Category.insertOrUpdate({ data: item.data.raw })
       const cat = Category.find(item.data.value)
       if (cat) {
-        this.recipe.categories.push(cat)
+        if (!this.recipe.categories.find(c => c.clientId === cat.clientId)) {
+          this.recipe.categories.push(cat)
+        }
+
+        const recCatId = [this.recipe.clientId, cat.clientId]
 
         await RecipeCategory.insertOrUpdate({
           data: {
@@ -525,11 +529,11 @@ export default defineComponent({
             categoryId: cat.clientId,
           },
         })
-        const rc = RecipeCategory.query()
-          .where('recipeId', this.recipe.clientId)
-          .where('categoryId', cat.clientId)
-          .first()
-        if (rc) this.recipe.recipeCategories.push(rc)
+        const rc = RecipeCategory.find(recCatId)
+        if (rc) {
+          const recCat = this.recipe.recipeCategories.find(x => x.$id === rc.$id)
+          recCat ? recCat.unmarkForDestruction() : this.recipe.recipeCategories.push(rc)
+        }
       }
     },
     destroyItem<T extends Destroyable>(item: T) {
@@ -538,8 +542,14 @@ export default defineComponent({
     destroyRecipeCategory(item: Category) {
       if (this.recipe) {
         const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
+        const category = this.recipe.categories.find(c => c.$id === item.$id)
+        if (category) {
+          category.$delete()
+          const categoryIndex = this.recipe.categories.indexOf(category)
+          this.recipe.categories.splice(categoryIndex, 1)
+        }
         if (rc) {
-          rc?.markForDestruction()
+          rc.markForDestruction()
         } else {
           Logger.warn('RecipeCategory not found!')
         }
