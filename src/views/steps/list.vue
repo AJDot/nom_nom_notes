@@ -1,23 +1,37 @@
 <template>
-  <ul>
-    <steps-list-item
-      v-for="(step, i) in steps"
-      :key="step.clientId"
-      v-model:description="step.description"
-      :index="i"
-      :data-test="`step-${i}`"
-      @context-menu="openContextMenu($event, step)"
-    />
-    <row tag="li">
-      <button
-        class="btn"
-        type="button"
-        @click="addStep"
+  <draggable
+    tag="transition-group"
+    :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }"
+    :list="steps"
+    item-key="clientId"
+    ghost-class="ghost"
+    handle=".handle"
+    @end="sort"
+  >
+    <template #item="{element: step, index}">
+      <steps-list-item
+        :key="step.clientId"
+        v-model:description="step.description"
+        :index="index"
+        :data-test="`step-${index}`"
+        @context-menu.prevent="openContextMenu($event, step)"
+      />
+    </template>
+    <template #footer>
+      <row
+        key="add"
+        tag="li"
       >
-        + Add Step
-      </button>
-    </row>
-  </ul>
+        <button
+          class="btn"
+          type="button"
+          @click="addStep"
+        >
+          + Add Step
+        </button>
+      </row>
+    </template>
+  </draggable>
 </template>
 
 <script lang="ts">
@@ -25,11 +39,14 @@ import { defineComponent } from 'vue'
 import Step from 'Models/step'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import StepsListItem from 'Views/steps/listItem.vue'
+import draggable from 'vuedraggable'
+import Sorter from 'Models/concerns/sorter'
 
 export default defineComponent({
   name: 'StepsList',
   components: {
     StepsListItem,
+    draggable,
   },
   props: {
     steps: {
@@ -50,6 +67,9 @@ export default defineComponent({
         event,
         item,
       })
+    },
+    sort(event) {
+      new Sorter().reorder<Step>(this.steps, event.oldIndex, event.newIndex)
     },
   },
 })
