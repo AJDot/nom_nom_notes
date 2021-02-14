@@ -27,3 +27,9 @@
     transition: opacity .3s, height .3s, padding .3s;
   }
 }
+
+.flip-list {
+  &-move {
+    transition: transform 0.5s;
+  }
+}

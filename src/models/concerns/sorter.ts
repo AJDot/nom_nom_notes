@@ -30,4 +30,19 @@ export default class Sorter {
   sort<T extends Sortable>(items: Array<T>): Array<T> {
     return items.slice().sort((a, b) => a.sortOrder - b.sortOrder)
   }
+
+  reorder<T extends Sortable>(items: Array<T>, oldPosition: number, newPosition: number): void {
+    const movedItem: T | undefined = items.find(s => s.sortOrder === oldPosition)
+    if (!movedItem) return
+    movedItem.sortOrder = newPosition
+    items
+      .filter(item => item !== movedItem)
+      .sort((a, b) => {
+        return a.sortOrder - b.sortOrder
+      })
+      .forEach((item, i) => {
+        if (i >= newPosition) i += 1
+        item.sortOrder = i
+      })
+  }
 }
