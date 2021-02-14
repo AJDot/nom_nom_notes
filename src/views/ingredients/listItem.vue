@@ -1,7 +1,20 @@
 <template>
   <row tag="li">
     <column>
-      <label :for="`ingredient-${index}-description`">{{ index + 1 }}</label>
+      <label :for="`ingredient-${index}-description`">
+        <button
+          v-if="handle"
+          type="button"
+          class="btn handle"
+        >
+          <span class="material-icons">
+            drag_handle
+          </span>
+        </button>
+        <template v-else>
+          {{ index + 1 }}
+        </template>
+      </label>
     </column>
     <column class="grow-2">
       <input
@@ -38,6 +51,10 @@ export default defineComponent({
     description: {
       type: String,
       default: '',
+    },
+    handle: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: {

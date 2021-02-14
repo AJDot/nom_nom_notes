@@ -111,7 +111,7 @@
               <column>
                 <button
                   type="button"
-                  class="btn-link"
+                  class="btn"
                   data-test="category-destroy"
                   @click="destroyRecipeCategory(cat)"
                 >

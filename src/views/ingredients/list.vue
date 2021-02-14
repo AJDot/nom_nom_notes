@@ -1,23 +1,37 @@
 <template>
-  <ul>
-    <ingredients-list-item
-      v-for="(ing, i) in ingredients"
-      :key="ing.clientId"
-      v-model:description="ing.description"
-      :index="i"
-      :data-test="`ingredient-${i}`"
-      @context-menu="openContextMenu($event, ing)"
-    />
-    <row tag="li">
-      <button
-        class="btn"
-        type="button"
-        @click="addIngredient"
+  <draggable
+    tag="transition-group"
+    :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }"
+    :list="ingredients"
+    item-key="clientId"
+    ghost-class="ghost"
+    handle=".handle"
+    @end="sort"
+  >
+    <template #item="{element: ing, index}">
+      <ingredients-list-item
+        :key="ing.clientId"
+        v-model:description="ing.description"
+        :index="index"
+        :data-test="`ingredient-${index}`"
+        @context-menu="openContextMenu($event, ing)"
+      />
+    </template>
+    <template #footer>
+      <row
+        key="add"
+        tag="li"
       >
-        + Add Ingredient
-      </button>
-    </row>
-  </ul>
+        <button
+          class="btn"
+          type="button"
+          @click="addIngredient"
+        >
+          + Add Ingredient
+        </button>
+      </row>
+    </template>
+  </draggable>
 </template>
 
 <script lang="ts">
@@ -25,11 +39,14 @@ import { defineComponent } from 'vue'
 import Ingredient from 'Models/ingredient'
 import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import IngredientsListItem from 'Views/ingredients/listItem.vue'
+import Sorter from 'Models/concerns/sorter'
+import draggable from 'vuedraggable'
 
 export default defineComponent({
   name: 'IngredientsList',
   components: {
     IngredientsListItem,
+    draggable,
   },
   props: {
     ingredients: {
@@ -50,6 +67,9 @@ export default defineComponent({
         event,
         item,
       })
+    },
+    sort(event) {
+      new Sorter().reorder<Ingredient>(this.ingredients, event.oldIndex, event.newIndex)
     },
   },
 })
