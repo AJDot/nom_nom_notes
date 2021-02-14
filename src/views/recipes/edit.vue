@@ -127,51 +127,11 @@
     <dl>
       <dt><label for="step-0-description">Directions</label></dt>
       <dd>
-        <ul>
-          <row
-            v-for="(step, i) in unmarkedSortedSteps"
-            :key="step.clientId"
-            tag="li"
-            :data-test="`step-${i}`"
-          >
-            <column>
-              <label :for="`step-${i}-description`">{{ i + 1 }}</label>
-            </column>
-            <column class="grow-2">
-              <textarea
-                :id="`step-${i}-description`"
-                v-model="step.description"
-                v-focus="focusId === step.clientId"
-                :name="`step-${i}-description`"
-                placeholder="Next step..."
-              />
-            </column>
-            <column>
-              <div class="row">
-                <div class="col">
-                  <button
-                    class="btn more"
-                    type="button"
-                    @click="openContextMenu($event, recipe.steps, step)"
-                  >
-                    <span class="material-icons">
-                      more_vert
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </column>
-          </row>
-          <row tag="li">
-            <button
-              class="btn"
-              type="button"
-              @click="addStep"
-            >
-              + Add Step
-            </button>
-          </row>
-        </ul>
+        <steps-list
+          :steps="unmarkedSortedSteps"
+          @add="addStep"
+          @context-menu="openContextMenu($event.event, recipe.steps, $event.item)"
+        />
       </dd>
     </dl>
     <dl>
@@ -267,6 +227,7 @@ import Uploader from '~/uploaders/uploader'
 import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
 import { ImageSource } from 'Interfaces/imageInterfaces'
 import loading from '~/mixins/loading'
+import StepsList from 'Views/steps/list.vue'
 
 interface Data {
   recipe: Recipe | null
@@ -290,6 +251,7 @@ export default defineComponent({
   components: {
     Search,
     IngredientsList,
+    StepsList,
   },
   mixins: [
     loading,
