@@ -7,4 +7,5 @@ export enum RouteName {
   SignUp = 'sign-up',
   SignIn = 'sign-in',
   NotFound = 'not-found',
+  ForgotPassword = 'forgot-password',
 }

@@ -7,6 +7,7 @@ import EditRecipe from '~/views/recipes/edit.vue'
 import EditRecipeHeader from '~/views/recipes/editHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
+import ForgotPassword from '~/views/forgotPassword.vue'
 import NotFound from '~/views/NotFound.vue'
 import { RouteName } from '~/router/routeName'
 import AppConfig from '~/appConfig'
@@ -14,6 +15,7 @@ import { store, StoreModulePath } from '~/store'
 import { StoreModuleType } from '~/store/interfaces'
 import Feature from 'Models/feature'
 import { FlashActionTypes } from '~/store/modules/flash'
+import RoutePath from '~/router/path'
 
 const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Home,
@@ -22,6 +24,7 @@ const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Recipes,
   RouteName.Recipe,
   RouteName.NotFound,
+  RouteName.ForgotPassword,
 ]
 
 const checkSignIn: NavigationGuard = (to, _from) => {
@@ -96,6 +99,11 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
     path: '/sign_up',
     component: SignUp,
     beforeEnter: checkCanSignUp,
+  },
+  {
+    name: RouteName.ForgotPassword,
+    path: RoutePath.forgotPassword(),
+    component: ForgotPassword,
   },
   {
     name: RouteName.NotFound,

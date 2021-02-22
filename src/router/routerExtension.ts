@@ -2,6 +2,7 @@ import router from '~/router/index'
 import { App } from 'vue'
 import { NavigationFailure, RouteLocationRaw } from 'vue-router'
 import { RouteName } from '~/router/routeName'
+import RoutePath from '~/router/path'
 
 export class RouterExtension {
   install(app: App): void {
@@ -20,6 +21,14 @@ export class RouterExtension {
     }
 
     return router.replace(routeLocation)
+  }
+
+  get routePath(): typeof RoutePath {
+    return RoutePath
+  }
+
+  apiPath(path: string): string {
+    return this.routePath.apiBase() + path
   }
 }
 
