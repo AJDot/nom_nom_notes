@@ -1,4 +1,3 @@
-import router from './index'
 import { RRecord } from 'Interfaces/modelInterfaces'
 import { Hash } from 'Interfaces/utilInterfaces'
 import AppConfig from '~/appConfig'
@@ -8,8 +7,12 @@ class Path {
     return AppConfig.API_URL + '/api/v1'
   }
 
+  base() {
+    return window.location.origin
+  }
+
   root() {
-    return router.options.history.base
+    return AppConfig.ROOT_PATH
   }
 
   home() {
@@ -58,6 +61,18 @@ class Path {
 
   feature(key: string) {
     return this.features() + `/${key}`
+  }
+
+  password() {
+    return '/password'
+  }
+
+  forgotPassword() {
+    return this.password() + '/forgot'
+  }
+
+  changePassword() {
+    return this.password() + '/change'
   }
 
   private static buildPath(path: string, wildcards: Hash) {

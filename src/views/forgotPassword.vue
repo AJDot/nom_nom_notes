@@ -1,9 +1,9 @@
 <template>
   <form
     class="sign_in"
-    @submit.prevent="signin"
+    @submit.prevent="requestForgotPassword"
   >
-    <h2>Sign In</h2>
+    <h2>Forgot Password</h2>
     <dl class="email">
       <dt><label for="email">Email</label></dt>
       <dd>
@@ -15,42 +15,27 @@
         >
       </dd>
     </dl>
-    <dl class="password">
-      <dt><label for="password">Password</label></dt>
-      <dd>
-        <input
-          id="password"
-          v-model="formData.password"
-          type="password"
-          name="password"
-        >
-      </dd>
-    </dl>
     <input
       class="btn"
       type="submit"
-      value="Sign In"
+      value="Request Password Reset"
     >
-    <forgot-password-link />
   </form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { StoreModulePath } from '~/store'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
-import { FlashActionTypes } from '~/store/modules/flash'
-import { AxiosError, AxiosResponse } from 'axios'
-import { SessionActionTypes } from '~/store/modules/sessions/actions'
-import { mapGetters } from 'vuex'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
-import ForgotPasswordLink from '@/forgot-password-link.vue'
+import { mapGetters } from 'vuex'
+import { securedAxiosInstance } from '~/backend/axios'
+import RoutePath from '~/router/path'
+import { AxiosError, AxiosResponse } from 'axios'
+import { StoreModulePath } from '~/store'
+import { FlashActionTypes } from '~/store/modules/flash'
+import { RouteName } from '~/router/routeName'
 
 export default defineComponent({
-  name: 'SignIn',
-  components: {
-    ForgotPasswordLink,
-  },
+  name: 'ForgotPassword',
   setup() {
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     return {
@@ -60,8 +45,8 @@ export default defineComponent({
   data() {
     return {
       formData: {
-        email: this.$router.currentRoute.value.params.email,
-        password: null,
+        email: null,
+        originUrl: RoutePath.base() + RoutePath.changePassword(),
       },
     }
   },
@@ -75,22 +60,28 @@ export default defineComponent({
     this.checkSignedIn()
   },
   methods: {
-    signin() {
-      this.$store.dispatch(StoreModulePath.Session + SessionActionTypes.CREATE, this.formData)
-        .then((response: AxiosResponse) => this.signinSuccessful(response))
-        .catch((error: AxiosError) => this.signinError(error))
+    requestForgotPassword() {
+      securedAxiosInstance.put(RoutePath.apiBase() + RoutePath.forgotPassword(), this.formData)
+        .then((response: AxiosResponse) => this.requestSuccessful(response))
+        .catch((error: AxiosError) => this.requestError(error))
     },
-    signinSuccessful(response: AxiosResponse) {
-      if (!this.signedIn) {
-        this.signinFailed(response)
+    async requestSuccessful(response: AxiosResponse) {
+      if (response.data?.error) {
+        this.requestFailed(response)
         return
       }
-      this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
+      await this.$router.push({
+        name: RouteName.SignIn,
+        params: { email: this.formData.email },
+      })
+      this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+        flash: { success: 'A request to change your password was made. Please check your email for instructions.' },
+      })
     },
-    signinFailed(error: AxiosResponse) {
+    requestFailed(error: AxiosResponse) {
       this.processFailedSignin(error?.data?.error)
     },
-    signinError(error: AxiosError) {
+    requestError(error: AxiosError) {
       this.processFailedSignin(error.response?.data.error)
     },
     processFailedSignin(errorText: string | null | undefined) {
@@ -99,7 +90,6 @@ export default defineComponent({
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
     checkSignedIn() {
       if (localStorage.signedIn) {
