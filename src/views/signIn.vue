@@ -31,7 +31,11 @@
       type="submit"
       value="Sign In"
     >
-    <forgot-password-link />
+    <row class="f-justify-content-end">
+      <column>
+        <forgot-password-link />
+      </column>
+    </row>
   </form>
 </template>
 

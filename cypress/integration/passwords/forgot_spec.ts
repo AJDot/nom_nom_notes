@@ -32,17 +32,45 @@ describe('Forgot Password', () => {
       cy.url().should('contain', 'password/forgot')
     })
 
-    it('allows for user to request a password reset', () => {
-      cy.createFry().as('fry')
-      cy.visit('/password/forgot')
-      cy.getByLabel('Email').type('philip.fry@planet-express.com')
-      cy.contains('input', 'Request Password Reset').click()
-      cy.getFlash('A request to change your password was made. Please check your email for instructions.').should('exist')
-      cy.url().should('contain', 'sign_in')
-      cy.assertInput({
-        by: 'label',
-        label: 'Email',
-        value: 'philip.fry@planet-express.com',
+    context('from sign in page', () => {
+      it('allows for user to request a password reset', () => {
+        cy.createFry().as('fry')
+        cy.visit('/sign_in')
+        cy.contains('Forgot Password?').click()
+        cy.url().should('contain', 'password/forgot')
+        cy.getByLabel('Email').type('philip.fry@planet-express.com')
+        cy.contains('input', 'Request Password Reset').click()
+        cy.getFlash('A request to change your password was made. Please check your email for instructions.').should('exist')
+        cy.url().should('contain', 'sign_in')
+        cy.assertInput({
+          by: 'label',
+          label: 'Email',
+          value: 'philip.fry@planet-express.com',
+        })
+      })
+    })
+
+    context('from sign up page', () => {
+      beforeEach(() => {
+        cy.apiRequest('POST', '/testing/api/v1/features', {
+          key: 'signup',
+        })
+      })
+
+      it('allows for user to request a password reset', () => {
+        cy.createFry().as('fry')
+        cy.visit('/sign_up')
+        cy.contains('Forgot Password?').click()
+        cy.visit('/password/forgot')
+        cy.getByLabel('Email').type('philip.fry@planet-express.com')
+        cy.contains('input', 'Request Password Reset').click()
+        cy.getFlash('A request to change your password was made. Please check your email for instructions.').should('exist')
+        cy.url().should('contain', 'sign_in')
+        cy.assertInput({
+          by: 'label',
+          label: 'Email',
+          value: 'philip.fry@planet-express.com',
+        })
       })
     })
   })

@@ -52,6 +52,11 @@
       type="submit"
       value="Sign Up"
     >
+    <row class="f-justify-content-end">
+      <column>
+        <forgot-password-link />
+      </column>
+    </row>
   </form>
 </template>
 
@@ -62,9 +67,13 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { SignupActionTypes } from '~/store/modules/signups/actions'
+import ForgotPasswordLink from '@/forgot-password-link.vue'
 
 export default defineComponent({
   name: 'SignUp',
+  components: {
+    ForgotPasswordLink,
+  },
   data() {
     return {
       formData: {
