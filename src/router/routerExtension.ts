@@ -30,6 +30,10 @@ export class RouterExtension {
   apiPath(path: string): string {
     return this.routePath.apiBase() + path
   }
+
+  currentRouteIs(name: RouteName): boolean {
+    return router.currentRoute.value.name === name
+  }
 }
 
 const routerExtension = new RouterExtension()

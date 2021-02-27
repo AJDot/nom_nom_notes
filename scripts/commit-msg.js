@@ -18,7 +18,8 @@
 const fs = require('fs')
 const childProcessExec = require('child_process').exec
 const util = require('util')
-const BRANCH_CONTRACT = Object.freeze(/^(feature|hotfix)\/.+/)
+// const BRANCH_CONTRACT = Object.freeze(/^(feature|hotfix)\/.+/)
+const BRANCH_CONTRACT = Object.freeze(/^.+/) // currently no contract
 const CODE_CONTRACT = Object.freeze(/^(revert: )?(feat|fix|docs|style|refactor|test|wip|chore)(\(.+\))?: .{1,50}/)
 const TIMEOUT_THRESHOLD = 3000
 

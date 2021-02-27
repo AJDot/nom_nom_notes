@@ -15,6 +15,7 @@ describe('Sign In', () => {
           expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
           cy.contains('a', 'Sign In').click()
           cy.url().should('include', '/sign_in')
+          cy.contains('a', 'Sign In').should('not.exist') // no sign up link when on sign up page
           cy.get('form').within(() => {
             cy.contains('label', 'Email').type('philip.fry@planet-express.com')
             cy.contains('label', /^Password$/).type('ah123456')
