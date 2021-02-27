@@ -7,7 +7,8 @@ import EditRecipe from '~/views/recipes/edit.vue'
 import EditRecipeHeader from '~/views/recipes/editHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
-import ForgotPassword from '~/views/forgotPassword.vue'
+import ForgotPassword from 'Views/passwords/forgot.vue'
+import ChangePassword from 'Views/passwords/change.vue'
 import NotFound from '~/views/NotFound.vue'
 import { RouteName } from '~/router/routeName'
 import AppConfig from '~/appConfig'
@@ -25,6 +26,7 @@ const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Recipe,
   RouteName.NotFound,
   RouteName.ForgotPassword,
+  RouteName.ChangePassword,
 ]
 
 const checkSignIn: NavigationGuard = (to, _from) => {
@@ -104,6 +106,11 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
     name: RouteName.ForgotPassword,
     path: RoutePath.forgotPassword(),
     component: ForgotPassword,
+  },
+  {
+    name: RouteName.ChangePassword,
+    path: RoutePath.changePassword(),
+    component: ChangePassword,
   },
   {
     name: RouteName.NotFound,

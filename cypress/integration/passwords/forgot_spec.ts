@@ -26,7 +26,7 @@ describe('Forgot Password', () => {
 
     it('shows error when email is not associated with an account', () => {
       cy.visit('/password/forgot')
-      cy.getByLabel('Email').type('Space Chicken')
+      cy.getByLabel('Email').type('Space@Chicken.bagawk')
       cy.contains('input', 'Request Password Reset').click()
       cy.getFlash('Account not found.').should('exist')
       cy.url().should('contain', 'password/forgot')
