@@ -1,6 +1,6 @@
 import router from '~/router/index'
 import { App } from 'vue'
-import { NavigationFailure, RouteLocationRaw } from 'vue-router'
+import { NavigationFailure, RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router'
 import { RouteName } from '~/router/routeName'
 import RoutePath from '~/router/path'
 
@@ -29,6 +29,10 @@ export class RouterExtension {
 
   apiPath(path: string): string {
     return this.routePath.apiBase() + path
+  }
+
+  get currentRoute(): RouteLocationNormalizedLoaded {
+    return router.currentRoute.value
   }
 
   currentRouteIs(name: RouteName): boolean {

@@ -10,7 +10,7 @@
         <input
           id="email"
           v-model="formData.email"
-          type="text"
+          type="email"
           name="email"
         >
       </dd>
