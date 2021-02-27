@@ -17,14 +17,14 @@
         <li v-if="currentUser">
           {{ currentUser.username }}
         </li>
-        <li v-if="!signedIn">
+        <li v-if="canSignIn">
           <router-link
             :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }"
           >
             Sign In
           </router-link>
         </li>
-        <li v-if="$flipper.isEnabled(FeatureName.Signup) && !signedIn">
+        <li v-if="canSignUp">
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
@@ -67,6 +67,12 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
+    canSignUp(): boolean {
+      return this.$flipper.isEnabled(FeatureName.Signup) && !this.signedIn && !this.$routerExtension.currentRouteIs(this.$routerExtension.names.SignUp)
+    },
+    canSignIn(): boolean {
+      return !this.signedIn && !this.$routerExtension.currentRouteIs(this.$routerExtension.names.SignIn)
+    },
   },
   async beforeCreate() {
     this.$store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { key: 'signup' })
