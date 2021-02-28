@@ -17,6 +17,7 @@ import { Focus } from '~/directives/focus'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { Hover } from '~/directives/hover'
 import flipper from '~/plugins/flipper'
+import { ToggleClass } from '~/directives/toggleClass'
 
 createApp(App)
   .use(router)
@@ -36,4 +37,5 @@ createApp(App)
   .mixin(currentUserMixin)
   .directive('focus', Focus)
   .directive('hover', Hover)
+  .directive('toggle-class', ToggleClass)
   .mount('#app')
