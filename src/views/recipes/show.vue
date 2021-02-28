@@ -32,6 +32,7 @@
         <li
           v-for="ing in sortedIngredients"
           :key="ing.clientId"
+          v-toggle-class="'strike-through'"
         >
           {{ ing.description }}
         </li>
@@ -43,6 +44,7 @@
         <li
           v-for="step in sortedSteps"
           :key="step.clientId"
+          v-toggle-class="'strike-through'"
         >
           <pre class="inline">{{ step.description }}</pre>
         </li>
