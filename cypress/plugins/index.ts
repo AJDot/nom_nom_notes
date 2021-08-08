@@ -14,10 +14,15 @@
 
 // import webpackPreprocessor from '@cypress/webpack-preprocessor'
 
+import { config as dotenvConfig } from 'dotenv'
+import { configureEnvVars } from './env'
+
+dotenvConfig({ path: './.env.test' })
+
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = (_on, _config) => {
+module.exports = (_on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
@@ -29,4 +34,6 @@ module.exports = (_on, _config) => {
   // }
   //
   // on('file:preprocessor', webpackPreprocessor(options))
+  configureEnvVars(config)
+  return config
 }

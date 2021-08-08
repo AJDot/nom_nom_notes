@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "setup": "node setup.js",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --progress",
     "dev-build": "cross-env NODE_ENV=development webpack --progress",
     "test": "cross-env NODE_ENV=test webpack-dev-server --progress",
@@ -15,7 +16,8 @@
   },
   "dependencies": {
     "@vuex-orm/core": "^0.36.3",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
     "jquery": "^3.5.1",
     "qs": "^6.9.4",
     "vue": "^3.0.3",
@@ -48,6 +50,7 @@
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "cypress": "^6.2.1",
+    "dotenv-webpack": "^7.0.3",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-chai-friendly": "^0.6.0",
