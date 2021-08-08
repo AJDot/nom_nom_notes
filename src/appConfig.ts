@@ -1,4 +1,4 @@
 export default class AppConfig {
-  static API_URL = process.env.NODE_ENV === 'test' ? 'http://localhost:3001' : 'http://localhost:3000'
-  static ROOT_PATH = '/'
+  static API_URL = process.env.VUE_APP_API_URL
+  static ROOT_PATH = process.env.VUE_APP_ROOT_PATH
 }

@@ -14,3 +14,7 @@ yarn-error.log
 # Cypress videos
 cypress/videos/
 cypress/screenshots/
+
+# Environment Variables
+.env*
+!.env.example

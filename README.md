@@ -4,6 +4,15 @@
 
 ## Build Setup
 
+Copy `.env.example` to `.env` and adjust the values where necessary.
+
+OR run
+```bash
+yarn setup
+```
+
+---
+
 ``` bash
 # install dependencies
 npm install

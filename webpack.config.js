@@ -3,6 +3,15 @@ const path = require('path')
 const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
+const dotenv = require('dotenv')
+let dotenvConfig
+if (process.env.NODE_ENV === 'test') {
+  dotenvConfig = { path: './.env.test' }
+} else {
+  dotenvConfig = { path: './.env' }
+}
+dotenv.config(dotenvConfig)
 
 module.exports = {
   entry: './src/main.ts',
@@ -13,6 +22,7 @@ module.exports = {
     filename: 'build.js',
   },
   plugins: [
+    new Dotenv(dotenvConfig),
     new VueLoaderPlugin(),
     new ESLintPlugin({
       fix: false,
@@ -116,7 +126,8 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true,
     overlay: true,
-    port: process.env.NODE_ENV === 'test' ? 8081 : 8080,
+    host: process.env.VUE_APP_HOST,
+    port: process.env.VUE_APP_PORT,
   },
   performance: {
     hints: false,
