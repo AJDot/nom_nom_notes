@@ -1,3 +1,4 @@
+/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 class logger {
   warn(message: string) {
     if (process.env.NODE_ENV === 'development') {
