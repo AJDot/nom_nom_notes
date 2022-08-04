@@ -1,7 +1,7 @@
 @import "whitespace-reset";
 @import "color";
-@import "main";
 @import "font";
+@import "main";
 @import "icon";
 @import "button";
 @import "table";

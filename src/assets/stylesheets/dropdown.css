@@ -1,4 +1,3 @@
-@import "mixins";
 @import "color";
 
 .dropdown {
@@ -16,11 +15,11 @@
     padding: 5px 15px;
 
     &:focus-within {
-      background-color: $color-gray-lt-v;
+      background-color: var(--color-gray-lt-v);
     }
 
     &:hover {
-      background-color: $color-gray-lt;
+      background-color: var(--color-gray-lt);
     }
   }
 

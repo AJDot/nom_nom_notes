@@ -1,6 +1,6 @@
 <template>
   <form
-    class="sign_in"
+    class="sign-in"
     @submit.prevent="changePassword"
   >
     <h2>Change Password</h2>
