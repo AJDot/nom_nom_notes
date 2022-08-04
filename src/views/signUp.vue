@@ -1,6 +1,6 @@
 <template>
   <form
-    class="sign_up"
+    class="sign-up"
     @submit.prevent="signup"
   >
     <h2>Sign Up</h2>

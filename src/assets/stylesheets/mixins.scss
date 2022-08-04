@@ -1,7 +1,0 @@
-@mixin eachClass($prop, $class, $start, $end) {
-  @for $i from $start through $end {
-    #{$class}-#{$i} {
-      #{$prop}: $i;
-    }
-  }
-}

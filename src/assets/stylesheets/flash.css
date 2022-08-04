@@ -1,0 +1,21 @@
+@import "color";
+
+.flash {
+  padding: 0.625em;
+  margin: 0.625em 0;
+  text-align: center;
+  color: var(--color-white);
+  background: var(--color-blue);
+}
+
+.flash.error {
+  background: var(--color-orange);
+}
+
+.flash.success {
+  background: var(--color-green);
+}
+
+.flash.alert {
+  background: var(--color-red);
+}

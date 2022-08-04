@@ -1,5 +1,5 @@
 import '~/vendor'
-import 'Styles/index'
+import 'Styles/index.css'
 import { createApp } from 'vue'
 import App from '~/App.vue'
 import router from '~/router'

@@ -1,6 +1,6 @@
 <template>
   <form
-    class="sign_in"
+    class="sign-in"
     @submit.prevent="requestForgotPassword"
   >
     <h2>Forgot Password</h2>
@@ -45,7 +45,7 @@ export default defineComponent({
   data() {
     return {
       formData: {
-        email: null,
+        email: '',
         originUrl: RoutePath.base() + RoutePath.changePassword(),
       },
     }
