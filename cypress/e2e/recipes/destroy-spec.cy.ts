@@ -9,7 +9,17 @@ describe('Destroy recipe', () => {
     cy.forceSignIn()
   })
 
-  it('allows destroying a recipe', function() {
+  it('allows destroying a recipe', function () {
+    // catch recipe not found error when going to edit page after destruction
+    cy.on('uncaught:exception', (err, runnable) => {
+      expect(err.message).to.include('Recipe not found')
+
+      // return false to prevent the error from
+      // failing this test
+      return false
+    })
+
+
     const recipeId = this.recipe.attributes.clientId
     cy.visit(`/recipes/${recipeId}/edit`)
     cy.contains('Delete Recipe').click()

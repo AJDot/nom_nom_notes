@@ -10,10 +10,10 @@
     "setup": "node setup.js",
     "dev": "vite",
     "preview": "view preview",
-    "test": "vite --mode test",
+    "test": "vite --mode test --port 5174",
     "build": "vite-tsc --noEmit && vite build",
-    "cy:test:local:run": "cross-env cypress run",
-    "cy:test:local:open": "cross-env cypress open"
+    "cy:test:local:run": "cypress run --browser chrome",
+    "cy:test:local:open": "cypress open"
   },
   "dependencies": {
     "@vuex-orm/core": "^0.36.3",
@@ -21,7 +21,7 @@
     "dotenv": "^10.0.0",
     "jquery": "^3.5.1",
     "qs": "^6.9.4",
-    "vue": "^3.2.37",
+    "vue": "3.2.25",
     "vue-axios": "^3.2.0",
     "vue-router": "^4.0.0-rc.5",
     "vuedraggable": "^4.0.1",
@@ -43,7 +43,7 @@
     "@typescript-eslint/parser": "^4.9.0",
     "@vitejs/plugin-vue": "^3.0.0",
     "chrome-remote-interface": "^0.29.0",
-    "cypress": "^6.2.1",
+    "cypress": "^10.4.0",
     "eslint": "^7.15.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-chai-friendly": "^0.6.0",
