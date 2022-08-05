@@ -34,8 +34,8 @@ describe('Edit Recipe', () => {
       }).its('body.data.0').as('recipe')
   })
 
-  context('Not logged in', function() {
-    it('redirects to sign in first', function() {
+  context('Not logged in', function () {
+    it('redirects to sign in first', function () {
       cy.visit(`/recipes/${this.recipe.attributes.clientId}/edit`)
       cy.url().should('contain', '/sign_in')
       cy.contains('Email').type(this.fry.attributes.email)
@@ -130,7 +130,7 @@ describe('Edit Recipe', () => {
       cy.forceSignIn()
     })
 
-    it('validates recipe data', function() {
+    it('validates recipe data', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -150,7 +150,7 @@ describe('Edit Recipe', () => {
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
           cy.wrap(data).its('response.body.data')
-            .then(function() {
+            .then(function () {
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)
                 .and('not.contain', 'edit')
@@ -162,7 +162,7 @@ describe('Edit Recipe', () => {
         })
     })
 
-    it('allows recipe update with all data', function() {
+    it.only('allows recipe update with all data', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -233,7 +233,7 @@ describe('Edit Recipe', () => {
       cy.wait('@updateRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
-            .then(function() {
+            .then(function () {
               // on show page
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)
@@ -246,7 +246,7 @@ describe('Edit Recipe', () => {
         })
     })
 
-    it('allows editing image', function() {
+    it('allows editing image', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.visit(`/recipes/${recipeId}/edit`)
       cy.uploadFile({
@@ -260,7 +260,7 @@ describe('Edit Recipe', () => {
         .and('have.attr', 'title', 'Space Soup')
     })
 
-    it('allows removing and adding back a category', function() {
+    it('allows removing and adding back a category', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -284,7 +284,7 @@ describe('Edit Recipe', () => {
       cy.wait('@updateRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
-            .then(function() {
+            .then(function () {
               // on show page
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)

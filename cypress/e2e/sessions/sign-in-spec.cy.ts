@@ -7,7 +7,7 @@ describe('Sign In', () => {
       })
     })
 
-    it('allows users to sign in to an existing account', () => {
+    it.only('allows users to sign in to an existing account', () => {
       cy.createFry()
         .then(() => {
           cy.visit('/')

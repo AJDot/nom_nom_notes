@@ -15,15 +15,15 @@
  * Don't forget to make your file executable!
  */
 
-const fs = require('fs')
-const childProcessExec = require('child_process').exec
-const util = require('util')
+import { readFileSync } from 'fs'
+import { exec as childProcessExec } from 'child_process'
+import { promisify } from 'util'
 // const BRANCH_CONTRACT = Object.freeze(/^(feature|hotfix)\/.+/)
 const BRANCH_CONTRACT = Object.freeze(/^.+/) // currently no contract
 const CODE_CONTRACT = Object.freeze(/^(revert: )?(feat|fix|docs|style|refactor|test|wip|chore)(\(.+\))?: .{1,50}/)
 const TIMEOUT_THRESHOLD = 3000
 
-const exec = util.promisify(childProcessExec)
+const exec = promisify(childProcessExec)
 
 checkCommitMessage()
 hookCleanup()
@@ -32,7 +32,7 @@ async function checkCommitMessage() {
   console.log('Running commit-msg hook')
 
   const commitMsgFileName = process.argv[2]
-  const message = fs.readFileSync(commitMsgFileName, 'utf8').trim()
+  const message = readFileSync(commitMsgFileName, 'utf8').trim()
   let branchName = ''
   try {
     branchName = await getCurrentBranch()

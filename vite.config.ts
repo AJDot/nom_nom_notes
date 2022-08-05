@@ -17,4 +17,7 @@ export default defineConfig({
       'Views': path.resolve(__dirname, 'src/views'),
     },
   },
+  server: {
+    host: '127.0.0.1'
+  }
 })

@@ -8,29 +8,25 @@
   justify-items: flex-start;
   padding: 10px 0;
   border-radius: 15px;
-
-  &-item {
-    flex-direction: column;
-    text-align: left;
-    padding: 5px 15px;
-
-    &:focus-within {
-      background-color: var(--color-gray-lt-v);
-    }
-
-    &:hover {
-      background-color: var(--color-gray-lt);
-    }
-  }
-
-  &-btn {
-    background: none;
-    border: none;
-    font-size: 1.2em;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    padding: 0;
-    outline: none;
-  }
+}
+.dropdown-item {
+  flex-direction: column;
+  text-align: left;
+  padding: 5px 15px;
+}
+.dropdown-item:focus-within {
+  background-color: var(--color-gray-lt-v);
+}
+.dropdown-item:hover {
+  background-color: var(--color-gray-lt);
+}
+.dropdown-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
 }

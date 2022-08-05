@@ -1,11 +1,11 @@
-import { Action, ActionContext, ActionTree } from 'vuex'
-import { RecipesState, RootState } from '~/store/interfaces'
-import Recipe, { RecipeAttributes } from 'Models/recipe'
-import RoutePath from '~/router/path'
-import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
-import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
-import { securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
+import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
+import Recipe, { RecipeAttributes } from 'Models/recipe'
+import { Action, ActionContext, ActionTree } from 'vuex'
+import { securedAxiosInstance } from '~/backend/axios'
+import RoutePath from '~/router/path'
+import { RecipesState, RootState } from '~/store/interfaces'
+import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 import { StoreUtils } from '~/utils/storeUtils'
 
 export enum RecipeActionTypes {
@@ -18,19 +18,24 @@ export enum RecipeActionTypes {
 }
 
 type RecipeActions = {
-  [key in RecipeActionTypes]: Action<RecipesState, RootState>;
+  [key in RecipeActionTypes]: Action<RecipesState, RootState>
 }
 
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipe(id))
+    try {
+      const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipe(id))
+      if (!response.data) throw new Error('Recipe not found')
 
-    commit(RecipeMutationTypes.ADD, {
-      id: response.data.data.id,
-      ...response.data.data.attributes,
-    })
-    await StoreUtils.processIncluded(Recipe, response.data.included)
-    return response
+      commit(RecipeMutationTypes.ADD, {
+        id: response.data.data.id,
+        ...response.data.data.attributes,
+      })
+      await StoreUtils.processIncluded(Recipe, response.data.included)
+      return response
+    } catch (err) {
+      throw err
+    }
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
     const response: AxiosResponse<ServerResponse<RecipeAttributes, Array<ServerData>>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipes())

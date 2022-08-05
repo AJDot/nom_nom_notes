@@ -12,16 +12,20 @@ export enum FeatureActionTypes {
 }
 
 type FeatureActions = {
-  [key in FeatureActionTypes]: Action<FeaturesState, RootState>;
+  [key in FeatureActionTypes]: Action<FeaturesState, RootState>
 }
 
 const actions: ActionTree<FeaturesState, RootState> & FeatureActions = {
   async [FeatureActionTypes.FETCH]({ commit }: ActionContext<FeaturesState, RootState>, { key }: { key: string }) {
-    const response: AxiosResponse<ServerResponse<FeatureAttributes>> = await securedAxiosInstance.get(RoutePath.feature(key))
+    try {
+      const response: AxiosResponse<ServerResponse<FeatureAttributes>> = await securedAxiosInstance.get(RoutePath.feature(key))
 
-    commit(FeatureMutationTypes.ADD, response.data)
-    return response
-  },
+      commit(FeatureMutationTypes.ADD, response.data)
+      return response
+    } catch (err) {
+      commit(FeatureMutationTypes.ADD, { key, state: "off" })
+    }
+  }
 }
 
 export default actions
