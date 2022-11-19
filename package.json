@@ -11,7 +11,7 @@
     "dev": "vite",
     "preview": "view preview",
     "test": "vite --mode test --port 5174",
-    "build": "vite-tsc --noEmit && vite build",
+    "build": "vite build",
     "cy:test:local:run": "cypress run --browser chrome",
     "cy:test:local:open": "cypress open"
   },
