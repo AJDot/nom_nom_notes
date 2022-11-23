@@ -1,7 +1,7 @@
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { CategoriesState, RootState } from '~/store/interfaces'
 import Category, { CategoryAttributes } from 'Models/category'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
 import { CategoryMutationTypes } from '~/store/modules/categories/mutations'
 import { securedAxiosInstance } from '~/backend/axios'
@@ -18,7 +18,7 @@ type CategoryActions = {
 
 const actions: ActionTree<CategoriesState, RootState> & CategoryActions = {
   async [CategoryActionTypes.FETCH_ALL]({ commit }: ActionContext<CategoriesState, RootState>) {
-    const response: AxiosResponse<ServerResponse<CategoryAttributes, Array<ServerData>>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.categories())
+    const response: AxiosResponse<ServerResponse<CategoryAttributes, Array<ServerData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.categories())
     commit(
       CategoryMutationTypes.SET,
       response.data.data.map((x) => {

@@ -41,6 +41,8 @@ describe('Reset Password', () => {
                       cy.getByLabel('Email').type(this.fry.attributes.email)
                       cy.getByLabel('Password').type(newPassword)
                       cy.contains('input', 'Sign In').click()
+                      // ensure on home page - localStorage should be updated by now.
+                      cy.contains('New Recipe').should('be.visible')
                         .then(() => {
                           // ensure signed in
                           expect(localStorage.getItem('csrf')).to.not.be.null
@@ -139,6 +141,8 @@ describe('Reset Password', () => {
                       cy.getByLabel('Email').type(this.fry.attributes.email)
                       cy.getByLabel('Password').type(newPassword)
                       cy.contains('input', 'Sign In').click()
+                      // ensure on home page - localStorage should be updated by now.
+                      cy.contains('New Recipe').should('be.visible')
                         .then(() => {
                           // ensure signed in
                           expect(localStorage.getItem('csrf')).to.not.be.null

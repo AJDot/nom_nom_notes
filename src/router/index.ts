@@ -16,7 +16,7 @@ import { store, StoreModulePath } from '~/store'
 import { StoreModuleType } from '~/store/interfaces'
 import Feature from 'Models/feature'
 import { FlashActionTypes } from '~/store/modules/flash'
-import RoutePath from '~/router/path'
+import { AppPath } from '~/router/path'
 
 const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Home,
@@ -58,12 +58,12 @@ const checkCanSignUp: NavigationGuard = async (_to, _from) => {
 const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   {
     name: RouteName.Home,
-    path: '/',
+    path: AppPath.home(),
     redirect: { name: RouteName.Recipes },
   },
   {
     name: RouteName.Recipes,
-    path: '/recipes',
+    path: AppPath.recipes(),
     components: {
       default: ListRecipe,
       'secondary-header': ListRecipeHeader,
@@ -71,13 +71,13 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.NewRecipe,
-    path: '/recipes/new',
+    path: AppPath.newRecipe(),
     component: EditRecipe,
     props: { mode: 'create' },
   },
   {
     name: RouteName.Recipe,
-    path: '/recipes/:clientId',
+    path: AppPath.recipe(':clientId'),
     components: {
       default: ShowRecipe,
       'secondary-header': ShowRecipeHeader,
@@ -85,7 +85,7 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.EditRecipe,
-    path: '/recipes/:clientId/edit',
+    path: AppPath.editRecipe(':clientId'),
     components: {
       default: EditRecipe,
       'secondary-header': EditRecipeHeader,
@@ -93,23 +93,23 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
   },
   {
     name: RouteName.SignIn,
-    path: '/sign_in',
+    path: AppPath.signin(),
     component: SignIn,
   },
   {
     name: RouteName.SignUp,
-    path: '/sign_up',
+    path: AppPath.signup(),
     component: SignUp,
     beforeEnter: checkCanSignUp,
   },
   {
     name: RouteName.ForgotPassword,
-    path: RoutePath.forgotPassword(),
+    path: AppPath.forgotPassword(),
     component: ForgotPassword,
   },
   {
     name: RouteName.ChangePassword,
-    path: RoutePath.changePassword(),
+    path: AppPath.changePassword(),
     component: ChangePassword,
   },
   {

@@ -3,7 +3,7 @@ import { UsersState, RootState } from '~/store/interfaces'
 import { AxiosResponse } from 'axios'
 import { ServerResponse } from 'Interfaces/serverInterfaces'
 import { securedAxiosInstance } from '~/backend/axios'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { UserMutationTypes } from '~/store/modules/users/mutations'
 import { UserAttributes } from 'Models/user'
 
@@ -17,7 +17,7 @@ type UserActions = {
 
 const actions: ActionTree<UsersState, RootState> & UserActions = {
   async [UserActionTypes.FETCH_CURRENT]({ commit }: ActionContext<UsersState, RootState>) {
-    const response: AxiosResponse<ServerResponse<UserAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.currentUser())
+    const response: AxiosResponse<ServerResponse<UserAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.currentUser())
 
     commit(UserMutationTypes.SET_CURRENT, {
       id: response.data.data.id,

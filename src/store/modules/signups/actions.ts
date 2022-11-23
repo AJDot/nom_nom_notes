@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import { RootState, SignupsState } from '~/store/interfaces'
 import { Action, ActionTree } from 'vuex'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { plainAxiosInstance } from '~/backend/axios'
 import { StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
@@ -20,7 +20,7 @@ const actions: ActionTree<SignupsState, RootState> & SignupActions = {
     commit,
     dispatch,
   }, payload: { email: string, password: string, passwordConfirmation: string, username: string }): Promise<AxiosResponse> {
-    const response = await plainAxiosInstance.post(RoutePath.signup(), payload)
+    const response = await plainAxiosInstance.post(ApiPath.signup(), payload)
     if (response.data.csrf) {
       commit(StoreModulePath.Session + SessionMutationTypes.SIGN_IN, response.data.csrf, { root: true })
       dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT, null, { root: true })

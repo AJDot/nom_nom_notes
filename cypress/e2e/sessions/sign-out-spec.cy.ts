@@ -16,8 +16,11 @@ describe('Sign Out', () => {
       .then(() => {
         cy.contains('a', 'Sign Out').should('not.exist')
         cy.contains('orangejoe').should('not.exist')
-        expect(localStorage.getItem('csrf')).to.be.null
-        expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
+        cy.contains('New Recipe').should('be.visible')
+          .then(() => {
+            expect(localStorage.getItem('csrf')).to.be.null
+            expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
+          })
       })
   })
 })

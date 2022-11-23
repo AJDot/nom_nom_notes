@@ -3,10 +3,25 @@ import { Hash } from 'Interfaces/utilInterfaces'
 import AppConfig from '~/appConfig'
 
 class Path {
-  apiBase(): string {
-    return AppConfig.API_URL + '/api/v1'
-  }
+  protected static buildPath(path: string, wildcards: Hash) {
+    let result = path
+    for (const [key, value] of Object.entries(wildcards)) {
+      let val
+      if (typeof value === 'string') {
+        val = value
+      } else if (typeof value === 'undefined') {
+        val = value
+      } else {
+        val = value.clientId
+      }
+      result = result.replace(`:${key}`, val)
+    }
 
+    return result
+  }
+}
+
+class AppPath extends Path {
   base() {
     return window.location.origin
   }
@@ -17,6 +32,48 @@ class Path {
 
   home() {
     return this.root()
+  }
+
+  signin(): string {
+    return '/sign_in'
+  }
+
+  signup(): string {
+    return '/sign_up'
+  }
+
+  recipes() {
+    return '/recipes'
+  }
+
+  newRecipe() {
+    return this.recipes() + '/new'
+  }
+
+  recipe(recipeClientId: RRecord['clientId']) {
+    return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
+  }
+
+  editRecipe(recipeClientId: RRecord['clientId']) {
+    return this.recipe(recipeClientId) + '/edit'
+  }
+
+  password() {
+    return '/password'
+  }
+
+  forgotPassword() {
+    return this.password() + '/forgot'
+  }
+
+  changePassword() {
+    return this.password() + '/change'
+  }
+}
+
+class ApiPath extends Path {
+  base(): string {
+    return AppConfig.API_URL + '/api/v1'
   }
 
   signin(): string {
@@ -40,7 +97,7 @@ class Path {
   }
 
   recipe(recipeClientId: RRecord['clientId']) {
-    return Path.buildPath('/recipes/:clientId', { clientId: recipeClientId })
+    return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
   }
 
   categories() {
@@ -74,25 +131,9 @@ class Path {
   changePassword() {
     return this.password() + '/change'
   }
-
-  private static buildPath(path: string, wildcards: Hash) {
-    let result = path
-    for (const [key, value] of Object.entries(wildcards)) {
-      let val
-      if (typeof value === 'string') {
-        val = value
-      } else if (typeof value === 'undefined') {
-        val = value
-      } else {
-        val = value.clientId
-      }
-      result = result.replace(`:${key}`, val)
-    }
-
-    return result
-  }
 }
 
-const RoutePath = new Path()
+const appPath = new AppPath()
+const apiPath = new ApiPath()
 
-export default RoutePath
+export { appPath as AppPath, apiPath as ApiPath }

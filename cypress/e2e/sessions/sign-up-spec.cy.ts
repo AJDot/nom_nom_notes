@@ -21,6 +21,7 @@ describe('Sign Up', () => {
         cy.getByLabel('Confirm Password').type('i.c. wiener')
         cy.contains('input', 'Sign Up').click()
       })
+      cy.contains('New Recipe')
         .then(() => {
           expect(localStorage.getItem('csrf')).to.not.be.null
           expect(localStorage.getItem('signedIn')).to.eq('true')
