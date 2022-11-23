@@ -7,7 +7,7 @@ describe('Sign In', () => {
       })
     })
 
-    it.only('allows users to sign in to an existing account', () => {
+    it('allows users to sign in to an existing account', () => {
       cy.createFry()
         .then(() => {
           cy.visit('/')
@@ -21,6 +21,7 @@ describe('Sign In', () => {
             cy.contains('label', /^Password$/).type('ah123456')
             cy.contains('input', 'Sign In').click()
           })
+          cy.contains('New Recipe').should('be.visible')
             .then(() => {
               expect(localStorage.getItem('csrf')).to.not.be.null
               expect(localStorage.getItem('signedIn')).to.eq('true')

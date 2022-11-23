@@ -8,6 +8,7 @@
     @keydown.enter.prevent
   >
   <context-menu
+    v-if="q"
     ref="menu"
     :display="menuEvent"
     :focus="false"
@@ -87,7 +88,7 @@ export default defineComponent({
       this.menuEvent = null
     },
     select(item: SearchResult<never>): void {
-      this.q = item.label
+      this.q = ''
       this.$emit('select', { data: item })
     },
   },

@@ -28,11 +28,11 @@ import { defineComponent } from 'vue'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { mapGetters } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
-import RoutePath from '~/router/path'
 import { AxiosError, AxiosResponse } from 'axios'
 import { StoreModulePath } from '~/store'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RouteName } from '~/router/routeName'
+import { AppPath, ApiPath } from '~/router/path'
 
 export default defineComponent({
   name: 'ForgotPassword',
@@ -46,7 +46,7 @@ export default defineComponent({
     return {
       formData: {
         email: '',
-        originUrl: RoutePath.base() + RoutePath.changePassword(),
+        originUrl: AppPath.base() + AppPath.changePassword(),
       },
     }
   },
@@ -61,7 +61,7 @@ export default defineComponent({
   },
   methods: {
     requestForgotPassword() {
-      securedAxiosInstance.put(RoutePath.apiBase() + RoutePath.forgotPassword(), this.formData)
+      securedAxiosInstance.put(ApiPath.base() + ApiPath.forgotPassword(), this.formData)
         .then((response: AxiosResponse) => this.requestSuccessful(response))
         .catch((error: AxiosError) => this.requestError(error))
     },

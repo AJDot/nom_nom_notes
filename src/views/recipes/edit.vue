@@ -219,7 +219,7 @@ import IngredientsList from 'Views/ingredients/list.vue'
 import Category, { RCategory } from 'Models/category'
 import Search from '@/search.vue'
 import Searcher from '~/utils/searcher'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
 import RecipeCategory from 'Models/recipeCategory'
 import Logger from '~/utils/logger'
@@ -311,7 +311,7 @@ export default defineComponent({
         value: 'clientId',
         valueString: 'clientId',
         collection: Category.all(),
-        endpoint: RoutePath.apiBase() + RoutePath.categories(),
+        endpoint: ApiPath.base() + ApiPath.categories(),
       }
       if (this.recipe) {
         options.query = {
@@ -401,7 +401,7 @@ export default defineComponent({
       if (this.recipe) {
         // if image uploaded, then upload it
         if (this.tmpImage.raw) {
-          const uploader = new Uploader(RoutePath.apiBase() + RoutePath.recipe(this.recipe.clientId))
+          const uploader = new Uploader(ApiPath.base() + ApiPath.recipe(this.recipe.clientId))
           const imageResponse = await uploader.patch({
             root: 'recipe',
             data: {

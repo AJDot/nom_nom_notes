@@ -1,10 +1,9 @@
 import axios from 'axios'
 import AppConfig from '~/appConfig'
-import RoutePath from '~/router/path'
+import { ApiPath, AppPath } from '~/router/path'
 import { store, StoreModulePath } from '~/store'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
-import { RouteName } from '~/router/routeName'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as qs from 'qs'
@@ -58,7 +57,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
     // If 401 by expired access cookie, we do a refresh request
     return plainAxiosInstance
       .post(
-        RoutePath.refresh(),
+        ApiPath.refresh(),
         {},
         { headers: { 'X-CSRF-TOKEN': localStorage.csrf } },
       )
@@ -77,7 +76,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
           StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
         )
         // redirect to signin if refresh fails
-        location.replace(RouteName.SignIn)
+        location.replace(AppPath.base() + AppPath.signin())
         return Promise.reject(error)
       })
   } else {

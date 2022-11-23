@@ -1,6 +1,6 @@
 import { Action, ActionTree } from 'vuex'
 import { RootState, SessionsState } from '~/store/interfaces'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import { AxiosResponse } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
@@ -23,7 +23,7 @@ const actions: ActionTree<SessionsState, RootState> & SessionActions = {
     commit,
     dispatch,
   }, payload: { email: string, password: string }): Promise<AxiosResponse> {
-    const response = await plainAxiosInstance.post(RoutePath.signin(), payload)
+    const response = await plainAxiosInstance.post(ApiPath.signin(), payload)
     if (response.data.csrf) {
       commit(SessionMutationTypes.SIGN_IN, response.data.csrf)
       dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT, null, { root: true })
@@ -31,7 +31,7 @@ const actions: ActionTree<SessionsState, RootState> & SessionActions = {
     return response
   },
   async [SessionActionTypes.DESTROY]({ commit }): Promise<AxiosResponse> {
-    const response = await securedAxiosInstance.delete(RoutePath.signin())
+    const response = await securedAxiosInstance.delete(ApiPath.signin())
     if (response.status === HttpStatusCode.Ok) {
       commit(SessionMutationTypes.SIGN_OUT)
       commit(StoreModulePath.Users + UserMutationTypes.UNSET_CURRENT, null, { root: true })

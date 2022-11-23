@@ -3,7 +3,7 @@ import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
 import Recipe, { RecipeAttributes } from 'Models/recipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { RecipesState, RootState } from '~/store/interfaces'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
 import { StoreUtils } from '~/utils/storeUtils'
@@ -24,7 +24,7 @@ type RecipeActions = {
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
     try {
-      const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipe(id))
+      const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipe(id))
       if (!response.data) throw new Error('Recipe not found')
 
       commit(RecipeMutationTypes.ADD, {
@@ -38,7 +38,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     }
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes, Array<ServerData>>> = await securedAxiosInstance.get(RoutePath.apiBase() + RoutePath.recipes())
+    const response: AxiosResponse<ServerResponse<RecipeAttributes, Array<ServerData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipes())
     commit(
       RecipeMutationTypes.SET,
       response.data.data.map((x) => {
@@ -58,7 +58,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     }
   },
   async [RecipeActionTypes.CREATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.post(RoutePath.apiBase() + RoutePath.recipes(), {
+    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.recipes(), {
       recipe: recipe.$toJson(),
     })
     recipe.id = response.data.data.id
@@ -66,7 +66,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     return response
   },
   async [RecipeActionTypes.UPDATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.patch(RoutePath.apiBase() + RoutePath.recipe(recipe.clientId), {
+    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.patch(ApiPath.base() + ApiPath.recipe(recipe.clientId), {
       recipe: recipe.$toJson(),
     })
 
@@ -76,7 +76,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
     return response
   },
   async [RecipeActionTypes.DESTROY](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.delete(RoutePath.apiBase() + RoutePath.recipe(recipe.clientId))
+    const response: AxiosResponse<ServerResponse<RecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.recipe(recipe.clientId))
     await recipe.$delete()
     return response
   },

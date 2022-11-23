@@ -38,7 +38,7 @@
 
 import { defineComponent, ref } from 'vue'
 import { plainAxiosInstance } from '~/backend/axios'
-import RoutePath from '~/router/path'
+import { ApiPath } from '~/router/path'
 import { AxiosError, AxiosResponse } from 'axios'
 import { RouteName } from '~/router/routeName'
 import { StoreModulePath } from '~/store'
@@ -56,7 +56,7 @@ export default defineComponent({
   },
   methods: {
     changePassword() {
-      plainAxiosInstance.put(RoutePath.apiBase() + RoutePath.changePassword(), {
+      plainAxiosInstance.put(ApiPath.base() + ApiPath.changePassword(), {
         ...this.formData,
         token: this.$routerExtension.currentRoute.query.token,
       })
