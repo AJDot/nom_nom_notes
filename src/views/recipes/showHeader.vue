@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex gap-5 place-items-center text-2xl">
+  <ul class="flex gap-5 place-items-center text-2xl mt-4">
     <li>
       <router-link
         :to="{ name: $routerExtension.names.Recipes }"

@@ -1,35 +1,14 @@
 <template>
-  <draggable
-    tag="transition-group"
-    :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }"
-    :list="ingredients"
-    item-key="clientId"
-    ghost-class="ghost"
-    handle=".handle"
-    @end="sort"
-  >
-    <template #item="{element: ing, index}">
-      <ingredients-list-item
-        :key="ing.clientId"
-        v-model:description="ing.description"
-        :index="index"
-        :data-test="`ingredient-${index}`"
-        @context-menu="openContextMenu($event, ing)"
-      />
+  <draggable tag="transition-group" :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }" :list="ingredients" item-key="clientId" ghost-class="ghost" handle=".handle" @end="sort">
+    <template #item="{ element: ing, index }">
+      <ingredients-list-item :key="ing.clientId" v-model:description="ing.description" :index="index" :data-test="`ingredient-${index}`" @context-menu="openContextMenu($event, ing)" />
     </template>
     <template #footer>
-      <row
-        key="add"
-        tag="li"
-      >
-        <button
-          class="btn"
-          type="button"
-          @click="addIngredient"
-        >
+      <li key="add">
+        <button class="btn" type="button" @click="addIngredient">
           + Add Ingredient
         </button>
-      </row>
+      </li>
     </template>
   </draggable>
 </template>

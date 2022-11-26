@@ -1,43 +1,19 @@
 <template>
-  <transition-group
-    appear
-    name="fade-slide-vert"
-  >
-    <div
-      v-for="(messages, type) in fullMessages"
-      :key="type.toString()"
-      class="flash"
-      :class="type"
-      role="alert"
-    >
-      <row>
-        <column
-          tag="ul"
-          class="grow-2 f-direction-column"
-        >
-          <li
-            v-for="(m, i) in messages"
-            :key="`${type}-${i}`"
-            class="f-justify-content-center"
-          >
-            {{ m }}
-          </li>
-        </column>
-        <column tag="span">
-          <button
-            type="button"
-            class="btn-clear"
-            @click="close(type)"
-          >
-            <i
-              class="material-icons"
-            >
+  <transition-group appear name="fade-slide-vert">
+    <div v-for="(messages, type) in fullMessages" :key="type.toString()" class="flash" :class="type" role="alert">
+      <ul>
+        <li v-for="(m, i) in messages" :key="`${type}-${i}`" class="f-justify-content-center">
+          {{ m }}
+        </li>
+        <span>
+          <button type="button" class="btn-clear" @click="close(type)">
+            <i class="material-icons">
               close
             </i>
             <span class="sr-only">Dismiss Alert Button</span>
           </button>
-        </column>
-      </row>
+        </span>
+      </ul>
     </div>
   </transition-group>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <article v-if="recipe" :key="recipe.clientId" class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols 1">
+  <article v-if="recipe" :key="recipe.clientId" class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1">
     <header class="border-none grid grid-cols-2 gap-4 after:clear-both">
       <div class="grid grid-cols-1 content-start">
         <h1 class="text-3xl">{{ recipe.name }}</h1>

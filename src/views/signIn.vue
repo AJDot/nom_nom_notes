@@ -1,41 +1,20 @@
 <template>
-  <form
-    class="sign-in"
-    @submit.prevent="signin"
-  >
-    <h2>Sign In</h2>
-    <dl class="email">
+  <form class="max-w-screen-xs flex flex-col mt-4 mx-auto" @submit.prevent="signin">
+    <h2 class="text-2xl border-b border-gray-400 mb-2">Sign In</h2>
+    <dl class="mt-2">
       <dt><label for="email">Email</label></dt>
       <dd>
-        <input
-          id="email"
-          v-model="formData.email"
-          type="text"
-          name="email"
-        >
+        <a-input id="email" v-model="formData.email" type="text" name="email" />
       </dd>
     </dl>
-    <dl class="password">
+    <dl class="mt-2">
       <dt><label for="password">Password</label></dt>
       <dd>
-        <input
-          id="password"
-          v-model="formData.password"
-          type="password"
-          name="password"
-        >
+        <a-input id="password" v-model="formData.password" type="password" name="password" />
       </dd>
     </dl>
-    <input
-      class="btn"
-      type="submit"
-      value="Sign In"
-    >
-    <row class="f-justify-content-end">
-      <column>
-        <forgot-password-link />
-      </column>
-    </row>
+    <input class="btn" type="submit" value="Sign In">
+    <forgot-password-link />
   </form>
 </template>
 

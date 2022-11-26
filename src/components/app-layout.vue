@@ -3,7 +3,7 @@
     <loading v-if="isLoading()" />
     <app-header />
     <router-view />
-    <footer>
+    <footer class="mt-5">
       <ul class=text-xs>
         <li>
           Recipe image placeholder icon

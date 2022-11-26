@@ -1,41 +1,28 @@
 <template>
-  <row tag="li">
-    <column>
+  <li class="flex p-1 gap-1 items-center">
+    <div>
       <label :for="`ingredient-${index}-description`">
-        <button
-          v-if="handle"
-          type="button"
-          class="btn handle"
-        >
-          <span class="material-icons">
+        <button v-if="handle" type="button" class="btn handle">
+          <i class="material-icons align-middle">
             drag_handle
-          </span>
+          </i>
         </button>
         <template v-else>
           {{ index + 1 }}
         </template>
       </label>
-    </column>
-    <column class="grow-2">
-      <input
-        :id="`ingredient-${index}-description`"
-        :value="description"
-        type="text"
-        @input="$emit('update:description', $event.target.value)"
-      >
-    </column>
-    <column>
-      <button
-        class="btn more"
-        type="button"
-        @click="$emit('context-menu', $event)"
-      >
-        <span class="material-icons">
+    </div>
+    <div class="grow">
+      <a-input :id="`ingredient-${index}-description`" :value="description" type="text" @input="$emit('update:description', $event.target.value)" class="w-full" />
+    </div>
+    <div>
+      <button class="btn" type="button" @click="$emit('context-menu', $event)">
+        <i class="material-icons align-middle">
           more_vert
-        </span>
+        </i>
       </button>
-    </column>
-  </row>
+    </div>
+  </li>
 </template>
 
 <script lang="ts">

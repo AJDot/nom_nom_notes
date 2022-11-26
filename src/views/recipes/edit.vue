@@ -1,195 +1,97 @@
 <template>
-  <form
-    v-if="recipe"
-    class="edit-recipe"
-    enctype="multipart/form-data"
-    @submit.prevent="save"
-  >
-    <h2>{{ headerText }}</h2>
-    <input
-      class="btn"
-      type="submit"
-      :value="submitText"
-      placeholder="My Super Awesome Recipe"
-    >
-    <dl>
-      <dt>
-        <img v-bind="imageAttrs" class="w-6/12 h-6/12 float-right mb-4 ml-4 rounded-2xl max-h-52 object-contain">
-      </dt>
-      <dd>
-        <label class="choose-file btn">
-          Choose File
-          <input
-            type="file"
-            name="image"
-            @change="setImage"
-          >
-        </label>
-      </dd>
-    </dl>
+  <form v-if="recipe" class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-2" enctype="multipart/form-data" @submit.prevent="save">
+    <h2 class="text-3xl border-b border-gray-400 col-span-2">{{ headerText }}</h2>
+    <input class="btn col-span-2" type="submit" :value="submitText">
 
-    <dl class="name">
-      <dt><label for="name">Name</label></dt>
-      <dd>
-        <input
-          id="name"
-          v-model="recipe.name"
-          type="text"
-          name="name"
-          placeholder="My Super Awesome Recipe"
-        >
-      </dd>
-    </dl>
-    <dl class="cook-time grid grid-1-4">
-      <dt><label for="hours">Cook Time</label></dt>
-      <dd class="grid-1-2">
-        <h3><label for="hours">Hours</label></h3>
-        <input
-          id="hours"
-          v-model.number="cookTime.hours"
-          type="number"
-          name="hours"
-          min="0"
-          max="191"
-        >
-      </dd>
-      <dd class="grid-1-2 last">
-        <h3><label for="minutes">Minutes</label></h3>
-        <input
-          id="minutes"
-          v-model.number="cookTime.minutes"
-          type="number"
-          name="minutes"
-          min="0"
-          max="59"
-        >
-      </dd>
-    </dl>
-
-    <dl class="description">
-      <dt><label for="description">Description</label></dt>
-      <dd>
-        <textarea
-          id="description"
-          v-model="recipe.description"
-          name="description"
-          cols="80"
-          rows="10"
-          placeholder="Enter recipe description"
-        />
-      </dd>
-    </dl>
-    <div class="grid">
-      <dl class="grid-1-2">
-        <dt><label for="ingredient-0-description">Ingredients</label></dt>
+    <div>
+      <dl class="mt-2">
+        <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
         <dd>
-          <ingredients-list
-            :ingredients="unmarkedSortedIngredients"
-            @add="addIngredient"
-            @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)"
-          />
+          <a-input id="name" v-model="recipe.name" type="text" name="name" placeholder="My Super Awesome Recipe" />
         </dd>
       </dl>
-      <dl class="grid-1-2">
-        <dt><label for="categories">Categories</label></dt>
+      <dl class="mt-2 flex flex-wrap gap-2">
+        <dt class="basis-full text-lg border-b border-gray-400"><label for="hours">Cook Time</label></dt>
         <dd>
-          <search
-            id="categories"
-            :searcher="categorySearcher"
-            @select="addCategory"
-          />
-          <ul>
-            <row
-              v-for="cat in unmarkedCategories"
-              :key="cat.clientId"
-              :data-test="`category-${cat.name}`"
-            >
-              <column class="grow-2">
-                {{ cat.name }}
-              </column>
-
-              <column>
-                <button
-                  type="button"
-                  class="btn"
-                  data-test="category-destroy"
-                  @click="destroyRecipeCategory(cat)"
-                >
-                  <i class="material-icons">delete</i>
-                </button>
-              </column>
-            </row>
-          </ul>
+          <h3 class="border-b border-gray-400 mb-2"><label for="hours">Hours</label></h3>
+          <a-input id="hours" v-model.number="cookTime.hours" type="number" name="hours" min="0" max="191" />
+        </dd>
+        <dd>
+          <h3 class="border-b border-gray-400 mb-2"><label for="minutes">Minutes</label></h3>
+          <a-input id="minutes" v-model.number="cookTime.minutes" type="number" name="minutes" min="0" max="59" />
         </dd>
       </dl>
     </div>
 
-    <dl>
-      <dt><label for="step-0-description">Directions</label></dt>
+    <dl class="grid grid-cols-1">
+      <dt>
+        <img v-bind="imageAttrs" class="mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain">
+      </dt>
       <dd>
-        <steps-list
-          :steps="unmarkedSortedSteps"
-          @add="addStep"
-          @context-menu="openContextMenu($event.event, recipe.steps, $event.item)"
-        />
+        <label class="float-right btn w-full">
+          Choose File
+          <input type="file" name="image" class="hidden" @change="setImage">
+        </label>
       </dd>
     </dl>
-    <dl>
-      <dt><label for="note">Notes</label></dt>
+
+
+    <dl class="col-span-2 mt-2">
+      <dt class="text-lg border-b border-gray-400 mb-2"><label for="description">Description</label></dt>
       <dd>
-        <textarea
-          id="note"
-          v-model="recipe.note"
-          name="note"
-          cols="80"
-          rows="10"
-          placeholder="Put each note on its own line."
-        />
+        <a-textarea id="description" v-model="recipe.description" name="description" cols="80" rows="10" placeholder="Enter recipe description" class="w-full" />
       </dd>
     </dl>
-    <input
-      class="btn"
-      type="submit"
-      value="Update Recipe"
-    >
-    <context-menu
-      :display="showContextMenu"
-      @close="resetStepContextMenu"
-    >
-      <ul
-        v-if="showContextMenu"
-        class="dropdown"
-      >
-        <li
-          v-if="!isFirst(contextCollection, contextItem)"
-          class="dropdown-item"
-        >
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="moveUp(contextCollection, contextItem)"
-          >
+    <dl class="mt-2">
+      <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
+      <dd>
+        <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)" />
+      </dd>
+    </dl>
+    <dl class="mt-2">
+      <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
+      <dd>
+        <search id="categories" :searcher="categorySearcher" @select="addCategory" />
+        <ul class="grid grid-cols-1">
+          <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
+            <span class="grow inline-block my-auto">
+              {{ cat.name }}
+            </span>
+            <button type="button" class="btn" data-test="category-destroy" @click="destroyRecipeCategory(cat)">
+              <i class="material-icons align-middle">delete</i>
+            </button>
+          </li>
+        </ul>
+      </dd>
+    </dl>
+
+    <dl class="col-span-2 mt-2">
+      <dt class="text-lg border-b border-gray-400"><label for="step-0-description">Directions</label></dt>
+      <dd class="mt-2">
+        <steps-list :steps="unmarkedSortedSteps" @add="addStep" @context-menu="openContextMenu($event.event, recipe.steps, $event.item)" />
+      </dd>
+    </dl>
+    <dl class="col-span-2 mt-2">
+      <dt class="text-lg border-b border-gray-400"><label for="note">Notes</label></dt>
+      <dd class="mt-2">
+        <a-textarea id="note" v-model="recipe.note" name="note" cols="80" rows="10" class="w-full" />
+      </dd>
+    </dl>
+    <input class="btn col-span-2" type="submit" :value="submitText">
+    <context-menu :display="showContextMenu" @close="resetStepContextMenu">
+      <ul v-if="showContextMenu" class="dropdown">
+        <li v-if="!isFirst(contextCollection, contextItem)" class="dropdown-item">
+          <button class="dropdown-btn" type="button" @click="moveUp(contextCollection, contextItem)">
             Up
           </button>
         </li>
-        <li
-          v-if="!isLast(contextCollection, contextItem)"
-          class="dropdown-item"
-        >
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="moveDown(contextCollection, contextItem)"
-          >
+        <li v-if="!isLast(contextCollection, contextItem)" class="dropdown-item">
+          <button class="dropdown-btn" type="button" @click="moveDown(contextCollection, contextItem)">
             Down
           </button>
         </li>
         <li class="dropdown-item">
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="destroyItem(contextItem)"
-          >
+          <button class="dropdown-btn" type="button" @click="destroyItem(contextItem)">
             Delete
           </button>
         </li>

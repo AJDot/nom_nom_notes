@@ -1,35 +1,14 @@
 <template>
-  <draggable
-    tag="transition-group"
-    :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }"
-    :list="steps"
-    item-key="clientId"
-    ghost-class="ghost"
-    handle=".handle"
-    @end="sort"
-  >
-    <template #item="{element: step, index}">
-      <steps-list-item
-        :key="step.clientId"
-        v-model:description="step.description"
-        :index="index"
-        :data-test="`step-${index}`"
-        @context-menu.prevent="openContextMenu($event, step)"
-      />
+  <draggable tag="transition-group" :component-data="{ tag: 'ul', name: 'flip-list', type: 'transition' }" :list="steps" item-key="clientId" ghost-class="ghost" handle=".handle" @end="sort">
+    <template #item="{ element: step, index }">
+      <steps-list-item :key="step.clientId" v-model:description="step.description" :index="index" :data-test="`step-${index}`" @context-menu.prevent="openContextMenu($event, step)" />
     </template>
     <template #footer>
-      <row
-        key="add"
-        tag="li"
-      >
-        <button
-          class="btn"
-          type="button"
-          @click="addStep"
-        >
+      <li key="add">
+        <button class="btn" type="button" @click="addStep">
           + Add Step
         </button>
-      </row>
+      </li>
     </template>
   </draggable>
 </template>

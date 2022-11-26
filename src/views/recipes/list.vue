@@ -1,70 +1,35 @@
 <template>
   <div class="p-5 overflow-hidden">
     <aside>
-      <row>
-        <button
-          class="text-2xl btn-clear"
-          type="button"
-          @click="toggleShowFilters"
-        >
-          <i class="material-icons">filter_list</i>
+      <button class="text-2xl btn-clear" type="button" @click="toggleShowFilters">
+        <i class="material-icons">filter_list</i>
+      </button>
+      <div v-if="showFilters">
+        <h2>
+          <label for="filter-category" class="lone">
+            Filter by Category
+          </label>
+        </h2>
+        <search id="filter-category" :searcher="categoryFilterSearcher" @select="filterByCategory" />
+        <button type="button" class="btn-clear" @click="clearCategoryFilter">
+          Clear
+          <i class="material-icons">close</i>
         </button>
-      </row>
-      <row v-if="showFilters">
-        <column>
-          <h2>
-            <label
-              for="filter-category"
-              class="lone"
-            >
-              Filter by Category
-            </label>
-          </h2>
-        </column>
-        <column class="grow-2">
-          <search
-            id="filter-category"
-            :searcher="categoryFilterSearcher"
-            @select="filterByCategory"
-          />
-        </column>
-        <column>
-          <button
-            type="button"
-            class="btn-clear"
-            @click="clearCategoryFilter"
-          >
-            Clear
-            <i class="material-icons">close</i>
-          </button>
-        </column>
-      </row>
+      </div>
     </aside>
     <main class="p-0 m-0 overflow-hidden after:block after:clear-both">
       <ul class="card-list">
-        <li
-          v-for="recipe in recipesForList"
-          :key="recipe.clientId"
-          v-hover="pullDetails"
-        >
+        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails">
           <article>
             <h1>{{ recipe.name }}</h1>
             <section>
               <img v-bind="imageAttrs(recipe)">
-              <div
-                class="content -translate-y-full"
-              >
-                <router-link
-                  :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
-                  class="view-recipe"
-                >
+              <div class="content -translate-y-full">
+                <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="view-recipe">
                   <i class="material-icons">receipt</i>View Recipe
                 </router-link>
                 <ul class="categories">
-                  <li
-                    v-for="category in recipe.categories"
-                    :key="category.clientId"
-                  >
+                  <li v-for="category in recipe.categories" :key="category.clientId">
                     {{ category.name }}
                   </li>
                 </ul>

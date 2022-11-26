@@ -1,21 +1,21 @@
 <template>
-  <ul>
+  <ul class="flex gap-5 place-items-center text-2xl mt-4">
     <li>
       <router-link
         :to="{name: $routerExtension.names.Recipe}"
-        class="cancel"
+        class="flex"
       >
-        <i class="material-icons">receipt</i>
+        <i class="material-icons my-auto">receipt</i>
         <span>Back to Recipe</span>
       </router-link>
     </li>
     <li v-if="signedIn && recipe">
       <a
         href="#"
-        class="destroy"
+        class="flex"
         @click.prevent="confirmDestroy"
       >
-        <i class="material-icons">delete</i>
+        <i class="material-icons my-auto">delete</i>
         <span>Delete Recipe</span>
       </a>
     </li>

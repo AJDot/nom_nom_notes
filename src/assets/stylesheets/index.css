@@ -3,6 +3,7 @@
 @import "icon";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import "animation";
 
 @layer base {
   html {

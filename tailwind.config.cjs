@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -6,11 +8,18 @@ module.exports = {
   ],
   theme: {
     extend: {
-      boxShadow: {
+      boxShadow: ({ theme }) => ({
         card: '0 2px 8px 0 rgb(0 0 0 / 30%)',
-      },
+        input: `0 0 1px 0 ${theme.colors.gray[900]}`,
+      }),
       borderColor: {
         transparent: 'transparent',
+      },
+      transitionProperty: {
+        height: 'height',
+        spacing: 'margin, padding',
+        drag: 'height, margin, padding',
+        background: 'background',
       },
     },
     colors: {
@@ -52,6 +61,10 @@ module.exports = {
       sans: '"Josefin Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
       serif: '"Josefin Slab", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
     },
+    screens: {
+      xs: '475px',
+      ...defaultTheme.screens,
+    }
   },
   plugins: [],
 }
