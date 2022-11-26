@@ -1,7 +1,7 @@
 <template>
-  <header class="app-header">
-    <div class="primary-header row">
-      <h1 class="row">
+  <header>
+    <div class="flex items-center justify-between">
+      <h1>
         <router-link
           :to="{name: $routerExtension.names.Home}"
           aria-label="Go to Nom Nom Notes Home"
@@ -9,27 +9,27 @@
           <img
             src="~Public/logo-512x512.png"
             alt="Nom Nom Notes"
-            class="logo-n3"
+            class="h-12 w-12 align-top"
           >
         </router-link>
       </h1>
-      <ul class="suffix s-200-em horizontal j-slash">
-        <li v-if="currentUser">
+      <ul class="text-2xl j-slash">
+        <li v-if="currentUser" class="inline-block">
           {{ currentUser.username }}
         </li>
-        <li v-if="canSignIn">
+        <li v-if="canSignIn" class="inline-block">
           <router-link
             :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }"
           >
             Sign In
           </router-link>
         </li>
-        <li v-if="canSignUp">
+        <li v-if="canSignUp" class="inline-block">
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
         </li>
-        <li v-if="signedIn">
+        <li v-if="signedIn" class="inline-block">
           <a
             href="#"
             @click.prevent="signOut"

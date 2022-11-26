@@ -9,12 +9,12 @@
   Josefin Slab
 */
 
-body {
+/* body {
   font: normal 14px Raleway, Helvetica, Arial, sans-serif;
   color: var(--color-black);
-}
+} */
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
@@ -29,71 +29,71 @@ dl,
 dd,
 dt {
   letter-spacing: 0.05em;
-}
+} */
 
-a {
+/* a {
   color: inherit;
   text-decoration: none;
-}
+} */
 
-a:hover {
+/* a:hover {
   font-weight: bold;
   color: var(--color-green);
-}
+} */
 
-ul,
+/* ul,
 ol,
 p {
   line-height: 1.4em;
-}
+} */
 
-ol {
+/* ol {
   list-style: decimal inside;
-}
+} */
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
   font-family: "Josefin Slab", serif;
-}
+} */
 
-h1 {
+/* h1 {
   font-size: 48px;
   margin-bottom: 10px;
   min-height: 36px;
   min-width: 36px;
-}
+} */
 
-h2 {
+/* h2 {
   font-weight: 300;
   font-size: 26px;
   margin: 0 0 20px;
-}
+} */
 
-main {
+/* main {
   padding: 20px;
   margin: 0;
-}
+} */
 
-main::after {
+/* main::after {
   content: "";
   display: block;
   clear: both;
-}
+} */
 
-pre {
+/* pre {
   font-family: "Josefin Slab", serif;
-}
+} */
 
-::selection {
+/* ::selection {
   color: var(--color-black);
   background: var(--color-green);
-}
+} */
 
-input[type="submit"] {
+/* input[type="submit"] {
   font: inherit;
   letter-spacing: inherit;
   line-height: inherit;
@@ -102,9 +102,9 @@ input[type="submit"] {
   border: none;
   cursor: pointer;
   outline: none;
-}
+} */
 
-.sr-only {
+/* .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -113,42 +113,42 @@ input[type="submit"] {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-}
+} */
 
-button {
+/* button {
   color: var(--color-black);
-}
+} */
 
-ul.horizontal > li {
+/* ul.horizontal > li {
   display: inline-block;
-}
+} */
 
-.j-slash > * + *::before {
+/* .j-slash > * + *::before {
   content: "/";
-}
+} */
 
-.inline {
+/* .inline {
   display: inline;
-}
+} */
 
-.t-align-center {
+/* .t-align-center {
   text-align: center;
-}
+} */
 
-.hidden-y {
+/* .hidden-y {
   transform: translateY(-100%);
-}
+} */
 
 /*
 *************************
   LOGO
 *************************
 */
-.app-header .logo-n3 {
+/* .app-header .logo-n3 {
   height: 48px;
   width: 48px;
   vertical-align: top;
-}
+} */
 
 /*
 *************************
@@ -273,19 +273,19 @@ textarea:focus {
 *************************
 */
 
-.container {
+/* .container {
   padding: 20px 0 20px 20px;
   overflow: hidden;
-}
+} */
 
-.container main {
+/* .container main {
   overflow: hidden;
   padding: 0;
-}
+} */
 
-.filters .filters-toggle {
+/* .filters .filters-toggle {
   font-size: 28px;
-}
+} */
 
 ul.card-list > li {
   display: inline-block;
@@ -348,7 +348,7 @@ ul.card-list .content p {
   border-radius: 1em;
 }
 
-.recipe header > img {
+/* .recipe header > img {
   float: right;
   width: 50%;
   height: 50%;
@@ -356,7 +356,7 @@ ul.card-list .content p {
   margin: 0 0 15px 15px;
   object-fit: cover;
   border-radius: 1em;
-}
+} */
 
 .recipe header > img.img-placeholder {
   object-fit: scale-down;
@@ -464,31 +464,31 @@ ul.card-list img.img-placeholder {
 *************************
 */
 
-.recipe {
+/* .recipe {
   max-width: 960px;
   padding: 10px;
   margin: 0 auto 2em;
   border-radius: 1em;
   box-shadow: 0 2px 8px 0 rgb(0 0 0 / 30%);
-}
+} */
 
-.recipe header {
+/* .recipe header {
   font-family: Raleway, Helvetica, Arial, sans-serif;
   min-height: 200px;
   padding: 0;
   margin-bottom: 50px;
   border: none;
-}
+} */
 
-.recipe header::after {
+/* .recipe header::after {
   content: "";
   display: block;
   clear: both;
-}
+ } */
 
-.strike-through {
+/* .strike-through {
   text-decoration-line: line-through;
-}
+} */
 
 /*
 *************************
@@ -613,15 +613,15 @@ dl.description::before {
   transform: rotate(360deg);
 }
 
-.wiggle:hover {
+/* .wiggle:hover {
   animation: wiggle 0.2s 2 linear;
 
-  /* transform: rotate(45deg); */
+  transform: rotate(45deg);
 
-  /* transform: rotate(45deg) rotate(-45deg); */
-}
+  transform: rotate(45deg) rotate(-45deg);
+} */
 
-@keyframes wiggle {
+/* @keyframes wiggle {
   0% {
     transform: rotate(0);
   }
@@ -641,7 +641,7 @@ dl.description::before {
   100% {
     transform: rotate(0);
   }
-}
+} */
 
 /*
 *************************
@@ -649,13 +649,13 @@ dl.description::before {
 *************************
 */
 
-.s-90-em {
+/* .s-90-em {
   font-size: 0.9em;
 }
 
 .s-200-em {
   font-size: 2em;
-}
+} */
 
 /*
 *************************

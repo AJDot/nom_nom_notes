@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="px-4 py-2">
     <loading v-if="isLoading()" />
     <app-header />
     <router-view />
     <footer>
-      <ul>
+      <ul class=text-xs>
         <li>
           Recipe image placeholder icon
           <a

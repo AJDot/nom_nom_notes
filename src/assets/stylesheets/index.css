@@ -1,3 +1,116 @@
 @import "tailwindcss/base";
+@import "font";
+@import "icon";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    @apply font-sans text-gray-900;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif tracking-wider;
+  }
+
+  li,
+  dl,
+  dd,
+  dt {
+    @apply tracking-wider;
+  }
+
+  a {
+    @apply tracking-wider hover:text-green hover:font-bold;
+  }
+
+  ol {
+    @apply list-decimal list-inside;
+  }
+
+  ul,
+  ol,
+  p {
+    @apply tracking-wider leading-snug;
+  }
+
+  button {
+    @apply text-gray-900;
+  }
+
+  ::selection {
+    @apply text-gray-900 bg-green;
+  }
+}
+
+@layer components {
+  input[type="submit"] {
+    @apply p-0 m-0 border-none cursor-pointer outline-none;
+  }
+
+  input[type="submit"].btn {
+    @apply block w-full py-2.5 my-5;
+  }
+
+  .sr-only {
+    @apply absolute w-px h-px p-0 text-clip overflow-hidden border-none;
+
+    margin: -1px;
+  }
+
+  .j-slash > * + *::before {
+    @apply content-["/"];
+  }
+
+  .btn {
+    @apply py-1 px-2.5 m-0;
+    @apply text-white bg-gray-900 outline-none border-none rounded-lg text-center;
+    @apply shadow-sm cursor-pointer;
+    @apply transition-all box-border;
+    @apply active:shadow-inner;
+    @apply hover:text-black hover:bg-green hover:cursor-pointer;
+    @apply focus:text-black focus:bg-green focus:cursor-pointer;
+  }
+
+  .btn-clear {
+    @apply bg-none border-none cursor-pointer;
+  }
+
+  .btn-link {
+    font: inherit;
+
+    @apply bg-none border-b-2 border-transparent border-solid transition-all box-border;
+    @apply hover:border-green;
+  }
+
+  .btn-link.lg {
+    @apply text-3xl border-b-4;
+  }
+}
+
+/* @import "whitespace-reset";
+@import "color";
+*/
+
+/*
+@import "main";
+@import "button";
+@import "table";
+@import "header";
+@import "modal";
+@import "context-menu";
+@import "dropdown";
+@import "flash";
+@import "flex";
+@import "drag";
+@import "animation";
+@import "keyframe"; */

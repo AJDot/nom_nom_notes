@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-    <aside class="filters">
+  <div class="p-5 overflow-hidden">
+    <aside>
       <row>
         <button
-          class="filters-toggle btn-clear"
+          class="text-2xl btn-clear"
           type="button"
           @click="toggleShowFilters"
         >
@@ -40,7 +40,7 @@
         </column>
       </row>
     </aside>
-    <main>
+    <main class="p-0 m-0 overflow-hidden after:block after:clear-both">
       <ul class="card-list">
         <li
           v-for="recipe in recipesForList"
@@ -52,7 +52,7 @@
             <section>
               <img v-bind="imageAttrs(recipe)">
               <div
-                class="content hidden-y"
+                class="content -translate-y-full"
               >
                 <router-link
                   :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
@@ -170,7 +170,7 @@ export default defineComponent({
       this.recipeFilters.categoryName = null
     },
     pullDetails(event: MouseEvent, hovering: boolean): void {
-      const cssClass = 'hidden-y'
+      const cssClass = '-translate-y-full'
       const $el = $(event.currentTarget).find('.content')
       hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },

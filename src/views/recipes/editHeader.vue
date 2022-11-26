@@ -5,7 +5,7 @@
         :to="{name: $routerExtension.names.Recipe}"
         class="cancel"
       >
-        <i class="material-icons wiggle">receipt</i>
+        <i class="material-icons">receipt</i>
         <span>Back to Recipe</span>
       </router-link>
     </li>
@@ -15,7 +15,7 @@
         class="destroy"
         @click.prevent="confirmDestroy"
       >
-        <i class="material-icons wiggle">delete</i>
+        <i class="material-icons">delete</i>
         <span>Delete Recipe</span>
       </a>
     </li>

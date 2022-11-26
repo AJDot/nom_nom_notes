@@ -12,9 +12,9 @@
       :value="submitText"
       placeholder="My Super Awesome Recipe"
     >
-    <dl class="image">
+    <dl>
       <dt>
-        <img v-bind="imageAttrs">
+        <img v-bind="imageAttrs" class="w-6/12 h-6/12 float-right mb-4 ml-4 rounded-2xl max-h-52 object-contain">
       </dt>
       <dd>
         <label class="choose-file btn">
@@ -115,7 +115,7 @@
                   data-test="category-destroy"
                   @click="destroyRecipeCategory(cat)"
                 >
-                  <i class="material-icons wiggle">delete</i>
+                  <i class="material-icons">delete</i>
                 </button>
               </column>
             </row>

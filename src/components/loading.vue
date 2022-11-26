@@ -2,7 +2,7 @@
   <modal
     state
     hide-container
-    :classes="{body: 't-align-center'}"
+    :classes="{body: 'text-center'}"
   >
     <ellipsis />
   </modal>

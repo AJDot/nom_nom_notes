@@ -1,20 +1,20 @@
 <template>
-  <ul>
+  <ul class="flex gap-5 place-items-center text-2xl">
     <li>
       <router-link
         :to="{ name: $routerExtension.names.Recipes }"
-        class="safe"
+        class="flex"
       >
-        <i class="material-icons wiggle">view_comfy</i>
+        <i class="material-icons my-auto">view_comfy</i>
         <span>Recipe Cards</span>
       </router-link>
     </li>
     <li v-if="signedIn">
       <router-link
         :to="{ name: $routerExtension.names.EditRecipe }"
-        class="safe"
+        class="flex"
       >
-        <i class="material-icons wiggle">edit</i>
+        <i class="material-icons my-auto">edit</i>
         <span>Edit Recipe</span>
       </router-link>
     </li>
