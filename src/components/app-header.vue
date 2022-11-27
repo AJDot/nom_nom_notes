@@ -1,16 +1,9 @@
 <template>
   <header>
-    <div class="flex items-center justify-between">
+    <div class="px-4 py-2 flex items-center justify-between">
       <h1>
-        <router-link
-          :to="{name: $routerExtension.names.Home}"
-          aria-label="Go to Nom Nom Notes Home"
-        >
-          <img
-            src="~Public/logo-512x512.png"
-            alt="Nom Nom Notes"
-            class="h-12 w-12 align-top"
-          >
+        <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home">
+          <img src="~Public/logo-512x512.png" alt="Nom Nom Notes" class="h-12 w-12 align-top">
         </router-link>
       </h1>
       <ul class="text-2xl j-slash">
@@ -18,9 +11,7 @@
           {{ currentUser.username }}
         </li>
         <li v-if="canSignIn" class="inline-block">
-          <router-link
-            :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }"
-          >
+          <router-link :to="{ name: $routerExtension.names.SignIn, params: { originalRequest: $router.currentRoute.value.path } }">
             Sign In
           </router-link>
         </li>
@@ -30,14 +21,11 @@
           </router-link>
         </li>
         <li v-if="signedIn" class="inline-block">
-          <a
-            href="#"
-            @click.prevent="signOut"
-          >Sign Out</a>
+          <a href="#" @click.prevent="signOut">Sign Out</a>
         </li>
       </ul>
     </div>
-    <div class="secondary-header">
+    <div class="px-4 py-2">
       <div class="header-links">
         <router-view name="secondary-header" />
       </div>

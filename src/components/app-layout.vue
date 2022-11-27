@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 py-2">
+  <div>
     <loading v-if="isLoading()" />
     <app-header />
     <router-view />
