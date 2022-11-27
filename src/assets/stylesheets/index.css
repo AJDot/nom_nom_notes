@@ -1,9 +1,11 @@
 @import "tailwindcss/base";
+@import "color";
 @import "font";
 @import "icon";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "animation";
+@import "keyframe";
 
 @layer base {
   html {
@@ -112,6 +114,4 @@
 @import "dropdown";
 @import "flash";
 @import "flex";
-@import "drag";
-@import "animation";
-@import "keyframe"; */
+@import "drag"; */
