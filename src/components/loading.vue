@@ -1,9 +1,5 @@
 <template>
-  <modal
-    state
-    hide-container
-    :classes="{body: 'text-center'}"
-  >
+  <modal state transparent center>
     <ellipsis />
   </modal>
 </template>

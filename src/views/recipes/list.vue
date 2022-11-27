@@ -21,10 +21,10 @@
     </aside>
     <main class="overflow-hidden after:block after:clear-both">
       <ul class="flex gap-2 flex-wrap mb-2 justify-center">
-        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="shadow-md rounded-t-3xl">
-          <article>
-            <h1 class="text-xl text-center p-2 bg-white border border-gray-400 rounded-t-3xl">{{ recipe.name }}</h1>
-            <section class="w-72 h-72 overflow-hidden relative border border-gray-400">
+        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="w-72 shadow-md rounded-3xl">
+          <article class="border border-gray-400 rounded-3xl overflow-hidden">
+            <h1 class="text-xl text-center truncate p-2 bg-white" :title="recipe.name">{{ recipe.name }}</h1>
+            <section class="h-72 overflow-hidden relative">
               <img v-bind="imageAttrs(recipe)" class="w-full h-full">
               <div class="-translate-y-full absolute top-0 w-full h-full overflow-y-auto transition-transform bg-black/70 text-white p-2" data-content>
                 <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="w-4/5 p-2.5 my-4 mx-auto text-white border-2 border-white text-sm text-center uppercase box-border transition-all hover:text-green hover:bg-white block">
