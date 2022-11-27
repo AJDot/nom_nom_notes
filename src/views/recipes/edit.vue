@@ -44,7 +44,7 @@
     </dl>
     <dl class="mt-2">
       <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
-      <dd>
+      <dd class="mt-2">
         <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)" />
       </dd>
     </dl>

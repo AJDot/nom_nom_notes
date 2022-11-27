@@ -1,15 +1,15 @@
 <template>
   <a-input ref="search" v-model="q" v-bind="$attrs" type="search" @keyup="search" @keydown.enter.prevent placeholder="Search..." class="mt-1" />
   <context-menu v-if="q" ref="menu" :display="menuEvent" :focus="false" :width="$refs.search" @close="hideResults">
-    <ul class="dropdown">
+    <ul>
       <template v-if="hasResults">
-        <li v-for="item in results" :key="item.value" class="dropdown-item" @click.capture="select(item)">
-          <button type="button" class="dropdown-btn">
+        <li v-for="item in results" :key="item.value" @click.capture="select(item)">
+          <button type="button">
             {{ item.label }}
           </button>
         </li>
       </template>
-      <li v-else class="dropdown-item">
+      <li v-else>
         No results found.
       </li>
     </ul>

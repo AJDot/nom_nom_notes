@@ -1,39 +1,41 @@
 <template>
-  <div class="p-5 overflow-hidden">
-    <aside>
+  <div class="px-5 pt-5 overflow-hidden">
+    <aside class="mb-5">
       <button class="text-2xl btn-clear" type="button" @click="toggleShowFilters">
         <i class="material-icons">filter_list</i>
       </button>
-      <div v-if="showFilters">
+      <template v-if="showFilters">
         <h2>
           <label for="filter-category" class="lone">
             Filter by Category
           </label>
         </h2>
-        <search id="filter-category" :searcher="categoryFilterSearcher" @select="filterByCategory" />
-        <button type="button" class="btn-clear" @click="clearCategoryFilter">
-          Clear
-          <i class="material-icons">close</i>
-        </button>
-      </div>
+        <div class="flex items-center gap-1">
+          <search id="filter-category" :searcher="categoryFilterSearcher" @select="filterByCategory" />
+          <button type="button" class="btn-clear flex" @click="clearCategoryFilter">
+            Clear
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+      </template>
     </aside>
-    <main class="p-0 m-0 overflow-hidden after:block after:clear-both">
-      <ul class="card-list">
-        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails">
+    <main class="overflow-hidden after:block after:clear-both">
+      <ul class="flex gap-2 flex-wrap mb-2 justify-center">
+        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="shadow-md rounded-t-3xl">
           <article>
-            <h1>{{ recipe.name }}</h1>
-            <section>
-              <img v-bind="imageAttrs(recipe)">
-              <div class="content -translate-y-full">
-                <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="view-recipe">
-                  <i class="material-icons">receipt</i>View Recipe
+            <h1 class="text-xl text-center p-2 bg-white border border-gray-400 rounded-t-3xl">{{ recipe.name }}</h1>
+            <section class="w-72 h-72 overflow-hidden relative border border-gray-400">
+              <img v-bind="imageAttrs(recipe)" class="w-full h-full">
+              <div class="-translate-y-full absolute top-0 w-full h-full overflow-y-auto transition-transform bg-black/70 text-white p-2" data-content>
+                <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="w-4/5 p-2.5 my-4 mx-auto text-white border-2 border-white text-sm text-center uppercase box-border transition-all hover:text-green hover:bg-white block">
+                  <i class="material-icons my-auto align-middle mr-1">receipt</i><span class="align-middle">View Recipe</span>
                 </router-link>
-                <ul class="categories">
-                  <li v-for="category in recipe.categories" :key="category.clientId">
+                <ul class="flex flex-wrap gap-1">
+                  <li v-for="category in recipe.categories" :key="category.clientId" class="font-thin text-gray-400 text-xs">
                     {{ category.name }}
                   </li>
                 </ul>
-                <p>{{ recipe.description }}</p>
+                <p class="mt-2 text-sm">{{ recipe.description }}</p>
               </div>
             </section>
           </article>
@@ -119,7 +121,7 @@ export default defineComponent({
         }
       } else {
         return {
-          class: 'img-placeholder',
+          class: 'img-placeholder p-14',
           src: ImagePlaceholder,
           alt: recipe.name,
         }
@@ -136,7 +138,7 @@ export default defineComponent({
     },
     pullDetails(event: MouseEvent, hovering: boolean): void {
       const cssClass = '-translate-y-full'
-      const $el = $(event.currentTarget).find('.content')
+      const $el = $(event.currentTarget).find('[data-content]')
       hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },
   },

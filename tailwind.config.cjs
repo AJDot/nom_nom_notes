@@ -20,6 +20,7 @@ module.exports = {
         spacing: 'margin, padding',
         drag: 'height, margin, padding',
         background: 'background',
+        transform: 'transform',
       },
     },
     colors: {
