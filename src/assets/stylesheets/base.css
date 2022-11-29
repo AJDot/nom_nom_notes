@@ -1,0 +1,51 @@
+@import "color";
+@import "font";
+@import "icon";
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    @apply font-sans text-gray-900;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif tracking-wider;
+  }
+
+  li,
+  dl,
+  dd,
+  dt {
+    @apply tracking-wider;
+  }
+
+  a {
+    @apply tracking-wider hover:text-green hover:font-bold;
+  }
+
+  ol {
+    @apply list-decimal list-inside;
+  }
+
+  ul,
+  ol,
+  p {
+    @apply tracking-wider leading-snug;
+  }
+
+  button {
+    @apply text-gray-900;
+  }
+
+  ::selection {
+    @apply text-gray-900 bg-green;
+  }
+}
