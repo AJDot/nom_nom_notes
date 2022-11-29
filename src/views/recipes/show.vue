@@ -25,7 +25,7 @@
 
     <section class="mt-5">
       <h2 class="text-2xl border-b border-gray-400">Ingredients</h2>
-      <ul class="columns-3xs">
+      <ul class="mt-2 columns-3xs">
         <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
           {{ ing.description }}
         </li>

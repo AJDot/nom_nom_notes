@@ -11,7 +11,7 @@
           </label>
         </h2>
         <div class="flex items-center gap-1">
-          <search id="filter-category" :searcher="categoryFilterSearcher" @select="filterByCategory" />
+          <search id="filter-category" class="grow" :searcher="categoryFilterSearcher" @select="filterByCategory" />
           <button type="button" class="btn-clear flex" @click="clearCategoryFilter">
             Clear
             <i class="material-icons">close</i>
@@ -25,7 +25,7 @@
           <article class="border border-gray-400 rounded-3xl overflow-hidden">
             <h1 class="text-xl text-center truncate p-2 bg-white" :title="recipe.name">{{ recipe.name }}</h1>
             <section class="h-72 overflow-hidden relative">
-              <img v-bind="imageAttrs(recipe)" class="w-full h-full">
+              <img v-bind="imageAttrs(recipe)" class="w-full h-full object-cover">
               <div class="-translate-y-full absolute top-0 w-full h-full overflow-y-auto transition-transform bg-black/70 text-white p-2" data-content>
                 <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="w-4/5 p-2.5 my-4 mx-auto text-white border-2 border-white text-sm text-center uppercase box-border transition-all hover:text-green hover:bg-white block">
                   <i class="material-icons my-auto align-middle mr-1">receipt</i><span class="align-middle">View Recipe</span>

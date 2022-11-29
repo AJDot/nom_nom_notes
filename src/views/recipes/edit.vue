@@ -45,7 +45,7 @@
     <dl class="mt-2">
       <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
       <dd class="mt-2">
-        <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)" />
+        <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" />
       </dd>
     </dl>
     <dl class="mt-2">
@@ -68,7 +68,7 @@
     <dl class="col-span-2 mt-2">
       <dt class="text-lg border-b border-gray-400"><label for="step-0-description">Directions</label></dt>
       <dd class="mt-2">
-        <steps-list :steps="unmarkedSortedSteps" @add="addStep" @context-menu="openContextMenu($event.event, recipe.steps, $event.item)" />
+        <steps-list :steps="unmarkedSortedSteps" @add="addStep" />
       </dd>
     </dl>
     <dl class="col-span-2 mt-2">
@@ -78,25 +78,6 @@
       </dd>
     </dl>
     <input class="btn col-span-2" type="submit" :value="submitText">
-    <context-menu :display="showContextMenu" @close="resetStepContextMenu">
-      <ul v-if="showContextMenu" class="dropdown">
-        <li v-if="!isFirst(contextCollection, contextItem)" class="dropdown-item">
-          <button class="dropdown-btn" type="button" @click="moveUp(contextCollection, contextItem)">
-            Up
-          </button>
-        </li>
-        <li v-if="!isLast(contextCollection, contextItem)" class="dropdown-item">
-          <button class="dropdown-btn" type="button" @click="moveDown(contextCollection, contextItem)">
-            Down
-          </button>
-        </li>
-        <li class="dropdown-item">
-          <button class="dropdown-btn" type="button" @click="destroyItem(contextItem)">
-            Delete
-          </button>
-        </li>
-      </ul>
-    </context-menu>
   </form>
 </template>
 
@@ -114,9 +95,7 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
 import Step from 'Models/step'
-import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
-import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import IngredientsList from 'Views/ingredients/list.vue'
 import Category, { RCategory } from 'Models/category'
 import Search from '@/search.vue'
@@ -134,9 +113,6 @@ import StepsList from 'Views/steps/list.vue'
 interface Data {
   recipe: Recipe | null
   cookTime: { hours?: number, minutes?: number }
-  showContextMenu: null | MouseEvent
-  contextItem: Sortable | null
-  contextCollection: Array<Sortable>
   focusId: string | null
   tmpImage: { image?: ImageSource, raw?: File }
 }
@@ -171,9 +147,6 @@ export default defineComponent({
         hours: 0,
         minutes: 0,
       },
-      showContextMenu: null,
-      contextItem: null,
-      contextCollection: [],
       focusId: null,
       tmpImage: {},
     }
@@ -400,9 +373,6 @@ export default defineComponent({
         }
       }
     },
-    destroyItem<T extends Destroyable>(item: T) {
-      item.markForDestruction()
-    },
     destroyRecipeCategory(item: Category) {
       if (this.recipe) {
         const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
@@ -418,28 +388,6 @@ export default defineComponent({
           Logger.warn('RecipeCategory not found!')
         }
       }
-    },
-    isFirst<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().isFirst(items, item)
-    },
-    isLast<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().isLast(items, item)
-    },
-    moveUp<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().moveUp(items, item)
-    },
-    moveDown<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().moveDown(items, item)
-    },
-    openContextMenu(e: MouseEvent, collection: Array<Sortable & Destroyable>, item: Sortable & Destroyable) {
-      this.contextItem = item
-      this.contextCollection = collection
-      this.showContextMenu = e
-    },
-    resetStepContextMenu() {
-      this.contextItem = null
-      this.contextCollection = []
-      this.showContextMenu = null
     },
     setImage(event: Event) {
       if (this.recipe) {

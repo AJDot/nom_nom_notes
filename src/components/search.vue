@@ -1,22 +1,22 @@
 <template>
-  <div class="relative">
-    <context-menu :state="dropdownState" @close="hideResults" class="absolute w-full">
+  <div>
+    <dropdown :state="dropdownState" @close="hideResults">
       <template #control>
         <a-input ref="search" v-model="q" v-bind="$attrs" type="search" @keyup="search" @keydown.enter.prevent placeholder="Search..." class="mt-1" />
       </template>
-      <ul class="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg focus:outline-none focus-visible:outline-none sm:text-sm" tabindex="-1" role="listbox">
+      <ul>
         <template v-if="hasResults">
-          <li v-for="item in results" :key="item.value" @click.capture="select(item)" class="text-gray-900 relative cursor-default select-none hover:bg-gray-300 focus-within:bg-gray-300">
-            <button type="button" class="w-full h-full py-2 pl-3 flex items-center focus:outline-none">
+          <dropdown-item v-for="item in results" :key="item.value" @click.capture="select(item)">
+            <dropdown-item-button>
               {{ item.label }}
-            </button>
-          </li>
+            </dropdown-item-button>
+          </dropdown-item>
         </template>
-        <li v-else class="text-gray-900 relative cursor-default select-none py-2 pl-3">
+        <dropdown-item-empty v-else>
           No results found.
-        </li>
+        </dropdown-item-empty>
       </ul>
-    </context-menu>
+    </dropdown>
   </div>
 </template>
 

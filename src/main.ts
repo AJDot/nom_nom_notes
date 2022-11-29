@@ -9,7 +9,10 @@ import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import routerExtension from '~/router/routerExtension'
 import filters from '~/plugins/filters'
 import modalStore from '~/plugins/store/modals'
-import ContextMenu from '@/context-menu.vue'
+import Dropdown from '~/components/structure/dropdown.vue'
+import DropdownItem from '~/components/structure/dropdown-item.vue'
+import DropdownItemEmpty from '~/components/structure/dropdown-item-empty.vue'
+import DropdownItemButton from '~/components/structure/dropdown-item-button.vue'
 import AInput from '@/structure/a-input.vue'
 import ATextarea from '@/structure/a-textarea.vue'
 import { Focus } from '~/directives/focus'
@@ -29,7 +32,10 @@ createApp(App)
   .use(filters)
   .use(modalStore)
   .use(flipper)
-  .component('context-menu', ContextMenu)
+  .component('dropdown', Dropdown)
+  .component('dropdown-item', DropdownItem)
+  .component('dropdown-item-empty', DropdownItemEmpty)
+  .component('dropdown-item-button', DropdownItemButton)
   .component('a-input', AInput)
   .component('a-textarea', ATextarea)
   .mixin(currentUserMixin)
