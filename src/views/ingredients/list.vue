@@ -4,7 +4,7 @@
       <ingredients-list-item :key="ing.clientId" v-model:description="ing.description" :index="index" :data-test="`ingredient-${index}`"  :first="isFirst(ing)" :last="isLast(ing)" @move:up="moveUp(ing)" @move:down="moveDown(ing)" @destroy="destroy(ing)" />
     </template>
     <template #footer>
-      <li key="add">
+      <li key="add" class="mt-2">
         <button class="btn" type="button" @click="addIngredient">
           + Add Ingredient
         </button>

@@ -3,10 +3,6 @@
 @import "icon";
 
 @layer base {
-  html {
-    font-size: 18px;
-  }
-
   body {
     @apply font-sans text-gray-900;
   }

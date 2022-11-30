@@ -4,7 +4,7 @@
       <steps-list-item :key="step.clientId" v-model:description="step.description" :index="index" :data-test="`step-${index}`" :first="isFirst(step)" :last="isLast(step)" @move:up="moveUp(step)" @move:down="moveDown(step)" @destroy="destroy(step)" />
     </template>
     <template #footer>
-      <li key="add">
+      <li key="add" class="mt-2">
         <button class="btn" type="button" @click="addStep">
           + Add Step
         </button>

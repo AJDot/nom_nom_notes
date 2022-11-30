@@ -1,83 +1,87 @@
 <template>
-  <form v-if="recipe" class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-2" enctype="multipart/form-data" @submit.prevent="save">
-    <h2 class="text-3xl border-b border-gray-400 col-span-2">{{ headerText }}</h2>
-    <input class="btn col-span-2" type="submit" :value="submitText">
+  <form v-if="recipe" class="mx-3" enctype="multipart/form-data" @submit.prevent="save">
+    <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+      <h2 class="text-3xl border-b border-gray-400 col-span-2">{{ headerText }}</h2>
+      <input class="btn col-span-2" type="submit" :value="submitText">
 
-    <div>
-      <dl class="mt-2">
-        <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
+      <div class="grid col-span-2 sm:grid-cols-2">
+        <dl class="sm:col-span-1 sm:order-1">
+          <dt>
+            <img v-bind="imageAttrs" class="w-full mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain">
+          </dt>
+          <dd>
+            <label class="float-right btn w-full">
+              Choose File
+              <input type="file" name="image" class="hidden" @change="setImage">
+            </label>
+          </dd>
+        </dl>
+
+        <div class="sm:col-span-1">
+          <dl class="mt-2 mb-4">
+            <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
+            <dd>
+              <a-input id="name" v-model="recipe.name" type="text" name="name" placeholder="My Super Awesome Recipe" />
+            </dd>
+          </dl>
+          <dl class="mt-2 mb-4 flex flex-wrap gap-2">
+            <dt class="basis-full text-lg border-b border-gray-400"><label for="hours">Cook Time</label></dt>
+            <dd>
+              <h3 class="border-b border-gray-400 mb-2 font-bold"><label for="hours">Hours</label></h3>
+              <a-input id="hours" v-model.number="cookTime.hours" type="number" name="hours" min="0" max="191" />
+            </dd>
+            <dd>
+              <h3 class="border-b border-gray-400 mb-2 font-bold"><label for="minutes">Minutes</label></h3>
+              <a-input id="minutes" v-model.number="cookTime.minutes" type="number" name="minutes" min="0" max="59" />
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400 mb-2"><label for="description">Description</label></dt>
         <dd>
-          <a-input id="name" v-model="recipe.name" type="text" name="name" placeholder="My Super Awesome Recipe" />
+          <a-textarea id="description" v-model="recipe.description" name="description" cols="80" rows="10" placeholder="Enter recipe description" class="w-full" />
         </dd>
       </dl>
-      <dl class="mt-2 flex flex-wrap gap-2">
-        <dt class="basis-full text-lg border-b border-gray-400"><label for="hours">Cook Time</label></dt>
-        <dd>
-          <h3 class="border-b border-gray-400 mb-2"><label for="hours">Hours</label></h3>
-          <a-input id="hours" v-model.number="cookTime.hours" type="number" name="hours" min="0" max="191" />
-        </dd>
-        <dd>
-          <h3 class="border-b border-gray-400 mb-2"><label for="minutes">Minutes</label></h3>
-          <a-input id="minutes" v-model.number="cookTime.minutes" type="number" name="minutes" min="0" max="59" />
+      <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
+        <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
+        <dd class="mt-2">
+          <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" />
         </dd>
       </dl>
-    </div>
+      <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
+        <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
+        <dd>
+          <search id="categories" :searcher="categorySearcher" @select="addCategory" />
+          <ul class="grid grid-cols-1">
+            <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
+              <span class="grow inline-block my-auto">
+                {{ cat.name }}
+              </span>
+              <button type="button" class="btn" data-test="category-destroy" @click="destroyRecipeCategory(cat)">
+                <i class="material-icons align-middle">delete</i>
+              </button>
+            </li>
+          </ul>
+        </dd>
+      </dl>
 
-    <dl class="grid grid-cols-1">
-      <dt>
-        <img v-bind="imageAttrs" class="mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain">
-      </dt>
-      <dd>
-        <label class="float-right btn w-full">
-          Choose File
-          <input type="file" name="image" class="hidden" @change="setImage">
-        </label>
-      </dd>
-    </dl>
-
-
-    <dl class="col-span-2 mt-2">
-      <dt class="text-lg border-b border-gray-400 mb-2"><label for="description">Description</label></dt>
-      <dd>
-        <a-textarea id="description" v-model="recipe.description" name="description" cols="80" rows="10" placeholder="Enter recipe description" class="w-full" />
-      </dd>
-    </dl>
-    <dl class="mt-2">
-      <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
-      <dd class="mt-2">
-        <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" />
-      </dd>
-    </dl>
-    <dl class="mt-2">
-      <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
-      <dd>
-        <search id="categories" :searcher="categorySearcher" @select="addCategory" />
-        <ul class="grid grid-cols-1">
-          <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
-            <span class="grow inline-block my-auto">
-              {{ cat.name }}
-            </span>
-            <button type="button" class="btn" data-test="category-destroy" @click="destroyRecipeCategory(cat)">
-              <i class="material-icons align-middle">delete</i>
-            </button>
-          </li>
-        </ul>
-      </dd>
-    </dl>
-
-    <dl class="col-span-2 mt-2">
-      <dt class="text-lg border-b border-gray-400"><label for="step-0-description">Directions</label></dt>
-      <dd class="mt-2">
-        <steps-list :steps="unmarkedSortedSteps" @add="addStep" />
-      </dd>
-    </dl>
-    <dl class="col-span-2 mt-2">
-      <dt class="text-lg border-b border-gray-400"><label for="note">Notes</label></dt>
-      <dd class="mt-2">
-        <a-textarea id="note" v-model="recipe.note" name="note" cols="80" rows="10" class="w-full" />
-      </dd>
-    </dl>
-    <input class="btn col-span-2" type="submit" :value="submitText">
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400"><label for="step-0-description">Directions</label></dt>
+        <dd class="mt-2">
+          <steps-list :steps="unmarkedSortedSteps" @add="addStep" />
+        </dd>
+      </dl>
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400"><label for="note">Notes</label></dt>
+        <dd class="mt-2">
+          <a-textarea id="note" v-model="recipe.note" name="note" cols="80" rows="10" class="w-full" />
+        </dd>
+      </dl>
+      <input class="btn col-span-2" type="submit" :value="submitText">
+    </section>
   </form>
 </template>
 

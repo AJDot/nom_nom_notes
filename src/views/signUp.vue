@@ -1,40 +1,42 @@
 <template>
-  <form class="max-w-screen-xs flex flex-col mt-4 mx-auto" @submit.prevent="signup">
-    <h2 class="text-2xl border-b border-gray-400 mb-2">Sign Up</h2>
-    <dl class="mt-2">
-      <dt>
-        <label for="email">Email</label>
-      </dt>
-      <dd>
-        <a-input id="email" v-model="formData.email" type="text" name="email" />
-      </dd>
-    </dl>
-    <dl class="mt-2">
-      <dt>
-        <label for="username">Username</label>
-      </dt>
-      <dd>
-        <a-input id="username" v-model="formData.username" type="text" name="username" />
-      </dd>
-    </dl>
-    <dl class="mt-2">
-      <dt>
-        <label for="password">Password</label>
-      </dt>
-      <dd>
-        <a-input id="password" v-model="formData.password" type="password" name="password" />
-      </dd>
-    </dl>
-    <dl class="mt-2">
-      <dt>
-        <label for="password_confirmation">Confirm Password</label>
-      </dt>
-      <dd>
-        <a-input id="password_confirmation" v-model="formData.passwordConfirmation" type="password" name="password_confirmation" />
-      </dd>
-    </dl>
-    <input class="btn" type="submit" value="Sign Up">
-    <forgot-password-link />
+  <form class="max-w-screen-xs w-full self-center pt-4 px-2" @submit.prevent="signup">
+    <section class="w-full flex flex-col">
+      <h2 class="text-2xl border-b border-gray-400 mb-2">Sign Up</h2>
+      <dl class="mt-2">
+        <dt>
+          <label for="email">Email</label>
+        </dt>
+        <dd>
+          <a-input id="email" v-model="formData.email" type="text" name="email" />
+        </dd>
+      </dl>
+      <dl class="mt-2">
+        <dt>
+          <label for="username">Username</label>
+        </dt>
+        <dd>
+          <a-input id="username" v-model="formData.username" type="text" name="username" />
+        </dd>
+      </dl>
+      <dl class="mt-2">
+        <dt>
+          <label for="password">Password</label>
+        </dt>
+        <dd>
+          <a-input id="password" v-model="formData.password" type="password" name="password" />
+        </dd>
+      </dl>
+      <dl class="mt-2">
+        <dt>
+          <label for="password_confirmation">Confirm Password</label>
+        </dt>
+        <dd>
+          <a-input id="password_confirmation" v-model="formData.passwordConfirmation" type="password" name="password_confirmation" />
+        </dd>
+      </dl>
+      <input class="btn" type="submit" value="Sign Up">
+      <forgot-password-link />
+    </section>
   </form>
 </template>
 

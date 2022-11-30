@@ -10,6 +10,7 @@
     "start": "vite preview --host 0.0.0.0 --port $PORT",
     "setup": "node setup.js",
     "dev": "vite",
+    "dev:host": "vite --host",
     "preview": "vite preview",
     "test": "vite --mode test --port 5174",
     "build": "vite build",

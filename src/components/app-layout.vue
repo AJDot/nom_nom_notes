@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="flex flex-col">
     <loading v-if="isLoading()" />
     <app-header />
     <router-view />
-    <footer class="mt-5">
+    <footer class="mx-2 my-5 sticky top-full">
       <ul class=text-xs>
         <li>
           Recipe image placeholder icon

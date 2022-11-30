@@ -1,52 +1,54 @@
 <template>
-  <article v-if="recipe" :key="recipe.clientId" class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1">
-    <header class="border-none grid grid-cols-2 gap-4 after:clear-both">
-      <div class="grid grid-cols-1 content-start">
-        <h1 class="text-3xl">{{ recipe.name }}</h1>
-        <ul class="mb-2">
-          <li v-if="recipe.cookTime">
-            Cook Time: {{ $filters.duration(recipe.cookTime) }}
+  <article v-if="recipe" :key="recipe.clientId" class="mx-3">
+    <div class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1">
+      <header class="border-none grid sm:grid-cols-2 gap-4">
+        <img v-bind="imageAttrs" class="object-contain max-h-[20rem] mx-auto sm:mx-0 sm:ml-auto rounded-2xl sm:order-2" />
+        <div class="flex flex-col gap-2 sm:order-1">
+          <h1 class="text-center text-3xl sm:text-left">{{ recipe.name }}</h1>
+          <ul class="mb-2">
+            <li v-if="recipe.cookTime">
+              Cook Time: {{ $filters.duration(recipe.cookTime) }}
+            </li>
+          </ul>
+          <ul class="text-xs mb-2">
+            <template v-for="(cat, i) in recipe.categories" :key="cat.clientId">
+              <li class="inline-block font-bold">
+                {{ cat.name }}
+              </li>
+              <span v-if="i < recipe.categories.length - 1"> | </span>
+            </template>
+          </ul>
+          <p v-if="recipe.description" class="whitespace-pre-line">
+            {{ recipe.description }}
+          </p>
+        </div>
+      </header>
+
+      <section class="mt-5">
+        <h2 class="text-2xl border-b border-gray-400">Ingredients</h2>
+        <ul class="mt-2 columns-3xs">
+          <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
+            {{ ing.description }}
           </li>
         </ul>
-        <ul class="text-xs mb-2">
-          <template v-for="(cat, i) in recipe.categories" :key="cat.clientId">
-            <li class="inline-block font-bold">
-              {{ cat.name }}
-            </li>
-            <span v-if="i < recipe.categories.length - 1"> | </span>
-          </template>
+      </section>
+      <section class="mt-5">
+        <h2 class="text-2xl border-b border-gray-400">Directions</h2>
+        <ol class="steps">
+          <li v-for="step in sortedSteps" :key="step.clientId" v-toggle-class="'line-through'" class="mt-2.5 whitespace-pre-line cursor-pointer hover:text-green hover:font-bold">
+            {{ step.description }}
+          </li>
+        </ol>
+      </section>
+      <section class="mt-5">
+        <h2 class="text-2xl border-b border-gray-400">Notes</h2>
+        <ul class="notes">
+          <li class="mt-2.5 whitespace-pre-line">
+            {{ recipe.note }}
+          </li>
         </ul>
-        <p v-if="recipe.description" class="whitespace-pre-line">
-          {{ recipe.description }}
-        </p>
-      </div>
-      <img v-bind="imageAttrs" class="max-h-[20rem] ml-auto rounded-2xl" />
-    </header>
-
-    <section class="mt-5">
-      <h2 class="text-2xl border-b border-gray-400">Ingredients</h2>
-      <ul class="mt-2 columns-3xs">
-        <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
-          {{ ing.description }}
-        </li>
-      </ul>
-    </section>
-    <section class="mt-5">
-      <h2 class="text-2xl border-b border-gray-400">Directions</h2>
-      <ol class="steps">
-        <li v-for="step in sortedSteps" :key="step.clientId" v-toggle-class="'line-through'" class="mt-2.5 whitespace-pre-line cursor-pointer hover:text-green hover:font-bold">
-          {{ step.description }}
-        </li>
-      </ol>
-    </section>
-    <section class="mt-5">
-      <h2 class="text-2xl border-b border-gray-400">Notes</h2>
-      <ul class="notes">
-        <li class="mt-2.5 whitespace-pre-line">
-          {{ recipe.note }}
-        </li>
-      </ul>
-    </section>
+      </section>
+    </div>
   </article>
 </template>
 
