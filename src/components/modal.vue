@@ -1,6 +1,6 @@
 <template>
   <transition appear name="fade">
-    <aside v-if="state" class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <aside v-if="state" class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" data-test="modal">
       <!--
     Background backdrop, show/hide based on modal state.
 

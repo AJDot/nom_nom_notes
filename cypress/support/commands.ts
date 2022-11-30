@@ -41,14 +41,14 @@ Cypress.Commands.add('resetDb', () => {
 
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
   if (typeof indexOrName === 'number') {
-    return cy.get(`.card-list > li:nth-child(${indexOrName + 1})`)
+    return cy.get(`[data-test="card-list"] > [data-test="card-list-item"]:nth-child(${indexOrName + 1})`)
   } else {
-    return cy.contains('.card-list > li', indexOrName)
+    return cy.contains('[data-test="card-list"] > [data-test="card-list-item"]', indexOrName)
   }
 })
 
 Cypress.Commands.add('getDropdownItem', (label: string) => {
-  cy.contains('.dropdown-item', label)
+  cy.contains('[data-test="dropdown-item"]', label)
 })
 
 Cypress.Commands.add('createUser', (user: { email: string, password: string, username: string }) => {
@@ -85,7 +85,7 @@ Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string,
 })
 
 Cypress.Commands.add('getFlash', (text: string) => {
-  cy.get('.flash').contains('li', text)
+  cy.get('[data-test="flash"]').contains('li', text)
 })
 
 Cypress.Commands.add('getTest', (text: string) => {
@@ -93,7 +93,7 @@ Cypress.Commands.add('getTest', (text: string) => {
 })
 
 Cypress.Commands.add('getModal', () => {
-  cy.get('.modal')
+  cy.get('[data-test="modal"]')
 })
 
 Cypress.Commands.add('getByLabel', (text: string | RegExp) => {

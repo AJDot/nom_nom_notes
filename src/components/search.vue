@@ -2,7 +2,7 @@
   <div>
     <dropdown :state="dropdownState" @close="hideResults">
       <template #control>
-        <a-input ref="search" v-model="q" v-bind="$attrs" type="search" @keyup="search" @keydown.enter.prevent placeholder="Search..." class="mt-1" />
+        <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent placeholder="Search..." class="mt-1" />
       </template>
       <ul>
         <template v-if="hasResults">
@@ -37,6 +37,10 @@ export default defineComponent({
     searcher: {
       type: Object as () => USearcher<never>,
       required: true,
+    },
+    id: {
+      type: String,
+      default: null,
     },
   },
   emits: {

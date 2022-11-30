@@ -174,7 +174,7 @@ describe('Edit Recipe', () => {
       cy.contains('Add Ingredient').click()
       cy.getTest('ingredient-2').find('input').type('3 cups cheez-its')
       // Remove 2nd ingredient
-      cy.getTest('ingredient-1').find('.more').click()
+      cy.getTest('ingredient-1').find('[data-test="more"]').click()
       cy.getDropdownItem('Delete').click()
       // Delete Italian category
       cy.getTest('category-Italian').within(() => {
@@ -187,7 +187,7 @@ describe('Edit Recipe', () => {
       cy.contains('Add Step').click()
       cy.getTest('step-2').find('textarea').type('Sift cheez-its onto a cat.')
       // Delete 2nd step
-      cy.getTest('step-1').find('.more').click()
+      cy.getTest('step-1').find('[data-test="more"]').click()
       cy.getDropdownItem('Delete').click()
       // Change cook time
       cy.getByLabel('Hours').clear().type('2')

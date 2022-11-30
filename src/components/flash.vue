@@ -1,6 +1,6 @@
 <template>
   <transition-group appear name="fade-slide-vert">
-    <div v-for="(messages, type) in fullMessages" :key="type.toString()" class="p-2.5 mb-2.5 text-center text-white" :class="typeClass(type)" role="alert">
+    <div v-for="(messages, type) in fullMessages" :key="type.toString()" class="p-2.5 mb-2.5 text-center text-white" :class="typeClass(type)" role="alert" data-test="flash">
       <ul class="flex justify-between items-center">
         <li v-for="(m, i) in messages" :key="`${type}-${i}`">
           {{ m }}

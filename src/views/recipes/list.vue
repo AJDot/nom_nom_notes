@@ -1,7 +1,7 @@
 <template>
   <div class="px-5 pt-5 overflow-hidden">
     <aside class="mb-5">
-      <button class="text-2xl btn-clear" type="button" @click="toggleShowFilters">
+      <button class="text-2xl btn-clear" type="button" @click="toggleShowFilters" data-test="filters-toggle">
         <i class="material-icons">filter_list</i>
       </button>
       <template v-if="showFilters">
@@ -20,8 +20,8 @@
       </template>
     </aside>
     <main class="overflow-hidden after:block after:clear-both">
-      <ul class="flex gap-2 flex-wrap mb-2 justify-center">
-        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="w-72 shadow-md rounded-3xl">
+      <ul class="flex gap-2 flex-wrap mb-2 justify-center" data-test="card-list">
+        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="w-72 shadow-md rounded-3xl" data-test="card-list-item">
           <article class="border border-gray-400 rounded-3xl overflow-hidden">
             <h1 class="text-xl text-center truncate p-2 bg-white" :title="recipe.name">{{ recipe.name }}</h1>
             <section class="h-72 overflow-hidden relative">

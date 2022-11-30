@@ -3,5 +3,4 @@
 @import "tailwindcss/components";
 @import "components";
 @import "tailwindcss/utilities";
-@import "animation";
-@import "keyframe";
+@import "utilities";

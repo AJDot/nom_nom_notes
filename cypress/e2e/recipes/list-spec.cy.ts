@@ -49,9 +49,9 @@ describe('Recipes List', () => {
         .then(function() {
           cy.visit('/')
           // recipes are in alphabetical order by name
-          cy.get('.card-list > li:nth-child(1)').should('contain', 'Noodle')
-          cy.get('.card-list > li:nth-child(2)').should('contain', 'Pasta')
-          cy.get('.card-list > li:nth-child(3)').should('contain', 'Penne')
+          cy.getRecipeCard(0).should('contain', 'Noodle')
+          cy.getRecipeCard(1).should('contain', 'Pasta')
+          cy.getRecipeCard(2).should('contain', 'Penne')
 
           cy.getRecipeCard('Pasta').within((response) => {
             // recipe shows categories
@@ -107,7 +107,7 @@ describe('Recipes List', () => {
         })
         .then(function() {
           cy.visit('/')
-          cy.get('.filters-toggle').click()
+          cy.getTest('filters-toggle').click()
           const filter = '#filter-category'
           cy.get(filter).type('i')
           // Italian and Chinese categories show as results

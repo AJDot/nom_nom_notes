@@ -18,7 +18,7 @@
     <div>
       <dropdown :state="dropdownState" right @close="dropdownState = false">
         <template #control>
-          <button class="btn" type="button" @click="dropdownState = !dropdownState">
+          <button class="btn" type="button" @click="dropdownState = !dropdownState" data-test="more">
             <i class="material-icons align-middle">
               more_vert
             </i>
