@@ -1,200 +1,87 @@
 <template>
-  <form
-    v-if="recipe"
-    class="edit-recipe"
-    enctype="multipart/form-data"
-    @submit.prevent="save"
-  >
-    <h2>{{ headerText }}</h2>
-    <input
-      class="btn"
-      type="submit"
-      :value="submitText"
-      placeholder="My Super Awesome Recipe"
-    >
-    <dl class="image">
-      <dt>
-        <img v-bind="imageAttrs">
-      </dt>
-      <dd>
-        <label class="choose-file btn">
-          Choose File
-          <input
-            type="file"
-            name="image"
-            @change="setImage"
-          >
-        </label>
-      </dd>
-    </dl>
+  <form v-if="recipe" class="mx-3" enctype="multipart/form-data" @submit.prevent="save">
+    <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+      <h2 class="text-3xl border-b border-gray-400 col-span-2">{{ headerText }}</h2>
+      <input class="btn col-span-2" type="submit" :value="submitText">
 
-    <dl class="name">
-      <dt><label for="name">Name</label></dt>
-      <dd>
-        <input
-          id="name"
-          v-model="recipe.name"
-          type="text"
-          name="name"
-          placeholder="My Super Awesome Recipe"
-        >
-      </dd>
-    </dl>
-    <dl class="cook-time grid grid-1-4">
-      <dt><label for="hours">Cook Time</label></dt>
-      <dd class="grid-1-2">
-        <h3><label for="hours">Hours</label></h3>
-        <input
-          id="hours"
-          v-model.number="cookTime.hours"
-          type="number"
-          name="hours"
-          min="0"
-          max="191"
-        >
-      </dd>
-      <dd class="grid-1-2 last">
-        <h3><label for="minutes">Minutes</label></h3>
-        <input
-          id="minutes"
-          v-model.number="cookTime.minutes"
-          type="number"
-          name="minutes"
-          min="0"
-          max="59"
-        >
-      </dd>
-    </dl>
+      <div class="grid col-span-2 sm:grid-cols-2">
+        <dl class="sm:col-span-1 sm:order-1">
+          <dt>
+            <img v-bind="imageAttrs" class="w-full mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain">
+          </dt>
+          <dd>
+            <label class="float-right btn w-full">
+              Choose File
+              <input type="file" name="image" class="hidden" @change="setImage">
+            </label>
+          </dd>
+        </dl>
 
-    <dl class="description">
-      <dt><label for="description">Description</label></dt>
-      <dd>
-        <textarea
-          id="description"
-          v-model="recipe.description"
-          name="description"
-          cols="80"
-          rows="10"
-          placeholder="Enter recipe description"
-        />
-      </dd>
-    </dl>
-    <div class="grid">
-      <dl class="grid-1-2">
-        <dt><label for="ingredient-0-description">Ingredients</label></dt>
+        <div class="sm:col-span-1">
+          <dl class="mt-2 mb-4">
+            <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
+            <dd>
+              <a-input id="name" v-model="recipe.name" type="text" name="name" placeholder="My Super Awesome Recipe" />
+            </dd>
+          </dl>
+          <dl class="mt-2 mb-4 flex flex-wrap gap-2">
+            <dt class="basis-full text-lg border-b border-gray-400"><label for="hours">Cook Time</label></dt>
+            <dd>
+              <h3 class="border-b border-gray-400 mb-2 font-bold"><label for="hours">Hours</label></h3>
+              <a-input id="hours" v-model.number="cookTime.hours" type="number" name="hours" min="0" max="191" />
+            </dd>
+            <dd>
+              <h3 class="border-b border-gray-400 mb-2 font-bold"><label for="minutes">Minutes</label></h3>
+              <a-input id="minutes" v-model.number="cookTime.minutes" type="number" name="minutes" min="0" max="59" />
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400 mb-2"><label for="description">Description</label></dt>
         <dd>
-          <ingredients-list
-            :ingredients="unmarkedSortedIngredients"
-            @add="addIngredient"
-            @context-menu="openContextMenu($event.event, recipe.ingredients, $event.item)"
-          />
+          <a-textarea id="description" v-model="recipe.description" name="description" cols="80" rows="10" placeholder="Enter recipe description" class="w-full" />
         </dd>
       </dl>
-      <dl class="grid-1-2">
-        <dt><label for="categories">Categories</label></dt>
+      <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
+        <dt class="text-lg border-b border-gray-400"><label for="ingredient-0-description">Ingredients</label></dt>
+        <dd class="mt-2">
+          <ingredients-list :ingredients="unmarkedSortedIngredients" @add="addIngredient" />
+        </dd>
+      </dl>
+      <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
+        <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
         <dd>
-          <search
-            id="categories"
-            :searcher="categorySearcher"
-            @select="addCategory"
-          />
-          <ul>
-            <row
-              v-for="cat in unmarkedCategories"
-              :key="cat.clientId"
-              :data-test="`category-${cat.name}`"
-            >
-              <column class="grow-2">
+          <search id="categories" :searcher="categorySearcher" @select="addCategory" />
+          <ul class="grid grid-cols-1">
+            <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
+              <span class="grow inline-block my-auto">
                 {{ cat.name }}
-              </column>
-
-              <column>
-                <button
-                  type="button"
-                  class="btn"
-                  data-test="category-destroy"
-                  @click="destroyRecipeCategory(cat)"
-                >
-                  <i class="material-icons wiggle">delete</i>
-                </button>
-              </column>
-            </row>
+              </span>
+              <button type="button" class="btn" data-test="category-destroy" @click="destroyRecipeCategory(cat)">
+                <i class="material-icons align-middle">delete</i>
+              </button>
+            </li>
           </ul>
         </dd>
       </dl>
-    </div>
 
-    <dl>
-      <dt><label for="step-0-description">Directions</label></dt>
-      <dd>
-        <steps-list
-          :steps="unmarkedSortedSteps"
-          @add="addStep"
-          @context-menu="openContextMenu($event.event, recipe.steps, $event.item)"
-        />
-      </dd>
-    </dl>
-    <dl>
-      <dt><label for="note">Notes</label></dt>
-      <dd>
-        <textarea
-          id="note"
-          v-model="recipe.note"
-          name="note"
-          cols="80"
-          rows="10"
-          placeholder="Put each note on its own line."
-        />
-      </dd>
-    </dl>
-    <input
-      class="btn"
-      type="submit"
-      value="Update Recipe"
-    >
-    <context-menu
-      :display="showContextMenu"
-      @close="resetStepContextMenu"
-    >
-      <ul
-        v-if="showContextMenu"
-        class="dropdown"
-      >
-        <li
-          v-if="!isFirst(contextCollection, contextItem)"
-          class="dropdown-item"
-        >
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="moveUp(contextCollection, contextItem)"
-          >
-            Up
-          </button>
-        </li>
-        <li
-          v-if="!isLast(contextCollection, contextItem)"
-          class="dropdown-item"
-        >
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="moveDown(contextCollection, contextItem)"
-          >
-            Down
-          </button>
-        </li>
-        <li class="dropdown-item">
-          <button
-            class="dropdown-btn"
-            type="button"
-            @click="destroyItem(contextItem)"
-          >
-            Delete
-          </button>
-        </li>
-      </ul>
-    </context-menu>
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400"><label for="step-0-description">Directions</label></dt>
+        <dd class="mt-2">
+          <steps-list :steps="unmarkedSortedSteps" @add="addStep" />
+        </dd>
+      </dl>
+      <dl class="col-span-2 mt-2 mb-4">
+        <dt class="text-lg border-b border-gray-400"><label for="note">Notes</label></dt>
+        <dd class="mt-2">
+          <a-textarea id="note" v-model="recipe.note" name="note" cols="80" rows="10" class="w-full" />
+        </dd>
+      </dl>
+      <input class="btn col-span-2" type="submit" :value="submitText">
+    </section>
   </form>
 </template>
 
@@ -212,9 +99,7 @@ import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
 import Step from 'Models/step'
-import Sorter from 'Models/concerns/sorter'
 import Ingredient from 'Models/ingredient'
-import { Destroyable, Sortable } from 'Interfaces/modelInterfaces'
 import IngredientsList from 'Views/ingredients/list.vue'
 import Category, { RCategory } from 'Models/category'
 import Search from '@/search.vue'
@@ -232,9 +117,6 @@ import StepsList from 'Views/steps/list.vue'
 interface Data {
   recipe: Recipe | null
   cookTime: { hours?: number, minutes?: number }
-  showContextMenu: null | MouseEvent
-  contextItem: Sortable | null
-  contextCollection: Array<Sortable>
   focusId: string | null
   tmpImage: { image?: ImageSource, raw?: File }
 }
@@ -269,9 +151,6 @@ export default defineComponent({
         hours: 0,
         minutes: 0,
       },
-      showContextMenu: null,
-      contextItem: null,
-      contextCollection: [],
       focusId: null,
       tmpImage: {},
     }
@@ -498,9 +377,6 @@ export default defineComponent({
         }
       }
     },
-    destroyItem<T extends Destroyable>(item: T) {
-      item.markForDestruction()
-    },
     destroyRecipeCategory(item: Category) {
       if (this.recipe) {
         const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
@@ -516,28 +392,6 @@ export default defineComponent({
           Logger.warn('RecipeCategory not found!')
         }
       }
-    },
-    isFirst<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().isFirst(items, item)
-    },
-    isLast<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().isLast(items, item)
-    },
-    moveUp<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().moveUp(items, item)
-    },
-    moveDown<T extends Sortable>(items: Array<T>, item: T) {
-      return new Sorter().moveDown(items, item)
-    },
-    openContextMenu(e: MouseEvent, collection: Array<Sortable & Destroyable>, item: Sortable & Destroyable) {
-      this.contextItem = item
-      this.contextCollection = collection
-      this.showContextMenu = e
-    },
-    resetStepContextMenu() {
-      this.contextItem = null
-      this.contextCollection = []
-      this.showContextMenu = null
     },
     setImage(event: Event) {
       if (this.recipe) {

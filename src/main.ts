@@ -9,10 +9,12 @@ import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import routerExtension from '~/router/routerExtension'
 import filters from '~/plugins/filters'
 import modalStore from '~/plugins/store/modals'
-import ContextMenu from '@/context-menu.vue'
-import Row from '@/structure/row.vue'
-import Column from '@/structure/column.vue'
+import Dropdown from '~/components/structure/dropdown.vue'
+import DropdownItem from '~/components/structure/dropdown-item.vue'
+import DropdownItemEmpty from '~/components/structure/dropdown-item-empty.vue'
+import DropdownItemButton from '~/components/structure/dropdown-item-button.vue'
 import AInput from '@/structure/a-input.vue'
+import ATextarea from '@/structure/a-textarea.vue'
 import { Focus } from '~/directives/focus'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { Hover } from '~/directives/hover'
@@ -30,10 +32,12 @@ createApp(App)
   .use(filters)
   .use(modalStore)
   .use(flipper)
-  .component('context-menu', ContextMenu)
-  .component('row', Row)
-  .component('column', Column)
+  .component('dropdown', Dropdown)
+  .component('dropdown-item', DropdownItem)
+  .component('dropdown-item-empty', DropdownItemEmpty)
+  .component('dropdown-item-button', DropdownItemButton)
   .component('a-input', AInput)
+  .component('a-textarea', ATextarea)
   .mixin(currentUserMixin)
   .directive('focus', Focus)
   .directive('hover', Hover)

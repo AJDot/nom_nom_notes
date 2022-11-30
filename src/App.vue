@@ -1,5 +1,5 @@
 <template>
-  <app-layout id="app" />
+  <app-layout id="app" class="min-h-screen" />
 </template>
 
 <script lang="ts">

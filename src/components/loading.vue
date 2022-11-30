@@ -1,9 +1,5 @@
 <template>
-  <modal
-    state
-    hide-container
-    :classes="{body: 't-align-center'}"
-  >
+  <modal state transparent center>
     <ellipsis />
   </modal>
 </template>

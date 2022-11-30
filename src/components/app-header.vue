@@ -1,43 +1,31 @@
 <template>
-  <header class="app-header">
-    <div class="primary-header row">
-      <h1 class="row">
-        <router-link
-          :to="{name: $routerExtension.names.Home}"
-          aria-label="Go to Nom Nom Notes Home"
-        >
-          <img
-            src="~Public/logo-512x512.png"
-            alt="Nom Nom Notes"
-            class="logo-n3"
-          >
+  <header>
+    <div class="px-4 py-2 flex items-center justify-between">
+      <h1>
+        <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home">
+          <img src="~Public/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20 align-top">
         </router-link>
       </h1>
-      <ul class="suffix s-200-em horizontal j-slash">
-        <li v-if="currentUser">
+      <ul class="text-2xl j-slash sm:text-3xl">
+        <li v-if="currentUser" class="inline-block">
           {{ currentUser.username }}
         </li>
-        <li v-if="canSignIn">
-          <router-link
-            :to="{ name: $routerExtension.names.SignIn, params: {originalRequest: $router.currentRoute.value.path} }"
-          >
+        <li v-if="canSignIn" class="inline-block">
+          <router-link :to="{ name: $routerExtension.names.SignIn, params: { originalRequest: $router.currentRoute.value.path } }">
             Sign In
           </router-link>
         </li>
-        <li v-if="canSignUp">
+        <li v-if="canSignUp" class="inline-block">
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
         </li>
-        <li v-if="signedIn">
-          <a
-            href="#"
-            @click.prevent="signOut"
-          >Sign Out</a>
+        <li v-if="signedIn" class="inline-block">
+          <a href="#" @click.prevent="signOut">Sign Out</a>
         </li>
       </ul>
     </div>
-    <div class="secondary-header">
+    <div class="px-4 py-2">
       <div class="header-links">
         <router-view name="secondary-header" />
       </div>

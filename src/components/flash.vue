@@ -1,43 +1,17 @@
 <template>
-  <transition-group
-    appear
-    name="fade-slide-vert"
-  >
-    <div
-      v-for="(messages, type) in fullMessages"
-      :key="type.toString()"
-      class="flash"
-      :class="type"
-      role="alert"
-    >
-      <row>
-        <column
-          tag="ul"
-          class="grow-2 f-direction-column"
-        >
-          <li
-            v-for="(m, i) in messages"
-            :key="`${type}-${i}`"
-            class="f-justify-content-center"
-          >
-            {{ m }}
-          </li>
-        </column>
-        <column tag="span">
-          <button
-            type="button"
-            class="btn-clear"
-            @click="close(type)"
-          >
-            <i
-              class="material-icons"
-            >
-              close
-            </i>
-            <span class="sr-only">Dismiss Alert Button</span>
-          </button>
-        </column>
-      </row>
+  <transition-group appear name="fade-slide-vert">
+    <div v-for="(messages, type) in fullMessages" :key="type.toString()" class="p-2.5 mb-2.5 text-center text-white" :class="typeClass(type)" role="alert" data-test="flash">
+      <ul class="flex justify-between items-center">
+        <li v-for="(m, i) in messages" :key="`${type}-${i}`">
+          {{ m }}
+        </li>
+        <button type="button" class="btn-clear" @click="close(type)">
+          <i class="material-icons align-middle">
+            close
+          </i>
+          <span class="sr-only">Dismiss Alert Button</span>
+        </button>
+      </ul>
     </div>
   </transition-group>
 </template>
@@ -108,6 +82,13 @@ export default defineComponent({
     getFlash(): void {
       this.flash = Object.assign({}, this.flashState.flash)
       this.$store.commit(StoreModulePath.Flash + FlashMutationTypes.RESET)
+    },
+    typeClass(type: string | number): String {
+      const classes = {
+        alert: 'bg-red',
+        success: 'bg-green',
+      }
+      return classes[type] || 'bg-blue'
     },
   },
 })

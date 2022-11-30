@@ -1,25 +1,15 @@
 <template>
-  <form
-    class="sign-in"
-    @submit.prevent="requestForgotPassword"
-  >
-    <h2>Forgot Password</h2>
-    <dl class="email">
-      <dt><label for="email">Email</label></dt>
-      <dd>
-        <input
-          id="email"
-          v-model="formData.email"
-          type="email"
-          name="email"
-        >
-      </dd>
-    </dl>
-    <input
-      class="btn"
-      type="submit"
-      value="Request Password Reset"
-    >
+  <form class="max-w-screen-xs w-full self-center pt-4 px-2" @submit.prevent="requestForgotPassword">
+    <section class="w-full flex flex-col">
+      <h2 class="text-2xl border-b border-gray-400 mb-2">Forgot Password</h2>
+      <dl class="email">
+        <dt><label for="email">Email</label></dt>
+        <dd>
+          <a-input id="email" v-model="formData.email" type="email" name="email" />
+        </dd>
+      </dl>
+      <input class="btn" type="submit" value="Request Password Reset">
+    </section>
   </form>
 </template>
 

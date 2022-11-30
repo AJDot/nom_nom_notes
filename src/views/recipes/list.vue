@@ -1,74 +1,41 @@
 <template>
-  <div class="container">
-    <aside class="filters">
-      <row>
-        <button
-          class="filters-toggle btn-clear"
-          type="button"
-          @click="toggleShowFilters"
-        >
-          <i class="material-icons">filter_list</i>
-        </button>
-      </row>
-      <row v-if="showFilters">
-        <column>
-          <h2>
-            <label
-              for="filter-category"
-              class="lone"
-            >
-              Filter by Category
-            </label>
-          </h2>
-        </column>
-        <column class="grow-2">
-          <search
-            id="filter-category"
-            :searcher="categoryFilterSearcher"
-            @select="filterByCategory"
-          />
-        </column>
-        <column>
-          <button
-            type="button"
-            class="btn-clear"
-            @click="clearCategoryFilter"
-          >
+  <div class="px-5 pt-5 overflow-hidden">
+    <aside class="mb-5">
+      <button class="text-2xl btn-clear" type="button" @click="toggleShowFilters" data-test="filters-toggle">
+        <i class="material-icons">filter_list</i>
+      </button>
+      <template v-if="showFilters">
+        <h2>
+          <label for="filter-category" class="lone">
+            Filter by Category
+          </label>
+        </h2>
+        <div class="flex items-center gap-1">
+          <search id="filter-category" class="grow" :searcher="categoryFilterSearcher" @select="filterByCategory" />
+          <button type="button" class="btn-clear flex" @click="clearCategoryFilter">
             Clear
             <i class="material-icons">close</i>
           </button>
-        </column>
-      </row>
+        </div>
+      </template>
     </aside>
-    <main>
-      <ul class="card-list">
-        <li
-          v-for="recipe in recipesForList"
-          :key="recipe.clientId"
-          v-hover="pullDetails"
-        >
-          <article>
-            <h1>{{ recipe.name }}</h1>
-            <section>
-              <img v-bind="imageAttrs(recipe)">
-              <div
-                class="content hidden-y"
-              >
-                <router-link
-                  :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }"
-                  class="view-recipe"
-                >
-                  <i class="material-icons">receipt</i>View Recipe
+    <main class="overflow-hidden after:block after:clear-both">
+      <ul class="flex gap-2 flex-wrap mb-2 justify-center" data-test="card-list">
+        <li v-for="recipe in recipesForList" :key="recipe.clientId" v-hover="pullDetails" class="w-72 shadow-md rounded-3xl" data-test="card-list-item">
+          <article class="border border-gray-400 rounded-3xl overflow-hidden">
+            <h1 class="text-xl text-center truncate p-2 bg-white" :title="recipe.name">{{ recipe.name }}</h1>
+            <section class="h-72 overflow-hidden relative">
+              <img v-bind="imageAttrs(recipe)" class="w-full h-full object-cover">
+              <div class="-translate-y-full absolute top-0 w-full h-full overflow-y-auto transition-transform bg-black/70 text-white p-2" data-content>
+                <router-link :to="{ name: $routerExtension.names.Recipe, params: { clientId: recipe.clientId } }" class="w-4/5 p-2.5 my-4 mx-auto text-white border-2 border-white text-sm text-center uppercase box-border transition-all hover:text-green hover:bg-white block">
+                  <i class="material-icons my-auto align-middle mr-1">receipt</i><span class="align-middle">View Recipe</span>
                 </router-link>
-                <ul class="categories">
-                  <li
-                    v-for="category in recipe.categories"
-                    :key="category.clientId"
-                  >
+                <ul class="flex flex-wrap gap-1">
+                  <li v-for="category in recipe.categories" :key="category.clientId" class="font-thin text-gray-400 text-xs">
                     {{ category.name }}
                   </li>
                 </ul>
-                <p>{{ recipe.description }}</p>
+                <p class="mt-2 text-sm">{{ recipe.description }}</p>
               </div>
             </section>
           </article>
@@ -154,7 +121,7 @@ export default defineComponent({
         }
       } else {
         return {
-          class: 'img-placeholder',
+          class: 'img-placeholder p-14',
           src: ImagePlaceholder,
           alt: recipe.name,
         }
@@ -170,8 +137,8 @@ export default defineComponent({
       this.recipeFilters.categoryName = null
     },
     pullDetails(event: MouseEvent, hovering: boolean): void {
-      const cssClass = 'hidden-y'
-      const $el = $(event.currentTarget).find('.content')
+      const cssClass = '-translate-y-full'
+      const $el = $(event.currentTarget).find('[data-content]')
       hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },
   },

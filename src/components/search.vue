@@ -1,54 +1,34 @@
 <template>
-  <input
-    ref="search"
-    v-model="q"
-    v-bind="$attrs"
-    type="search"
-    @keyup="search"
-    @keydown.enter.prevent
-  >
-  <context-menu
-    v-if="q"
-    ref="menu"
-    :display="menuEvent"
-    :focus="false"
-    :width="$refs.search"
-    @close="hideResults"
-  >
-    <ul class="dropdown">
-      <template v-if="hasResults">
-        <li
-          v-for="item in results"
-          :key="item.value"
-          class="dropdown-item"
-          @click.capture="select(item)"
-        >
-          <button
-            type="button"
-            class="dropdown-btn"
-          >
-            {{ item.label }}
-          </button>
-        </li>
+  <div>
+    <dropdown :state="dropdownState" @close="hideResults">
+      <template #control>
+        <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent placeholder="Search..." class="mt-1" />
       </template>
-      <li
-        v-else
-        class="dropdown-item"
-      >
-        No results found.
-      </li>
-    </ul>
-  </context-menu>
+      <ul>
+        <template v-if="hasResults">
+          <dropdown-item v-for="item in results" :key="item.value" @click.capture="select(item)">
+            <dropdown-item-button>
+              {{ item.label }}
+            </dropdown-item-button>
+          </dropdown-item>
+        </template>
+        <dropdown-item-empty v-else>
+          No results found.
+        </dropdown-item-empty>
+      </ul>
+    </dropdown>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, nextTick } from 'vue'
 import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
+import AInput from '~/components/structure/a-input.vue'
 
 interface Data {
   q: string
   results: Array<SearchResult<never>>
-  menuEvent: KeyboardEvent | null
+  dropdownState: boolean
 }
 
 export default defineComponent({
@@ -58,6 +38,10 @@ export default defineComponent({
       type: Object as () => USearcher<never>,
       required: true,
     },
+    id: {
+      type: String,
+      default: null,
+    },
   },
   emits: {
     select: null,
@@ -66,7 +50,7 @@ export default defineComponent({
     return {
       q: '',
       results: [],
-      menuEvent: null,
+      dropdownState: false,
     }
   },
   computed: {
@@ -76,20 +60,22 @@ export default defineComponent({
   },
   methods: {
     async search(evt: KeyboardEvent): Promise<void> {
-      await this.searcher.search(this.q)
-      this.results = this.searcher.results
-      this.showResults(evt)
-    },
-    showResults(evt: KeyboardEvent): void {
-      this.menuEvent = evt
+      if (this.q) {
+        await this.searcher.search(this.q)
+        this.results = this.searcher.results
+        this.dropdownState = true
+      } else {
+        this.hideResults()
+      }
     },
     async hideResults(): Promise<void> {
-      await nextTick()
-      this.menuEvent = null
+      this.dropdownState = false
     },
-    select(item: SearchResult<never>): void {
+    async select(item: SearchResult<never>): Promise<void> {
       this.q = ''
-      this.$emit('select', { data: item })
+      this.hideResults()
+      this.$emit('select', { data: item });
+      (<InstanceType<typeof AInput>>this.$refs.search).$el.focus()
     },
   },
 })
