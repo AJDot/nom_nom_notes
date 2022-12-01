@@ -12,6 +12,7 @@
     "dev": "vite",
     "dev:host": "vite --host",
     "preview": "vite preview",
+    "preview:host": "vite preview --host",
     "test": "vite --mode test --port 5174",
     "build": "vite build",
     "cy:test:local:run": "cypress run --browser chrome",
