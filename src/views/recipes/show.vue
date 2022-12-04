@@ -27,19 +27,38 @@
       <section class="mt-5">
         <h2 class="text-2xl border-b border-gray-400">Ingredients</h2>
         <ul class="mt-2 columns-3xs">
-          <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
+          <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-state="ingredientsState" class="cursor-pointer hover:text-green hover:font-bold mb-2" :class="{ 'line-through': ingredientsState[ing.clientId] }">
             {{ ing.description }}
           </li>
         </ul>
       </section>
-      <section class="mt-5">
-        <h2 class="text-2xl border-b border-gray-400">Directions</h2>
-        <ol class="steps">
-          <li v-for="step in sortedSteps" :key="step.clientId" v-toggle-class="'line-through'" class="mt-2.5 whitespace-pre-line cursor-pointer hover:text-green hover:font-bold">
-            {{ step.description }}
-          </li>
-        </ol>
-      </section>
+
+      <div class="flex mt-5 gap-2">
+        <SidePanel :state="ingredientsPanelState" @close="(ingredientsPanelState = false)" class="bg-gray-900 border border-transparent rounded-lg content-start">
+          <template #control>
+            <button type="button" class="btn p-0 flex h-full text-white place-items-start" data-test="ingredients-panel-toggle" @click="toggleIngredientsPanel">
+              <span class="py-5 vertical-rl text-orient-upright sticky top-0">Ingredients</span>
+            </button>
+          </template>
+          <section class="m-5">
+            <h1 class="text-xl border-b border-gray-400">Ingredients</h1>
+            <ul class="mt-4">
+              <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-state="ingredientsState" class="cursor-pointer hover:text-green hover:font-bold mb-2" :class="{ 'line-through': ingredientsState[ing.clientId] }">
+                {{ ing.description }}
+              </li>
+            </ul>
+          </section>
+        </SidePanel>
+        <section class="grow basis-96">
+          <h2 class="text-2xl border-b border-gray-400">Directions</h2>
+          <ol class="steps">
+            <li v-for="step in sortedSteps" :key="step.clientId" v-toggle-class="'line-through'" class="mt-2.5 whitespace-pre-line cursor-pointer hover:text-green hover:font-bold">
+              {{ step.description }}
+            </li>
+          </ol>
+        </section>
+      </div>
+
       <section class="mt-5">
         <h2 class="text-2xl border-b border-gray-400">Notes</h2>
         <ul class="notes">
@@ -64,6 +83,7 @@ import Sorter from "Models/concerns/sorter"
 import Ingredient from "Models/ingredient"
 import ImagePlaceholder from "Public/icons/image_placeholder.svg"
 import { ImageSource } from "Interfaces/imageInterfaces"
+import SidePanel from "~/components/structure/side-panel.vue"
 
 interface ImageAttrs {
   src: ImageSource
@@ -74,6 +94,15 @@ interface ImageAttrs {
 
 export default defineComponent({
   name: "Recipe",
+  components: {
+    SidePanel,
+  },
+  data() {
+    return {
+      ingredientsPanelState: false,
+      ingredientsState: {},
+    }
+  },
   computed: {
     recipe(): Recipe | null {
       const r = Recipe.query()
@@ -85,14 +114,16 @@ export default defineComponent({
     sortedSteps(): Array<Step> {
       if (this.recipe) {
         return new Sorter().sort(this.recipe.steps)
-      } else {
+      }
+      else {
         return []
       }
     },
     sortedIngredients(): Array<Ingredient> {
       if (this.recipe) {
         return new Sorter().sort(this.recipe.ingredients)
-      } else {
+      }
+      else {
         return []
       }
     },
@@ -103,7 +134,8 @@ export default defineComponent({
           alt: this.recipe.name,
           title: this.recipe.name,
         }
-      } else {
+      }
+      else {
         return {
           class: "img-placeholder",
           src: ImagePlaceholder,
@@ -112,13 +144,16 @@ export default defineComponent({
       }
     },
   },
+  methods: {
+    toggleIngredientsPanel() {
+      this.ingredientsPanelState = !this.ingredientsPanelState
+    },
+  },
   async beforeCreate() {
     try {
-      await this.$store.dispatch(
-        StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
-        this.$router.currentRoute.value.params.clientId
-      )
-    } catch (e) {
+      await this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH, this.$router.currentRoute.value.params.clientId)
+    }
+    catch (e) {
       if (!this.recipe) {
         await this.$router.push({ name: RouteName.Home })
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {

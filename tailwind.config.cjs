@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -76,5 +77,24 @@ module.exports = {
       ...defaultTheme.screens,
     }
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.horizontal-tb': {
+          'writing-mode': 'horizontal-tb',
+        },
+        '.vertical-rl': {
+          'writing-mode': 'vertical-rl'
+        },
+        '.vertical-lr': {
+          'writing-mode': 'vertical-lr'
+        },
+      })
+      addUtilities({
+        '.text-orient-upright': {
+          'text-orientation': 'upright',
+        },
+      })
+    })
+  ],
 }
