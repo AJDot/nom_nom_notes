@@ -81,6 +81,13 @@ declare namespace Cypress {
     getTest(text: string): Chainable<Subject>
 
     /**
+     * Get the DOM element according to data-test HTML attribute, scoped to current subject
+     * @example
+     * cy.getTest('recipe').findTest('ingredient-0')
+     */
+    findTest(text: string): Chainable<Subject>
+
+    /**
      * Get the DOM element for the modal
      *
      * @example
