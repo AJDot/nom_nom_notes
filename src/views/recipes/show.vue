@@ -27,7 +27,7 @@
       <section class="mt-5">
         <h2 class="text-2xl border-b border-gray-400">Ingredients</h2>
         <ul class="mt-2 columns-3xs">
-          <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
+          <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-state="ingredientsState" class="cursor-pointer hover:text-green hover:font-bold mb-2" :class="{ 'line-through': ingredientsState[ing.clientId] }">
             {{ ing.description }}
           </li>
         </ul>
@@ -43,7 +43,7 @@
           <section class="m-5">
             <h1 class="text-xl border-b border-gray-400">Ingredients</h1>
             <ul class="mt-4">
-              <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-class="'line-through'" class="cursor-pointer hover:text-green hover:font-bold mb-2">
+              <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-state="ingredientsState" class="cursor-pointer hover:text-green hover:font-bold mb-2" :class="{ 'line-through': ingredientsState[ing.clientId] }">
                 {{ ing.description }}
               </li>
             </ul>
@@ -100,6 +100,7 @@ export default defineComponent({
   data() {
     return {
       ingredientsPanelState: false,
+      ingredientsState: {},
     }
   },
   computed: {
