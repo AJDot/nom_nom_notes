@@ -41,4 +41,8 @@
   .btn-link.lg {
     @apply text-3xl border-b-4;
   }
+
+  .select-blue {
+    @apply text-gray-900 bg-blue-100;
+  }
 }
