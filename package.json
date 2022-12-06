@@ -15,8 +15,9 @@
     "preview:host": "vite preview --host",
     "test": "vite --mode test --port 5174",
     "build": "vite build",
-    "cy:test:local:run": "cypress run --browser chrome",
-    "cy:test:local:open": "cypress open"
+    "cy:run": "cypress run --browser chrome --e2e",
+    "cy:run:component": "cypress run --browser chrome --component",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@vuex-orm/core": "^0.36.3",

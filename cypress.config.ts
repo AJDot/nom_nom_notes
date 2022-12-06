@@ -1,7 +1,7 @@
 import { defineConfig } from "cypress"
-import { config as dotenvConfig } from 'dotenv'
+import { config as dotenvConfig } from "dotenv"
 
-dotenvConfig({ path: './.env.test' })
+dotenvConfig({ path: "./.env.test" })
 
 export default defineConfig({
   e2e: {
@@ -10,6 +10,13 @@ export default defineConfig({
     videoUploadOnPasses: false,
     env: {
       api_url: process.env.VITE_VUE_APP_API_URL,
-    }
-  }
+    },
+  },
+
+  component: {
+    devServer: {
+      framework: "vue",
+      bundler: "vite",
+    },
+  },
 })
