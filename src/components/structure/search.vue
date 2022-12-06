@@ -6,7 +6,7 @@
       </template>
       <ul>
         <template v-if="hasResults">
-          <dropdown-item v-for="item in results" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)">
+          <dropdown-item v-for="(item, i) in results" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)" :data-test="`item-${i}`">
             <dropdown-item-button>
               {{ item.label }}
             </dropdown-item-button>
@@ -23,7 +23,7 @@
 <script lang="ts">
 import AInput from '@/structure/a-input.vue'
 import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import { USelector } from '~/interfaces/selectInterfaces'
 import Selector from '~/utils/selector'
 
@@ -67,6 +67,9 @@ export default defineComponent({
     currentResult(): SearchResult<never> | null {
       return this.selector.current
     },
+    currentIndex(): number | null {
+      return this.selector.currentIndex
+    },
     hasResults(): boolean {
       return Boolean(this.results.length)
     },
@@ -105,13 +108,27 @@ export default defineComponent({
     },
     down(evt: KeyboardEvent) {
       this.selector.down()
+      this.currentScrollIntoView()
     },
     up(evt: KeyboardEvent) {
       this.selector.up()
+      this.currentScrollIntoView()
     },
     makeCurrent(index: number | null) {
       this.selector.set(index)
+      this.currentScrollIntoView()
     },
+    async currentScrollIntoView() {
+      await nextTick()
+      await nextTick() // two are necessary to make sure dropdown list is rendered
+
+      if (this.currentResult) {
+        $(this.$el)
+          .find(`[data-test="item-${this.currentIndex}"]`)
+          .get(0)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
+    }
   },
 })
 </script>

@@ -6,6 +6,12 @@ export default class Selector<T> implements USelector<T> {
   constructor(private _items: Array<T> = []) {
   }
 
+  get currentIndex(): number | null {
+    if (!this.current) return null
+
+    return this.items.indexOf(this.current)
+  }
+
   get items(): Array<T> {
     return this._items
   }
