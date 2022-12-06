@@ -56,7 +56,7 @@ import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
 import { ImageSource } from 'Interfaces/imageInterfaces'
 import Searcher from '~/utils/searcher'
 import Category from 'Models/category'
-import Search from '@/search.vue'
+import Search from '@/structure/search.vue'
 import { SearchResult } from 'Interfaces/searchInterfaces'
 
 interface ImageAttrs {

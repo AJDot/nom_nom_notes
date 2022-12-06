@@ -92,7 +92,7 @@ Cypress.Commands.add('getTest', (text: string) => {
   cy.get(`[data-test="${text}"]`)
 })
 
-Cypress.Commands.add('findTest', {prevSubject: true}, (subject, text: string) => {
+Cypress.Commands.add('findTest', { prevSubject: true }, (subject, text: string) => {
   cy.wrap(subject).find(`[data-test="${text}"]`)
 })
 

@@ -6,7 +6,7 @@
       </template>
       <ul>
         <template v-if="hasResults">
-          <dropdown-item v-for="item in results" @click="select(item)" :class="{ 'select-blue': item === currentResult }">
+          <dropdown-item v-for="item in results" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)">
             <dropdown-item-button>
               {{ item.label }}
             </dropdown-item-button>
@@ -23,7 +23,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
-import AInput from '~/components/structure/a-input.vue'
+import AInput from '@/structure/a-input.vue'
 
 interface Data {
   q: string
