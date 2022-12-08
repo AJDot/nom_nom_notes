@@ -104,6 +104,14 @@ declare namespace Cypress {
     getByLabel(text: string | RegExp): Chainable<Subject>
 
     /**
+     * Trim the whitespace of a subject's text
+     * @example
+     * 
+     * cy.contains('No results found.  ').trim().should('equal', 'No results found.')
+     */
+    trim(): Chainable<Subject>
+
+    /**
      * Test form field values
      *
      * @example
