@@ -22,9 +22,10 @@
 
 <script lang="ts">
 import AInput from '@/structure/a-input.vue'
-import { SearchResult, USearcher } from 'Interfaces/searchInterfaces'
+import { SearchResult, USearchDirector, USearcher } from 'Interfaces/searchInterfaces'
 import { defineComponent, nextTick } from 'vue'
 import { USelector } from '~/interfaces/selectInterfaces'
+import SearcherDirector from '~/utils/searchDirector'
 import Selector from '~/utils/selector'
 
 interface Data {
@@ -61,6 +62,9 @@ export default defineComponent({
     }
   },
   computed: {
+    searchDirector(): USearchDirector<unknown> {
+      return new SearcherDirector<unknown>({ searchers: this.searchers })
+    },
     results: {
       get(): Array<Array<SearchResult<unknown>>> {
         return this.selector.collections
@@ -84,8 +88,8 @@ export default defineComponent({
       if (['ArrowUp', 'ArrowDown', 'Enter'].includes(evt.key)) return
 
       if (this.q) {
-        await Promise.all(this.searchers.map(searcher => searcher.search(this.q)))
-        this.setResults(this.searchers.map(searcher => searcher.results))
+        await this.searchDirector.search(this.q)
+        this.setResults(this.searchDirector.results)
         this.dropdownState = true
       } else {
         this.clearResults()

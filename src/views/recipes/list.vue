@@ -104,6 +104,7 @@ export default defineComponent({
     },
     categoryFilterSearcher(): Searcher<Category, string> {
       return new Searcher({
+        type: 'result',
         label: 'name',
         value: 'name',
         valueString: 'name',
