@@ -1,31 +1,32 @@
 import { USelector } from './../interfaces/selectInterfaces'
 
-export default class Selector<T> implements USelector<T> {
-  current: T | null = null
+export default class Selector<Collections extends any[][]> implements USelector<Collections> {
+  current: Collections[number][number] | null = null
 
-  constructor(private _items: Array<T> = []) {
+  constructor(private _collections: Collections = [] as unknown as Collections) {
   }
 
   get currentIndex(): number | null {
     if (!this.current) return null
 
-    return this.items.indexOf(this.current)
+    return this.collections.reduce((all, items) => all.concat(items), []).indexOf(this.current)
   }
 
-  get items(): Array<T> {
-    return this._items
+  get collections(): Collections {
+    return this._collections
   }
 
-  set items(value: Array<T>) {
+  set collections(value: Collections) {
     this.current = null
-    this._items = value
+    this._collections = value
   }
 
   set(index: number | null): this['current'] {
     if (index === null) {
       this.current = null
     } else {
-      this.current = this.items[index % this.items.length]
+      const allItems = this.collections.reduce((all, items) => all.concat(items), [])
+      this.current = allItems[index % allItems.length]
     }
     return this.current
   }
@@ -39,8 +40,11 @@ export default class Selector<T> implements USelector<T> {
   }
 
   private step(dx: number): this['current'] {
-    let index = this.items.length
-    if (this.current) index += this.items.indexOf(this.current) + dx
+    let index = this.collections.reduce((sum, items) => sum + items.length, 0)
+    if (this.currentIndex !== null) {
+      index += this.currentIndex + dx
+    }
+
     return this.set(index)
   }
 }

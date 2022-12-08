@@ -6,7 +6,7 @@
       </template>
       <ul>
         <template v-if="hasResults">
-          <dropdown-item v-for="(item, i) in results" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)" :data-test="`item-${i}`">
+          <dropdown-item v-for="(item, i) in results.flat()" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)" :data-select="`item-${i}`">
             <dropdown-item-button>
               {{ item.label }}
             </dropdown-item-button>
@@ -30,15 +30,20 @@ import Selector from '~/utils/selector'
 interface Data {
   q: string
   dropdownState: boolean
-  selector: USelector<SearchResult<never>>
+  selector: USelector<SearchResult<unknown>[][]>
 }
 
 export default defineComponent({
   name: 'Search',
   props: {
     searcher: {
-      type: Object as () => USearcher<never>,
-      required: true,
+      type: Object as () => USearcher<unknown>,
+      required: false,
+    },
+    searchers: {
+      type: Array as () => Array<USearcher<unknown>>,
+      required: false,
+      default: (props) => props.searcher ? [props.searcher] : [],
     },
     id: {
       type: String,
@@ -52,26 +57,26 @@ export default defineComponent({
     return {
       q: '',
       dropdownState: false,
-      selector: new Selector<SearchResult<never>>()
+      selector: new Selector<SearchResult<unknown>[][]>()
     }
   },
   computed: {
     results: {
-      get(): Array<SearchResult<never>> {
-        return this.selector.items
+      get(): Array<Array<SearchResult<unknown>>> {
+        return this.selector.collections
       },
-      set(items: Array<SearchResult<never>>) {
-        this.selector.items = items
+      set(collections: Array<Array<SearchResult<unknown>>>) {
+        this.selector.collections = collections
       }
     },
-    currentResult(): SearchResult<never> | null {
+    currentResult(): SearchResult<unknown> | null {
       return this.selector.current
     },
     currentIndex(): number | null {
       return this.selector.currentIndex
     },
     hasResults(): boolean {
-      return Boolean(this.results.length)
+      return Boolean(this.results.some(items => items.length))
     },
   },
   methods: {
@@ -79,14 +84,14 @@ export default defineComponent({
       if (['ArrowUp', 'ArrowDown', 'Enter'].includes(evt.key)) return
 
       if (this.q) {
-        await this.searcher.search(this.q)
-        this.setResults(this.searcher.results)
+        await Promise.all(this.searchers.map(searcher => searcher.search(this.q)))
+        this.setResults(this.searchers.map(searcher => searcher.results))
         this.dropdownState = true
       } else {
         this.clearResults()
       }
     },
-    setResults(results: Array<SearchResult<never>>) {
+    setResults(results: Array<Array<SearchResult<unknown>>>) {
       this.results = results
       this.makeCurrent(0)
     },
@@ -98,7 +103,7 @@ export default defineComponent({
     async hideResults(): Promise<void> {
       this.dropdownState = false
     },
-    async select(item: SearchResult<never> | null): Promise<void> {
+    async select(item: SearchResult<unknown> | null): Promise<void> {
       if (!item) return
 
       this.q = ''
@@ -122,12 +127,17 @@ export default defineComponent({
       await nextTick()
       await nextTick() // two are necessary to make sure dropdown list is rendered
 
-      if (this.currentResult) {
+      if (this.currentResult && this.currentIndex) {
         $(this.$el)
-          .find(`[data-test="item-${this.currentIndex}"]`)
+          .find(`[data-select-id="item-${this.currentIndex}"]`)
           .get(0)
           ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
       }
+    }
+  },
+  created() {
+    if (!this.searchers.length) {
+      console[import.meta.env.DEV ? 'error' : 'warn']('Searcher must be provided')
     }
   },
 })

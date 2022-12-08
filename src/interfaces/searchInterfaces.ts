@@ -1,9 +1,12 @@
 import { Hash, KeysOfType } from 'Interfaces/utilInterfaces'
 
-export interface SearchResult<T> {
+type SearchType = 'result' | 'command'
+
+export interface SearchResult<V, Type extends SearchType = SearchType> {
+  type: Type
   label: string
   value: string
-  raw: T
+  raw: V
 }
 
 export interface USearcher<T> {
@@ -12,9 +15,10 @@ export interface USearcher<T> {
 }
 
 export interface SearchOptions<T, V> {
-  label: KeysOfType<T, string> | ((item: T) => string)
-  value: KeysOfType<T, V> | ((item: T) => V)
-  valueString: KeysOfType<T, string> | ((item: T) => string)
+  type: SearchType
+  label: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
+  value: KeysOfType<T, V> | ((item: T, options: { q: string }) => V)
+  valueString: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
   collection: Array<T>
   endpoint?: string
   query?: Hash

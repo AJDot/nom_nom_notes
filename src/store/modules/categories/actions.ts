@@ -10,6 +10,7 @@ import { StoreUtils } from '~/utils/storeUtils'
 
 export enum CategoryActionTypes {
   FETCH_ALL = 'FETCH_ALL',
+  CREATE = 'CREATE',
 }
 
 type CategoryActions = {
@@ -26,6 +27,14 @@ const actions: ActionTree<CategoriesState, RootState> & CategoryActions = {
       }),
     )
     await StoreUtils.processIncluded(Category, response.data.included)
+    return response
+  },
+  async [CategoryActionTypes.CREATE](_store: ActionContext<CategoriesState, RootState>, category: Category): Promise<AxiosResponse<ServerResponse<CategoryAttributes>>> {
+    const response: AxiosResponse<ServerResponse<CategoryAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.categories(), {
+      category: category.$toJson(),
+    })
+    category.id = response.data.data.id
+    await category.$update({ data: { id: category.id, ...response.data.data.attributes } })
     return response
   },
 }
