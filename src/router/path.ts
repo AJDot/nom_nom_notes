@@ -1,9 +1,8 @@
 import { RRecord } from 'Interfaces/modelInterfaces'
-import { Hash } from 'Interfaces/utilInterfaces'
 import AppConfig from '~/appConfig'
 
 class Path {
-  protected static buildPath(path: string, wildcards: Hash) {
+  protected static buildPath(path: string, wildcards: Record<string, any>) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {
       let val

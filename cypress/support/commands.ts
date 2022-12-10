@@ -101,10 +101,14 @@ Cypress.Commands.add('getModal', () => {
 })
 
 Cypress.Commands.add('getByLabel', (text: string | RegExp) => {
-  return cy.contains('label', text).invoke('attr', 'for')
+  cy.contains('label', text).invoke('attr', 'for')
     .then(labelFor => {
       cy.get(`#${labelFor}`)
     })
+})
+
+Cypress.Commands.add('trim', {prevSubject: true}, (subject) => {
+  cy.wrap(subject).invoke('text').then(text => text.trim())
 })
 
 Cypress.Commands.add('assertInput', (options: AssertInputOptionTypes) => {

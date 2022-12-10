@@ -107,6 +107,7 @@ describe('Recipes List', () => {
         })
         .then(function() {
           cy.visit('/')
+          cy.contains('Noodle').should('exist')
           cy.getTest('filters-toggle').click()
           const filter = '#filter-category'
           cy.get(filter).type('i')

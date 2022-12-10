@@ -5,20 +5,18 @@ import { AxiosResponse } from 'axios'
 import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
 import { ObjectUtils } from '~/utils/objectUtils'
 
-function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T) => V)): V {
+function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T, options: { q: string }) => V), options: { q: string }): V {
   if (getter instanceof Function) {
-    return getter(item)
+    return getter(item, options)
   } else {
     return item[getter] as unknown as V
   }
 }
 
 export default class Searcher<T, V> implements USearcher<T> {
-  options: SearchOptions<T, V>
   results: Array<SearchResult<T>> = []
 
-  constructor(options: SearchOptions<T, V>) {
-    this.options = options
+  constructor(private options: SearchOptions<T, V>) {
   }
 
   async search(q = ''): Promise<void> {
@@ -28,28 +26,30 @@ export default class Searcher<T, V> implements USearcher<T> {
         this.options.endpoint,
         {
           params: {
-            query: Object.assign({
-              term: q,
-            },
-            this.options.query),
+            query: Object.assign({},
+              this.options.query,
+              { term: q, },
+            ),
           },
         })
       this.results = response.data.data.map(item => {
         const obj = ObjectUtils.combine(item, 'id', 'attributes') as T
         return {
-          label: getValue(obj, this.options.label),
-          value: getValue(obj, this.options.valueString),
+          type: getValue(this.options, 'type', { q }),
+          label: getValue(obj, this.options.label, { q }),
+          value: getValue(obj, this.options.valueString, { q }),
           raw: obj,
         }
       })
     } else {
       // search locally
       this.results = this.options.collection.reduce((agg, item) => {
-        const label: string = getValue(item, this.options.label)
-        if (label.match(q)) {
+        const valueString: string = getValue(item, this.options.valueString, { q })
+        if (valueString.match(q)) {
           agg.push({
-            label: label,
-            value: getValue(item, this.options.valueString),
+            type: getValue(this.options, 'type', { q }),
+            label: getValue(item, this.options.label, { q }),
+            value: getValue(item, this.options.valueString, { q }),
             raw: item,
           })
         }

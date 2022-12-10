@@ -1,5 +1,4 @@
 import { InstanceUtils } from '~/utils/instanceUtils'
-import { Hash } from 'Interfaces/utilInterfaces'
 import { NumberUtils } from '~/utils/numberUtils'
 
 export const ArrayUtils = {
@@ -32,12 +31,12 @@ export const ArrayUtils = {
         return `${items.slice(0, lastIndex).join(separator)}${separator} ${lastSeparator} ${items[lastIndex]}`
     }
   },
-  gatherBy<T extends Hash>(array: T[], key: string, props: string | Array<string> = [], spreads: string | Array<string> = []): Hash<Array<T>> {
-    const gathered: Hash = {}
+  gatherBy<T extends Record<PropertyKey, any>>(array: T[], key: string, props: string | Array<string> = [], spreads: string | Array<string> = []): Record<PropertyKey, Array<T>> {
+    const gathered: Record<PropertyKey, any> = {}
     ArrayUtils.wrap(array).forEach((item) => {
       const val = item[key]
       if (!gathered[val]) gathered[val] = []
-      const hash: Hash = {}
+      const hash: Record<PropertyKey, any> = {}
       this.wrap(props).forEach(p => { hash[p] = item[p] })
       this.wrap(spreads).forEach(s => { Object.assign(hash, item[s]) })
       gathered[val].push(hash)

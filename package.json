@@ -16,7 +16,9 @@
     "test": "vite --mode test --port 5174",
     "build": "vite build",
     "cy:run": "cypress run --browser chrome --e2e",
-    "cy:run:component": "cypress run --browser chrome --component",
+    "cy:run:component": "cypress run --browser chrome --component --spec cypress/component/**/*.cy.ts",
+    "cy:run:unit": "cypress run --component --spec src/**/*.spec.ts",
+    "cy:run:component-unit": "cypress run --browser chrome --component",
     "cy:open": "cypress open"
   },
   "dependencies": {

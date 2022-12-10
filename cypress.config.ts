@@ -18,5 +18,6 @@ export default defineConfig({
       framework: "vue",
       bundler: "vite",
     },
+    specPattern: ["cypress/component/**/*.cy.ts", "src/**/*.spec.ts"]
   },
 })

@@ -54,7 +54,7 @@
       <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
         <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
         <dd>
-          <search id="categories" :searcher="categorySearcher" @select="addCategory" />
+          <search id="categories" :searchers="[categorySearcher, createCategorySearcher]" @select="addCategory" />
           <ul class="grid grid-cols-1">
             <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
               <span class="grow inline-block my-auto">
@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ImgHTMLAttributes } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import router from '~/router'
@@ -102,6 +102,7 @@ import Step from 'Models/step'
 import Ingredient from 'Models/ingredient'
 import IngredientsList from 'Views/ingredients/list.vue'
 import Category, { RCategory } from 'Models/category'
+import { CategoryActionTypes } from '~/store/modules/categories/actions'
 import Search from '@/structure/search.vue'
 import Searcher from '~/utils/searcher'
 import { ApiPath } from '~/router/path'
@@ -113,6 +114,7 @@ import ImagePlaceholder from 'Public/icons/image_placeholder.svg'
 import { ImageSource } from 'Interfaces/imageInterfaces'
 import loading from '~/mixins/loading'
 import StepsList from 'Views/steps/list.vue'
+import { Command } from '~/enums/command'
 
 interface Data {
   recipe: Recipe | null
@@ -186,6 +188,7 @@ export default defineComponent({
     },
     categorySearcher(): Searcher<Category, string> {
       const options: SearchOptions<Category, string> = {
+        type: 'result',
         label: 'name',
         value: 'clientId',
         valueString: 'clientId',
@@ -201,10 +204,25 @@ export default defineComponent({
       }
       return new Searcher(options)
     },
-    imageAttrs(): ImageAttrs {
+    createCategorySearcher(): Searcher<{ command: Command, name: string }, string> {
+      return new Searcher<{ command: Command, name: string }, string>({
+        type: 'command',
+        label: (item, { q }) => `${item.name} ${q}`,
+        value: item => item.name.trim(),
+        valueString: (_item, { q }) => {
+          const categoryExists = Category.query().where((category: Category) => {
+            return category.name.toLocaleLowerCase() === q.toLocaleLowerCase().trim()
+          }).exists()
+          // ? never match : always match
+          return categoryExists ? '' : q
+        },
+        collection: [{ command: Command.CreateCategory, name: '+ Create category' }],
+      })
+    },
+    imageAttrs(): ImgHTMLAttributes {
       if (this.tmpImage.image) {
         return {
-          src: this.tmpImage.image,
+          src: this.tmpImage.image.toString(),
           alt: 'Upload an Image',
         }
       } else if (this.recipe?.image.url) {
@@ -233,10 +251,10 @@ export default defineComponent({
     },
   },
   async beforeMount() {
+    const store = useStore<RootState>(stateKey)
     if (this.mode === 'create') {
       this.recipe = new Recipe()
     } else {
-      const store = useStore<RootState>(stateKey)
       const clientId = router.currentRoute.value.params.clientId
       try {
         await store.dispatch(
@@ -256,6 +274,7 @@ export default defineComponent({
         })
       }
     }
+    await store.dispatch(StoreModulePath.Categories + CategoryActionTypes.FETCH_ALL)
   },
   methods: {
     async save() {
@@ -267,6 +286,9 @@ export default defineComponent({
         action = StoreModulePath.Recipes + RecipeActionTypes.UPDATE
       }
       this.loading(async () => {
+        await Promise.all(Category.query().where('id', null).get().map(category => {
+          return this.$store.dispatch(StoreModulePath.Categories + CategoryActionTypes.CREATE, category)
+        }))
         await this.$store.dispatch(action, this.recipe)
           .then((response) => this.updateSuccessful(response))
           .catch((error) => this.updateError(error))
@@ -353,10 +375,17 @@ export default defineComponent({
       this.focusId = ingredient.clientId
       this.recipe.ingredients.push(ingredient)
     },
-    async addCategory(item: { data: SearchResult<RCategory> }) {
+    async addCategory(item: { data: SearchResult<RCategory, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
       if (!this.recipe) return
-      await Category.insertOrUpdate({ data: item.data.raw })
-      const cat = Category.find(item.data.value)
+      let cat
+      if (item.data.type === 'command') {
+        if (item.data.raw.command)
+        cat = (await Category.insertOrUpdate({ data: { name: item.data.value.trim() } })).categories[0]
+      } else {
+        await Category.insertOrUpdate({ data: item.data.raw })
+        cat = Category.find(item.data.value)
+      }
+
       if (cat) {
         if (!this.recipe.categories.find(c => c.clientId === cat.clientId)) {
           this.recipe.categories.push(cat)
@@ -382,7 +411,6 @@ export default defineComponent({
         const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
         const category = this.recipe.categories.find(c => c.$id === item.$id)
         if (category) {
-          category.$delete()
           const categoryIndex = this.recipe.categories.indexOf(category)
           this.recipe.categories.splice(categoryIndex, 1)
         }
@@ -392,6 +420,9 @@ export default defineComponent({
           Logger.warn('RecipeCategory not found!')
         }
       }
+    },
+    exactCategoryNameMatch(collections: Array<Array<SearchResult<Category>>>, name: string): boolean {
+      return collections.some(items => items.some(item => item.label.toLocaleLowerCase() === name.toLocaleLowerCase()))
     },
     setImage(event: Event) {
       if (this.recipe) {

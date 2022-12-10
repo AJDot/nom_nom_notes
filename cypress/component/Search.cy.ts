@@ -86,4 +86,37 @@ describe('Search.cy.ts', () => {
     cy.get('[role=listbox]').should('not.exist')
     cy.get('@onSelectSpy').should('have.been.calledWith', { data: { label: 'Thanksgiving', value: 'Thanksgiving', raw: { name: 'Thanksgiving' } } })
   })
+
+  describe('with multiple searchers', () => {
+    it.only('display results from all searchers', () => {
+      const nameCollection = [{ name: 'Turkey' }, { name: 'Thanksgiving' }, { name: 'Team' }]
+      const titleCollection = [{ title: 'Apple' }, { title: 'Apricot' }, { title: 'Artichoke' }]
+      const onSelectSpy = cy.spy().as('onSelectSpy')
+      cy.mount(Search, {
+        props: {
+          searchers: [
+            new Searcher({ label: 'name', value: 'name', valueString: 'name', collection: nameCollection }),
+            new Searcher({ label: 'title', value: 'title', valueString: 'title', collection: titleCollection }),
+          ],
+          onSelect: onSelectSpy
+        }
+      })
+
+      cy.get('input[placeholder="Search..."]').type('k')
+      let tExpected = ['Turkey', 'Thanksgiving', 'Artichoke']
+      cy.getTest('dropdown-item')
+        .should('have.length', 3)
+        .each(($el, index, $list) => {
+          cy.wrap($el).should('have.text', tExpected[index])
+        })
+
+      cy.get('input[placeholder="Search..."]').type('e') // now "ke"
+      let tExpected2 = ['Turkey', 'Artichoke']
+      cy.getTest('dropdown-item')
+        .should('have.length', 2)
+        .each(($el, index, $list) => {
+          cy.wrap($el).should('have.text', tExpected2[index])
+        })
+    })
+  })
 })
