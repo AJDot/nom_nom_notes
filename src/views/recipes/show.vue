@@ -81,7 +81,7 @@ import { RouteName } from "~/router/routeName"
 import Step from "Models/step"
 import Sorter from "Models/concerns/sorter"
 import Ingredient from "Models/ingredient"
-import ImagePlaceholder from "Public/icons/image_placeholder.svg"
+import ImagePlaceholder from "/icons/image_placeholder.svg"
 import { ImageSource } from "Interfaces/imageInterfaces"
 import SidePanel from "~/components/structure/side-panel.vue"
 

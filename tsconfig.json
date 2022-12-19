@@ -59,9 +59,6 @@
       "Assets/*": [
         "src/assets/*"
       ],
-      "Public/*": [
-        "src/assets/public/*"
-      ],
       "Styles/*": [
         "src/assets/stylesheets/*"
       ],
