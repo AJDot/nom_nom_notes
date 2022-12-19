@@ -3,7 +3,7 @@
     <div class="px-4 py-2 flex items-center justify-between">
       <h1>
         <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home">
-          <img src="~Public/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20 align-top">
+          <img src="/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20 align-top">
         </router-link>
       </h1>
       <ul class="text-2xl j-slash sm:text-3xl">
