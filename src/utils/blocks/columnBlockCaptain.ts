@@ -1,4 +1,5 @@
 import { Block, ColumnBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import assertNever from '../assertNever'
 
 export default class ColumnBlockCaptain implements UBlockCaptain {
   constructor(public block: ColumnBlock, public director: UBlockDirector) {
@@ -17,6 +18,21 @@ export default class ColumnBlockCaptain implements UBlockCaptain {
   }
 
   onMove({ block }: { block: Block }) {
-    this.director.moveInside(block, this.block)
+     switch (block.type) {
+      case 'h1':
+      case 'h2':
+      case 'h3':
+      case 'text':
+        this.director.moveInside(block, this.block)
+        break
+      case 'column':
+        this.director.move(block, this.block)
+        break
+      case 'row':
+        this.director.moveInside(block, this.block)
+        break
+      default:
+        assertNever(block)
+    }   
   }
 }
