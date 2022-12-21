@@ -1,4 +1,5 @@
-import { Block, H1Block, UBlockCaptain, UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block, H1Block, RowBlock, UBlockCaptain, UBlockDirector } from 'Interfaces/blockInterfaces'
+import assertNever from '../assertNever'
 import Guid from '../guid'
 
 export default class H1BlockCaptain implements UBlockCaptain {
@@ -21,6 +22,22 @@ export default class H1BlockCaptain implements UBlockCaptain {
   }
 
   onMove({ block }: { block: Block }) {
-    this.director.move(block, this.block)
+    switch (block.type) {
+      case 'h1':
+      case 'h2':
+      case 'h3':
+      case 'text':
+        this.director.move(block, this.block)
+        break
+      case 'column':
+        const row: RowBlock = { id: Guid.create(), type: 'row', content: { text: '' } }
+        this.director.addBefore(row, this.block)
+        this.director.moveInside(block, row)
+        break
+      case 'row':
+        break
+      default:
+        assertNever(block)
+    }
   }
 }
