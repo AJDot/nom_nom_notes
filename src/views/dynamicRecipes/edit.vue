@@ -107,8 +107,6 @@ export default defineComponent({
         return this.blocks.filter(b => !b.parentId)
       },
       set(value: Block[]) {
-        console.log(this.blocks)
-        console.log(value)
         this.blocks = value
       },
     },
@@ -121,7 +119,6 @@ export default defineComponent({
   },
   methods: {
     async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
-      console.log('input')
       if (!this.dynamicRecipe) return
 
       const data = event.data
@@ -193,7 +190,6 @@ export default defineComponent({
       this.focusBefore(block)
     },
     onBackspace({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
-      console.log('backspace')
       if (!this.dynamicRecipe) return
 
       const data = event.data
@@ -221,7 +217,7 @@ export default defineComponent({
     },
     onMove({ move, to, call }: { move: Block, to: Block, call: Function }) {
       call()
-      // this.save()
+      this.save()
     },
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
