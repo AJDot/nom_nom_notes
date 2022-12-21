@@ -1,4 +1,4 @@
-import { ColumnBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, ColumnBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
 
 export default class ColumnBlockCaptain implements UBlockCaptain {
   constructor(public block: ColumnBlock, public director: UBlockDirector) {
@@ -14,5 +14,9 @@ export default class ColumnBlockCaptain implements UBlockCaptain {
 
   onInput({ event }: { event: InputEvent }) {
     this.block.content.text = (<HTMLElement>event.target)?.innerText
+  }
+
+  onMove({ block }: { block: Block }) {
+    this.director.moveInside(block, this.block)
   }
 }

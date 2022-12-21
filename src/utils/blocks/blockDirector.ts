@@ -137,6 +137,25 @@ export default class BlockDirector implements UBlockDirector {
     return !block.content.text && this.childrenFor(block).length === 0
   }
 
+  move(block: Block, to: Block) {
+    let moveIndex: number | null = this.indexOf(block)
+    let toIndex: number | null = this.indexOf(to)
+    if (moveIndex === null || toIndex === null) return
+
+    this.blocks.splice(toIndex, 0, this.blocks.splice(moveIndex, 1)[0])
+    block.parentId = to.parentId
+  }
+
+  moveInside(block: Block, to: Block) {
+    let moveIndex: number | null = this.indexOf(block)
+    const children = this.childrenFor(to)
+    let toIndex: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
+    if (moveIndex === null || toIndex === null) return
+
+    this.blocks.splice(toIndex, 0, this.blocks.splice(moveIndex, 1)[0])
+    block.parentId = to.id
+  }
+
   async onDrop({ moveBlockId, toBlockId, }: { moveBlockId: string, toBlockId: string }) {
     if (this.options.onDrop) {
       this.options.onDrop({ moveBlockId, toBlockId, call: () => this.onDropDefault({ moveBlockId, toBlockId }) })
@@ -247,14 +266,7 @@ export default class BlockDirector implements UBlockDirector {
   }
 
   private onMoveDefault({ move, to }: { move: Block, to: Block }): void {
-    let moveIndex: number | null, toIndex: number | null
-      moveIndex = this.indexOf(move)
-      toIndex = this.indexOf(to)
-
-    if (moveIndex !== null && toIndex !== null) {
-      this.blocks.splice(toIndex, 0, this.blocks.splice(moveIndex, 1)[0])
-      move.parentId = to.parentId
-    }
+    this.captainFor(to).onMove({block: move})
   }
 
   private onDropDefault({ moveBlockId, toBlockId, }: { moveBlockId: string, toBlockId: string }) {

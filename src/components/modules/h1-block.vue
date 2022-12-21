@@ -1,21 +1,31 @@
 <template>
-  <h1 v-once class="basis-full text-3xl px-2 py-1 cursor-text outline-none border-2 border-transparent focus:border-gray-900 rounded-md" contenteditable data-focus v-html="block.content.text"></h1>
+  <draggable :draggable="draggable" :droppable="droppable" class="relative basis-full" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
+    <h1 class="basis-full text-3xl px-2 py-1 cursor-text outline-none border-2 border-transparent focus:border-gray-900 rounded-md" contenteditable data-focus ref="content" v-html="block.content.text"></h1>
+  </draggable>
 </template>
 
 <script lang="ts">
+import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
-import { H1Block, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { H1Block } from '~/interfaces/blockInterfaces'
+import blockMixin from '~/mixins/blockMixin'
+import draggableMixin from '~/mixins/draggableMixin'
+import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 
 export default defineComponent({
   name: 'H1Block',
-  props: {
-    block: {
-      type: Object as () => H1Block,
-      required: true,
-    },
-    director: {
-      type: Object as () => UBlockDirector,
-      required: true,
+  components: {
+    Draggable
+  },
+  mixins: [
+    draggableMixin,
+    blockMixin<H1Block>(),
+    preserveCaretMixin,
+  ],
+  methods: {
+    onDrop(payload) {
+      const { dragItemId: moveBlockId, dropItemId: toBlockId } = payload
+      this.director.onDrop({ moveBlockId, toBlockId })
     },
   },
 })

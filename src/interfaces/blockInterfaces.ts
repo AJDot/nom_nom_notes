@@ -55,13 +55,6 @@ export interface BlockDirectorOptions {
   onMove?(args: { move: Block, to: Block, call: () => void }): void
 }
 
-export interface TBlockCaptain<B = Block> {
-  director: UBlockDirector
-  block: B
-  onEnter(args: { event: KeyboardEvent }): void
-  onInput(args: { event: InputEvent }): void
-}
-
 export interface UBlockDirector {
   readonly COMMANDS: Array<BlockCommand>
   readonly blocks: Array<Block>
@@ -77,6 +70,8 @@ export interface UBlockDirector {
   find(id: string | null | undefined): Block | null
   indexOf(block: Block): number | null
   isEmpty(block: Block): boolean
+  move(block: Block, to: Block): void
+  moveInside(block: Block, to: Block): void
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent }): void
@@ -88,7 +83,10 @@ export interface UBlockDirector {
   set(blocks: Array<Block>): void
 }
 
-export interface UBlockCaptain {
+export interface UBlockCaptain<B = Block> {
+  director: UBlockDirector
+  block: B
   onEnter(args: { event: KeyboardEvent }): void
   onInput(args: { event: InputEvent }): void
+  onMove(args: { block: Block }): void
 }

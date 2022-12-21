@@ -1,28 +1,30 @@
 <template>
-  <section class="flex basis-full gap-4" :data-focusable="false">
+  <draggable tag="section" :draggable="false" :droppable="false" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1">
     <base-block-group :blocks="director.childrenFor(block)" :director="director" :draggable="draggable" :droppable="droppable" />
-  </section>
+  </draggable>
 </template>
 
 <script lang="ts">
+import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
-import { RowBlock, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { RowBlock } from '~/interfaces/blockInterfaces'
+import blockMixin from '~/mixins/blockMixin'
 import draggableMixin from '~/mixins/draggableMixin'
 
 export default defineComponent({
   name: 'RowBlock',
+  components: {
+    Draggable
+  },
   mixins: [
     draggableMixin,
+    blockMixin<RowBlock>(),
   ],
-  props: {
-    block: {
-      type: Object as () => RowBlock,
-      required: true,
+  methods: {
+    onDrop(payload) {
+      const { dragItemId: moveBlockId, dropItemId: toBlockId } = payload
+      this.director.onDrop({ moveBlockId, toBlockId })
     },
-    director: {
-      type: Object as () => UBlockDirector,
-      required: true,
-    },
-  },
+  }
 })
 </script>

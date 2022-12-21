@@ -1,4 +1,4 @@
-import { RowBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, RowBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
 
 export default class RowBlockCaptain implements UBlockCaptain {
   constructor(public block: RowBlock, public director: UBlockDirector) {
@@ -10,5 +10,9 @@ export default class RowBlockCaptain implements UBlockCaptain {
 
   onInput({ event }: { event: InputEvent }) {
     this.block.content.text = (<HTMLElement>event.target)?.innerText
+  }
+
+  onMove(args: { block: Block }): void {
+    throw new Error('Method not implemented.')
   }
 }

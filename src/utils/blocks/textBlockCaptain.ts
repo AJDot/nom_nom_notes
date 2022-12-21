@@ -2,8 +2,7 @@ import { Block, TextBlock, UBlockCaptain, UBlockDirector } from 'Interfaces/bloc
 import Guid from '../guid'
 
 export default class TextBlockCaptain implements UBlockCaptain {
-  constructor(public block: TextBlock, public director: UBlockDirector) {
-  }
+  constructor(public block: TextBlock, public director: UBlockDirector) {}
 
   canDestroy(): boolean {
     return !this.block.content.text
@@ -14,7 +13,6 @@ export default class TextBlockCaptain implements UBlockCaptain {
     const newBlock: Block = { id: Guid.create(), type: 'text', content: { text: '' } }
     if (parent) newBlock.parentId = parent.id
     this.director.addAfter(newBlock, this.block)
-
   }
 
   onInput({ event }: { event: InputEvent }) {
@@ -22,5 +20,9 @@ export default class TextBlockCaptain implements UBlockCaptain {
     if (!this.director.find(this.block.id)) {
       this.director.add(this.block)
     }
+  }
+
+  onMove({ block }: { block: Block }) {
+    this.director.move(block, this.block)
   }
 }

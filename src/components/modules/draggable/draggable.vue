@@ -1,7 +1,7 @@
 <template>
-  <div :draggable="draggable" @dragstart="onStartDrag" @mouseover.stop="onMouseover" @mouseout.stop="onMouseout" @drop="onDrop" @dragover="onDragOver" @dragleave="onDragLeave" class="border border-gray-300 m-1" :class="Object.assign([], hoverClass, dragClass)">
+  <component :is="tag" :draggable="draggable" @dragstart="onStartDrag" @mouseover.stop="onMouseover" @mouseout.stop="onMouseout" @drop="onDrop" @dragover="onDragOver" @dragleave="onDragLeave" class="border border-gray-300 m-1" :class="Object.assign([], hoverClass, dragClass)">
     <slot />
-  </div>
+  </component>
 </template>
 
 <script lang="ts">
@@ -22,6 +22,10 @@ export default defineComponent({
       type: Object,
       required: true,
     },
+    tag: {
+      type: String,
+      default: 'div',
+    },
   },
   emits: {
     drop: null,
@@ -37,6 +41,7 @@ export default defineComponent({
       evt.dataTransfer.dropEffect = 'move'
       evt.dataTransfer.effectAllowed = 'move'
       evt.dataTransfer.setData('itemId', this.item.id)
+      evt.stopPropagation()
     },
     onDrop(evt) {
       if (this.droppable) {
@@ -51,6 +56,7 @@ export default defineComponent({
     onDragOver(event) {
       if (this.droppable) {
         event.preventDefault()
+        event.stopPropagation()
       } else {
         return
       }

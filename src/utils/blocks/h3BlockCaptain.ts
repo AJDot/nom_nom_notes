@@ -19,4 +19,8 @@ export default class H3BlockCaptain implements UBlockCaptain {
   onInput({ event }: { event: InputEvent }) {
     this.block.content.text = (<HTMLElement>event.target)?.innerText
   }
+
+  onMove({ block }: { block: Block }) {
+    this.director.move(block, this.block)
+  }
 }
