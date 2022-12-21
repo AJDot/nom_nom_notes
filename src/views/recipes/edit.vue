@@ -186,13 +186,11 @@ export default defineComponent({
         return 'Update Recipe'
       }
     },
-    categorySearcher(): Searcher<Category, string> {
-      const options: SearchOptions<Category, string> = {
+    categorySearcher(): Searcher<Category> {
+      const options: SearchOptions<Category> = {
         type: 'result',
         label: 'name',
-        value: 'clientId',
         valueString: 'clientId',
-        collection: Category.all(),
         endpoint: ApiPath.base() + ApiPath.categories(),
       }
       if (this.recipe) {
@@ -204,11 +202,10 @@ export default defineComponent({
       }
       return new Searcher(options)
     },
-    createCategorySearcher(): Searcher<{ command: Command, name: string }, string> {
-      return new Searcher<{ command: Command, name: string }, string>({
+    createCategorySearcher(): Searcher<{ command: Command, name: string }> {
+      return new Searcher<{ command: Command, name: string }>({
         type: 'command',
         label: (item, { q }) => `${item.name} ${q}`,
-        value: item => item.name.trim(),
         valueString: (_item, { q }) => {
           const categoryExists = Category.query().where((category: Category) => {
             return category.name.toLocaleLowerCase() === q.toLocaleLowerCase().trim()

@@ -1,3 +1,4 @@
+import { SearchOptionsEndpoint, SearchOptionsLocal } from './../interfaces/searchInterfaces'
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 import { KeysOfType } from 'Interfaces/utilInterfaces'
 import { securedAxiosInstance } from '~/backend/axios'
@@ -13,48 +14,62 @@ function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T, options: 
   }
 }
 
-export default class Searcher<T, V> implements USearcher<T> {
+export default class Searcher<T> implements USearcher<T> {
   results: Array<SearchResult<T>> = []
 
-  constructor(private options: SearchOptions<T, V>) {
+  constructor(private options: SearchOptions<T>) {
   }
 
   async search(q = ''): Promise<void> {
-    if (this.options.endpoint) {
-      // search against API
-      const response: AxiosResponse<ServerResponse<T, Array<ServerData<T>>>> = await securedAxiosInstance.get(
-        this.options.endpoint,
-        {
-          params: {
-            query: Object.assign({},
-              this.options.query,
-              { term: q, },
-            ),
-          },
-        })
-      this.results = response.data.data.map(item => {
-        const obj = ObjectUtils.combine(item, 'id', 'attributes') as T
-        return {
-          type: getValue(this.options, 'type', { q }),
-          label: getValue(obj, this.options.label, { q }),
-          value: getValue(obj, this.options.valueString, { q }),
-          raw: obj,
-        }
-      })
+    if ('endpoint' in this.options) {
+      return this.searchEndpoint(q, this.options)
     } else {
-      // search locally
-      this.results = this.options.collection.reduce((agg, item) => {
-        const valueString: string = getValue(item, this.options.valueString, { q })
-        if (valueString.match(q)) {
-          agg.push({
-            type: getValue(this.options, 'type', { q }),
-            label: getValue(item, this.options.label, { q }),
-            value: getValue(item, this.options.valueString, { q }),
-            raw: item,
-          })
-        }
-        return agg
-      }, [] as Searcher<T, V>['results'])
+      return this.searchLocal(q, this.options)
+    }
+  }
+
+  private async searchEndpoint(q = '', options: SearchOptionsEndpoint<T>): Promise<void> {
+    const response: AxiosResponse<ServerResponse<T, Array<ServerData<T>>>> = await securedAxiosInstance.get(
+      options.endpoint,
+      {
+        params: {
+          query: Object.assign({},
+            options.query,
+            { term: q, },
+          ),
+        },
+      })
+    this.results = response.data.data.map(item => {
+      const obj = ObjectUtils.combine(item, 'id', 'attributes') as T
+      return {
+        type: getValue(options, 'type', { q }),
+        label: getValue(obj, options.label, { q }),
+        value: getValue(obj, options.valueString, { q }),
+        raw: obj,
+      }
+    })
+
+  }
+
+  private async searchLocal(q = '', options: SearchOptionsLocal<T>): Promise<void> {
+    const matcher: SearchOptionsLocal<T>['matcher'] = options.matcher ?? this.getDefaultLocalMatcher(options)
+    this.results = options.collection.reduce((agg, item) => {
+      if (matcher(item, q)) {
+        agg.push({
+          type: getValue(options, 'type', { q }),
+          label: getValue(item, options.label, { q }),
+          value: getValue(item, options.valueString, { q }),
+          raw: item,
+        })
+      }
+      return agg
+    }, [] as Searcher<T>['results'])
+  }
+
+  private getDefaultLocalMatcher(options: SearchOptionsLocal<T>): (item: T, q: string) => boolean {
+    return (item: T, q: string) => {
+      const valueString: string = getValue(item, options.valueString, { q })
+      return Boolean(valueString.match(q))
     }
   }
 }

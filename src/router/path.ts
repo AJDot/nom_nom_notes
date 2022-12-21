@@ -57,6 +57,22 @@ class AppPath extends Path {
     return this.recipe(recipeClientId) + '/edit'
   }
 
+  dynamicRecipes() {
+    return '/dynamic_recipes'
+  }
+
+  newDynamicRecipe() {
+    return this.dynamicRecipes() + '/new'
+  }
+
+  dynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+    return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
+  }
+
+  editDynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+    return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
+  }
+
   password() {
     return '/password'
   }
@@ -97,6 +113,14 @@ class ApiPath extends Path {
 
   recipe(recipeClientId: RRecord['clientId']) {
     return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
+  }
+
+  dynamicRecipes() {
+    return '/dynamic_recipes'
+  }
+
+  dynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+    return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
   }
 
   categories() {

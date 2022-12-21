@@ -1,5 +1,5 @@
 <template>
-  <dropdown-item class="py-2 pl-3">
+  <dropdown-item class="py-2 pl-3 hover:bg-initial">
     <slot />
   </dropdown-item>
 </template>

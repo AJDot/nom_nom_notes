@@ -1,17 +1,17 @@
 <template>
   <ul class="flex flex-col sm:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
-    <li>
-      <router-link :to="{ name: $routerExtension.names.Recipe }" class="flex">
+    <!-- <li>
+      <router-link :to="{ name: $routerExtension.names.DynamicRecipe }" class="flex">
         <i class="material-icons my-auto">receipt</i>
         <span>Back to Recipe</span>
       </router-link>
-    </li>
-    <li v-if="signedIn() && recipe">
+    </li> -->
+    <!-- <li v-if="signedIn() && dynamicRecipe">
       <a href="#" class="flex" @click.prevent="confirmDestroy">
         <i class="material-icons my-auto">delete</i>
         <span>Delete Recipe</span>
       </a>
-    </li>
+    </li> -->
   </ul>
   <modal :state="modalState" center>
     <template #header>
@@ -32,22 +32,22 @@
 </template>
 
 <script lang="ts">
+import Modal from '@/modal.vue'
+import { AxiosError, AxiosResponse } from 'axios'
+import DynamicRecipe from 'Models/dynamicRecipe'
 import { computed, defineComponent } from 'vue'
 import { mapGetters, useStore } from 'vuex'
-import { RootState } from '~/store/interfaces'
-import { stateKey, StoreModulePath } from '~/store'
-import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import router from '~/router'
-import Recipe from 'Models/recipe'
-import { AxiosError, AxiosResponse } from 'axios'
-import { FlashActionTypes } from '~/store/modules/flash'
-import Modal from '@/modal.vue'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
+import router from '~/router'
+import { stateKey, StoreModulePath } from '~/store'
+import { RootState } from '~/store/interfaces'
+import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
+import { FlashActionTypes } from '~/store/modules/flash'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
-  name: 'RecipeListHeader',
+  name: 'DynamicRecipeListHeader',
   components: {
     Modal,
   },
@@ -58,10 +58,10 @@ export default defineComponent({
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
     const clientId = router.currentRoute.value.params.clientId
-    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId)
+    store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId)
     return {
       ...getters,
-      recipe: computed(() => Recipe.find(clientId)),
+      dynamicRecipe: computed(() => DynamicRecipe.find(clientId)),
       recipeName: '',
     }
   },
@@ -72,14 +72,14 @@ export default defineComponent({
   },
   methods: {
     async destroy() {
-      // need to save this because it can't be referenced after recipe is destroyed
-      if (this.recipe) this.recipeName = this.recipe.name ?? 'Unnamed Recipe'
-      this.resetModal()
-      this.loading(async () => {
-        await this.$store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.DESTROY, this.recipe)
-          .then((response) => this.destroySuccessful(response))
-          .catch((error) => this.destroyError(error))
-      })
+      // // need to save this because it can't be referenced after recipe is destroyed
+      // if (this.dynamicRecipe) this.recipeName = this.dynamicRecipe.name ?? 'Unnamed Recipe'
+      // this.resetModal()
+      // this.loading(async () => {
+      //   await this.$store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.DESTROY, this.dynamicRecipe)
+      //     .then((response) => this.destroySuccessful(response))
+      //     .catch((error) => this.destroyError(error))
+      // })
     },
     async destroySuccessful(response: AxiosResponse) {
       if (response.data.error) {

@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ImgHTMLAttributes, ref } from 'vue'
 import { useStore } from 'vuex'
 import { stateKey, StoreModulePath } from '~/store'
 import Recipe, { RRecipe } from 'Models/recipe'
@@ -102,18 +102,20 @@ export default defineComponent({
         return !categoryName || r.categories.some(c => c.name === categoryName)
       })
     },
-    categoryFilterSearcher(): Searcher<Category, string> {
+    categoryFilterSearcher(): Searcher<Category> {
       return new Searcher({
         type: 'result',
         label: 'name',
-        value: 'name',
         valueString: 'name',
         collection: Category.all(),
+        matcher(item, q) {
+          return Boolean(item.name.toLocaleLowerCase().match(q.toLocaleLowerCase()))
+        },
       })
     },
   },
   methods: {
-    imageAttrs(recipe: RRecipe): ImageAttrs {
+    imageAttrs(recipe: RRecipe): ImgHTMLAttributes {
       if (recipe.image.url) {
         return {
           src: recipe.image.url,
@@ -139,7 +141,7 @@ export default defineComponent({
     },
     pullDetails(event: MouseEvent, hovering: boolean): void {
       const cssClass = '-translate-y-full'
-      const $el = $(event.currentTarget).find('[data-content]')
+      const $el = $(event.currentTarget as HTMLElement).find('[data-content]')
       hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },
   },

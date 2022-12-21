@@ -6,6 +6,9 @@ import User from 'Models/user'
 export interface RecipesState {
 }
 
+export interface DynamicRecipesState {
+}
+
 export interface CategoriesState {
 }
 
@@ -32,6 +35,7 @@ export enum StoreModuleType {
   Modal = 'modal',
   Loading = 'loading',
   Recipes = 'recipes',
+  DynamicRecipes = 'dynamicRecipes',
   Categories = 'categories',
 }
 
@@ -41,6 +45,7 @@ export interface RootState {
   [StoreModuleType.Modal]: ModalState
   [StoreModuleType.Loading]: LoadingState
   [StoreModuleType.Recipes]: RecipesState
+  [StoreModuleType.DynamicRecipes]: DynamicRecipesState
   [StoreModuleType.Categories]: CategoriesState
   [StoreModuleType.Users]: UsersState
 }

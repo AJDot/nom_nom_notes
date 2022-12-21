@@ -23,6 +23,9 @@ module.exports = {
         background: 'background',
         transform: 'transform',
       },
+      backgroundColor: {
+        initial: 'initial',
+      },
     },
     colors: {
       'black': {

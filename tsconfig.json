@@ -104,7 +104,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue"
-  ],
+, "src/components/modules/.vue.ts"  ],
   "files": [
     "src/shims/vue-shim.d.ts",
     "src/shims/vuex-shim.d.ts",

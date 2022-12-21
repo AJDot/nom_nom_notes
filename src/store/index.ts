@@ -4,6 +4,7 @@ import { InjectionKey } from 'vue'
 import VuexORM from '@vuex-orm/core'
 import database from '~/store/database'
 import recipes from '~/store/modules/recipes'
+import dynamicRecipes from './modules/dynamicRecipes'
 import sessions from '~/store/modules/sessions'
 import flash from '~/store/modules/flash'
 import modal from '~/store/modules/modal'
@@ -20,6 +21,7 @@ export enum StoreModulePath {
   Root = '',
   Users = 'users/',
   Recipes = 'recipes/',
+  DynamicRecipes = 'dynamicRecipes/',
   Categories = 'categories/',
   Session = 'sessions/',
   Signup = 'signups/',
@@ -34,6 +36,7 @@ export const store = createStore<RootState>({
   modules: {
     users,
     recipes,
+    dynamicRecipes,
     categories,
     signups,
     sessions,

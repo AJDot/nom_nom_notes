@@ -5,6 +5,8 @@ import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import EditRecipe from '~/views/recipes/edit.vue'
 import EditRecipeHeader from '~/views/recipes/editHeader.vue'
+import EditDynamicRecipe from '~/views/dynamicRecipes/edit.vue'
+import EditDynamicRecipeHeader from '~/views/dynamicRecipes/editHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
 import ForgotPassword from 'Views/passwords/forgot.vue'
@@ -89,6 +91,19 @@ const routes: RouteRecordRaw[] & { name: RouteName }[] = [
     components: {
       default: EditRecipe,
       'secondary-header': EditRecipeHeader,
+    },
+  },
+  {
+    name: RouteName.NewDynamicRecipe,
+    path: AppPath.newDynamicRecipe(),
+    component: EditDynamicRecipe,
+  },
+  {
+    name: RouteName.EditDynamicRecipe,
+    path: AppPath.editDynamicRecipe(':clientId'),
+    components: {
+      default: EditDynamicRecipe,
+      'secondary-header': EditDynamicRecipeHeader,
     },
   },
   {
