@@ -62,7 +62,7 @@ export default class BlockDirector implements UBlockDirector {
 
   addBefore(newBlock: Block, block: Block): void {
     const index = this.blocks.indexOf(block)
-    this.blocks.splice(index - 1, 0, newBlock)
+    this.blocks.splice(index, 0, newBlock)
     newBlock.parentId = block.parentId
   }
 
