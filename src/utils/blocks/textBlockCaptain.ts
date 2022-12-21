@@ -30,14 +30,13 @@ export default class TextBlockCaptain implements UBlockCaptain {
       case 'h2':
       case 'h3':
       case 'text':
+      case 'row':
         this.director.move(block, this.block)
         break
       case 'column':
         const row: RowBlock = { id: Guid.create(), type: 'row', content: { text: '' } }
         this.director.addBefore(row, this.block)
         this.director.moveInside(block, row)
-        break
-      case 'row':
         break
       default:
         assertNever(block)
