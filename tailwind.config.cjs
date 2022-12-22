@@ -22,6 +22,7 @@ module.exports = {
         drag: 'height, margin, padding',
         background: 'background',
         transform: 'transform',
+        'bg-shadow': 'background shadow',
       },
       backgroundColor: {
         initial: 'initial',

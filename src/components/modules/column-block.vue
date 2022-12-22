@@ -2,10 +2,13 @@
   <draggable tag="section" :draggable="draggable" :droppable="droppable" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex flex-col gap-x-4 gap-y-1 grow basis-0 py-1">
     <base-block-group v-if="childBlocks.length" :blocks="childBlocks" :director="director" :draggable="draggable"
       :droppable="droppable" />
-    <div v-else @click="addText" class="flex grow cursor-pointer place-items-center">
-      <div class="grow text-center">
+    <div v-else class="flex grow cursor-pointer place-items-center rounded-md">
+      <button type="button" @click="addText" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
         + Add Item
-      </div>
+      </button>
+      <button type="button" @click="destroy" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
+        - Remove Empty Column
+      </button>
     </div>
   </draggable>
 </template>
@@ -40,6 +43,9 @@ export default defineComponent({
     addText(): void {
       const text: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
       this.director.onCreate({ block: text, inside: this.block })
+    },
+    destroy(): void {
+      this.director.onDestroy({ block: this.block })
     },
   },
 })

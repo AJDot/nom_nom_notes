@@ -198,11 +198,19 @@ export default class BlockDirector implements UBlockDirector {
     }
   }
 
-  onDelete({ block, event }: { block: Block; event: InputEvent }) {
+  onDelete({ block, event }: { block: Block, event: InputEvent }) {
     if (this.options.onDelete) {
       this.options.onDelete({ block, event, call: () => this.onDeleteDefault({ block, event }) })
     } else {
       this.onDeleteDefault({ block, event })
+    }
+  }
+
+  onDestroy({ block }: { block: Block }) {
+    if (this.options.onDestroy) {
+      this.options.onDestroy({ block, call: () => this.onDestroyDefault({ block }) })
+    } else {
+      this.onDestroyDefault({ block })
     }
   }
 
@@ -265,6 +273,10 @@ export default class BlockDirector implements UBlockDirector {
 
   private onDeleteDefault({ block, event }: { block: Block; event: InputEvent }) {
     return this.destroy(block)
+  }
+
+  private onDestroyDefault({ block }: { block: Block }) {
+    return this.destroy(block, 'down')
   }
 
   private onEnterDefault({ block, event }: { block: Block; event: KeyboardEvent }) {

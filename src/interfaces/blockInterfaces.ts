@@ -49,6 +49,7 @@ export interface BlockDirectorOptions {
   onBackspace?(args: { block: Block, event: InputEvent, call: () => void }): void
   onCreate?(args: { block: Block, inside?: Block, call: () => void }): void
   onDelete?(args: { block: Block, event: InputEvent, call: () => void }): void
+  onDestroy?(args: { block: Block, call: () => void }): void
   onDrop?(args: { moveBlockId: string, toBlockId: string, call: () => void }): void
   onEnter?(args: { block: Block, event: KeyboardEvent, call: () => void }): void
   onInput?(args: { block: Block, event: InputEvent, call: () => void }): void
@@ -77,6 +78,7 @@ export interface UBlockDirector {
   onBackspace(args: { block: Block, event: InputEvent }): void
   onCreate(args: { block: Block, inside?: Block }): void
   onDelete(args: { block: Block, event: InputEvent }): void
+  onDestroy(args: { block: Block }): void
   onDrop(args: { moveBlockId: string, toBlockId: string }): void
   onEnter(args: { block: Block, event: KeyboardEvent }): void
   onInput(args: { block: Block, event: InputEvent }): void

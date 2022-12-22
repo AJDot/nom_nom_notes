@@ -223,6 +223,10 @@ export default defineComponent({
       call()
       this.save()
     },
+    onDestroy({ block, call }: { block: Block, call: Function }) {
+      call()
+      this.save()
+    },
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
       this.focus(block)
@@ -363,6 +367,7 @@ export default defineComponent({
       onBackspace: this.onBackspace.bind(this),
       onCreate: this.onCreate.bind(this),
       onDelete: this.onDelete.bind(this),
+      onDestroy: this.onDestroy.bind(this),
       onEnter: this.onEnter.bind(this),
       onInput: this.onInput.bind(this),
       onMove: this.onMove.bind(this),
