@@ -42,12 +42,12 @@ export interface BlockCommand {
   call(block: Block): void
 }
 
-
 export interface BlockDirectorOptions {
   blocks: Array<Block>
   onArrowDown?(args: { block: Block, event: KeyboardEvent, call: () => void }): void
   onArrowUp?(args: { block: Block, event: KeyboardEvent, call: () => void }): void
   onBackspace?(args: { block: Block, event: InputEvent, call: () => void }): void
+  onCreate?(args: { block: Block, inside?: Block, call: () => void }): void
   onDelete?(args: { block: Block, event: InputEvent, call: () => void }): void
   onDrop?(args: { moveBlockId: string, toBlockId: string, call: () => void }): void
   onEnter?(args: { block: Block, event: KeyboardEvent, call: () => void }): void
@@ -75,6 +75,7 @@ export interface UBlockDirector {
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent }): void
+  onCreate(args: { block: Block, inside?: Block }): void
   onDelete(args: { block: Block, event: InputEvent }): void
   onDrop(args: { moveBlockId: string, toBlockId: string }): void
   onEnter(args: { block: Block, event: KeyboardEvent }): void

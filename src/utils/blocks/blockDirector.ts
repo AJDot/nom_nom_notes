@@ -190,6 +190,14 @@ export default class BlockDirector implements UBlockDirector {
     }
   }
 
+  onCreate({ block, inside }: { block: Block, inside?: Block }) {
+    if (this.options.onCreate) {
+      this.options.onCreate({ block, inside, call: () => this.onCreateDefault({ block, inside }) })
+    } else {
+      this.onCreateDefault({ block, inside })
+    }
+  }
+
   onDelete({ block, event }: { block: Block; event: InputEvent }) {
     if (this.options.onDelete) {
       this.options.onDelete({ block, event, call: () => this.onDeleteDefault({ block, event }) })
@@ -276,5 +284,14 @@ export default class BlockDirector implements UBlockDirector {
     const toBlock = this.find(toBlockId)
     if (moveBlock && toBlock)
       this.onMove({ move: moveBlock, to: toBlock })
+  }
+
+  private onCreateDefault({ block, inside }: { block: Block, inside?: Block }) {
+    if (inside) {
+      this.addAfter(block, inside)
+      this.moveInside(block, inside)
+    } else {
+      this.add(block)
+    }
   }
 }

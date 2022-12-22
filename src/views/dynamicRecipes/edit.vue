@@ -219,6 +219,10 @@ export default defineComponent({
       call()
       this.save()
     },
+    onCreate({ block, inside, call }: { block: Block, inside?: Block, call: Function }) {
+      call()
+      this.save()
+    },
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
       this.focus(block)
@@ -357,6 +361,7 @@ export default defineComponent({
       onArrowDown: this.onArrowDown.bind(this),
       onArrowUp: this.onArrowUp.bind(this),
       onBackspace: this.onBackspace.bind(this),
+      onCreate: this.onCreate.bind(this),
       onDelete: this.onDelete.bind(this),
       onEnter: this.onEnter.bind(this),
       onInput: this.onInput.bind(this),
