@@ -1,6 +1,6 @@
 <template>
-  <draggable :draggable="draggable" :droppable="droppable" class="relative basis-full" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
-    <h3 class="text-xl px-2 py-1 cursor-tex outline-none border-2 border-transparent focus:border-gray-900 rounded-md" contenteditable data-focus ref="content" v-html="block.content.text"></h3>
+  <draggable :draggable="draggable" :droppable="droppable" class="relative basis-full rounded-md" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
+    <h3 class="text-xl px-2 py-1 cursor-tex outline-none border-2 border-transparent focus:shadow-input focus:bg-gray-100 rounded-md" contenteditable data-focus ref="content" v-html="block.content.text"></h3>
   </draggable>
 </template>
 
