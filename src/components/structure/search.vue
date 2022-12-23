@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative">
     <dropdown :state="dropdownState" @close="hideResults">
       <template #control>
         <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent="select(currentResult)" placeholder="Search..." class="mt-1" @keydown.prevent.down="down" @keydown.prevent.up="up" @blur="(makeCurrent(null))" />

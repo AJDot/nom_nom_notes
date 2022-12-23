@@ -1,7 +1,7 @@
 <template>
   <slot name="control" />
-  <div class="absolute" :style="styles">
-    <div v-if="state" class="z-10 border border-gray-400 mt-1 max-h-56 w-full min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none" :class="{ 'right-0': right }" tabindex="-1" role="listbox">
+  <div class="absolute left-0 right-0" :style="styles">
+    <div v-if="state" class="z-10 border border-gray-400 mt-1 max-h-56 min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none" :class="{ 'right-0': right }" tabindex="-1" role="listbox">
       <slot />
     </div>
   </div>
@@ -26,6 +26,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    positionType: {
+      type: String,
+      default: 'relative',
+      validator: prop => typeof prop === 'string' && ['relative', 'cursor'].includes(prop)
+    },
   },
   emits: {
     close: null,
@@ -49,7 +54,7 @@ export default defineComponent({
   methods: {
     async close(e: MouseEvent) {
       if (!this.$el.contains(e.target)) this.$emit('close')
-    },
+    }, 
   },
   mounted() {
     document.addEventListener('click', this.close)
@@ -59,7 +64,7 @@ export default defineComponent({
   },
   watch: {
     state(newVal, oldVal) {
-      if (newVal) {
+      if (newVal && this.positionType === 'cursor') {
         this.position = SelectionUtils.getCaretRect()
       }
     }

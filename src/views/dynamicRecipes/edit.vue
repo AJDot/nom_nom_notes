@@ -10,7 +10,7 @@
       <div class="sm:col-span-2">
         <base-block-group :blocks="topLevelBlocks" :director="blockDirector" draggable droppable />
         <base-block v-if="!blockDirector.find(textBlock.id)" :block="textBlock" :director="blockDirector" />
-        <dropdown :state="dropdownState">
+        <dropdown :state="dropdownState" position-type="cursor">
           <ul>
             <template v-if="commandSelector.collections.some(c => c.length)">
               <dropdown-item v-for="commandResult in commandSelector.collections.flat()" :class="{ 'select-blue': commandResult === commandSelector.current }">
