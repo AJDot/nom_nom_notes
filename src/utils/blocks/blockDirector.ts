@@ -40,7 +40,18 @@ export default class BlockDirector implements UBlockDirector {
         this.blocks.splice(this.indexOf(block)! + 1, 0, column1, column2, text1, text2)
         block.content.text = ''
       },
-    }
+    },
+    {
+      label: 'Add Column',
+      call: block => {
+        const column = this.find(block.parentId)!
+        const newColumn: ColumnBlock = { id: Guid.create(), type: 'column', content: { text: '' } }
+        const newText: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
+        this.addAfter(newColumn, column)
+        this.add(newText)
+        this.moveInside(newText, newColumn)
+      }
+    },
   ]
 
   constructor(private readonly options: BlockDirectorOptions) {
@@ -92,7 +103,7 @@ export default class BlockDirector implements UBlockDirector {
    * Destroy a block
    * Crawl up tree and destroy childless parents of +block+ until parent with child is found
    * Crawl down tree and destroy all children of +block+
-   * 
+   *
    * @param block {Block} lowest level block to destroy
    * @param direction {'down' | 'up' | 'both'} crawl up/down/both the tree to destroy childless parents and/or children of +block+
    * @returns {Boolean} successful operation

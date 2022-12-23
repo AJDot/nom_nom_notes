@@ -53,7 +53,8 @@ export default class Searcher<T> implements USearcher<T> {
 
   private async searchLocal(q = '', options: SearchOptionsLocal<T>): Promise<void> {
     const matcher: SearchOptionsLocal<T>['matcher'] = options.matcher ?? this.getDefaultLocalMatcher(options)
-    this.results = options.collection.reduce((agg, item) => {
+    const collection = typeof options.collection === 'function' ? options.collection() : options.collection
+    this.results = collection.reduce((agg, item) => {
       if (matcher(item, q)) {
         agg.push({
           type: getValue(options, 'type', { q }),

@@ -38,7 +38,7 @@ export interface ColumnBlock extends BaseBlock {
 export type Block = H1Block | H2Block | H3Block | TextBlock | RowBlock | ColumnBlock
 
 export interface BlockCommand {
-  label: string
+  label: 'H1' | 'H2' | 'H3' | 'Text' | 'Columns' | 'Add Column'
   call(block: Block): void
 }
 

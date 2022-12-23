@@ -12,7 +12,7 @@
         <base-block v-if="!blockDirector.find(textBlock.id)" :block="textBlock" :director="blockDirector" />
         <dropdown :state="dropdownState">
           <ul>
-            <template v-if="commandSelector.collections.flat().length">
+            <template v-if="commandSelector.collections.some(c => c.length)">
               <dropdown-item v-for="commandResult in commandSelector.collections.flat()" :class="{ 'select-blue': commandResult === commandSelector.current }">
                 <dropdown-item-button @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })">
                   {{ commandResult.label }}
@@ -42,7 +42,6 @@
 import { AxiosError, AxiosResponse } from 'axios'
 import { Block, BlockCommand, TextBlock, UBlockDirector } from 'Interfaces/blockInterfaces'
 import { defineComponent, nextTick } from 'vue'
-import { ChangeEvent } from 'vuedraggable'
 import { useStore } from 'vuex'
 import { SearchResult, USearcher } from '~/interfaces/searchInterfaces'
 import { USelector } from '~/interfaces/selectInterfaces'
@@ -67,6 +66,7 @@ interface Data {
   commandSearch: USearcher<BlockCommand>
   commandSelector: USelector<SearchResult<BlockCommand>[][]>
   currentBlock: Block | null
+  emptyCommandSearchTimes: number
   textBlock: TextBlock
 }
 
@@ -82,6 +82,7 @@ export default defineComponent({
       commandSearch: null!,
       commandSelector,
       currentBlock: null,
+      emptyCommandSearchTimes: 0,
       textBlock: {
         id: Guid.create(),
         type: 'text',
@@ -126,9 +127,6 @@ export default defineComponent({
         this.openSearch({ block, data })
         return
       }
-      if (this.dropdownState && data === ' ') {
-        this.closeSearch()
-      }
       if (this.dropdownState) {
         if (event.inputType === 'deleteContentBackward') {
           if (this.q) {
@@ -136,6 +134,7 @@ export default defineComponent({
             this.commandSearch.search(this.q)
             this.commandSelector.collections = [this.commandSearch.results]
             this.commandSelector.set(0)
+            if (this.emptyCommandSearchTimes) this.emptyCommandSearchTimes--
           } else {
             this.closeSearch()
           }
@@ -144,6 +143,15 @@ export default defineComponent({
           this.commandSearch.search(this.q)
           this.commandSelector.collections = [this.commandSearch.results]
           this.commandSelector.set(0)
+
+          if (this.commandSelector.collections.some(c => c.length)) {
+            this.emptyCommandSearchTimes = 0
+          } else {
+            this.emptyCommandSearchTimes++
+          }
+          if (this.emptyCommandSearchTimes > 3) {
+            this.closeSearch()
+          }
         }
 
         return
@@ -231,10 +239,17 @@ export default defineComponent({
       this.executeCommand({ block, command })
       this.focus(block)
     },
-    executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
+    async executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
       if (block === null) return
 
       command.call(block)
+
+      // hack to make block component reload - which wipe the "fake" characters used for command search
+      const text = block.content.text
+      block.content.text = text + ' '
+      await nextTick()
+      block.content.text = text
+
       this.closeSearch()
     },
     async focus(block: Block) {
@@ -270,6 +285,7 @@ export default defineComponent({
     closeSearch() {
       this.dropdownState = false
       this.q = ''
+      this.emptyCommandSearchTimes = 0
     },
     async updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {
@@ -377,7 +393,13 @@ export default defineComponent({
       label: 'label',
       valueString: 'label',
       type: 'command',
-      collection: this.blockDirector.COMMANDS,
+      collection: () => {
+        const allowableCommands: Array<BlockDirector['COMMANDS'][number]['label']> = ['H1', 'H2', 'H3', 'Text', 'Columns']
+        if (this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column')  {
+          allowableCommands.push('Add Column')
+        }
+        return this.blockDirector.COMMANDS.filter(c => allowableCommands.includes(c.label))
+      },
       matcher(item, q) {
         return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))
       },

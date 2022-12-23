@@ -8,7 +8,7 @@ export interface SearchOptionsLocal<T> {
   type: SearchType
   label: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
   valueString: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
-  collection: Array<T>
+  collection: T[] | (() => T[])
   matcher?(item: T, q: string): boolean
 }
 
