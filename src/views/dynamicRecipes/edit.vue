@@ -242,6 +242,7 @@ export default defineComponent({
     async executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
       if (block === null) return
 
+      if (block === this.textBlock) this.blockDirector.add(this.textBlock)
       command.call(block)
 
       // hack to make block component reload - which wipe the "fake" characters used for command search
