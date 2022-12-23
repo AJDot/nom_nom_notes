@@ -99,6 +99,11 @@ module.exports = {
           'text-orientation': 'upright',
         },
       })
+      addUtilities({
+        '.break-anywhere': {
+          'overflow-wrap': 'anywhere',
+        },
+      })
     })
   ],
 }
