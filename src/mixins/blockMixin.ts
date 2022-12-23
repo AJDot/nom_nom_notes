@@ -17,13 +17,13 @@ export default function<B>() {
     methods: {
       async preserveCaret() {
         const element = this.$refs.content as HTMLElement
+        if (!element) return
         const position = SelectionUtils.getCaret(element)
-        if (position) {
-          await nextTick()
-          // catch when element is removed from DOM - happens when TextBlock is converted to Rows and Columns
-          if (document.body.contains(element))
-            SelectionUtils.moveCaret(element, position)
-        }
+        if (!position) return
+        await nextTick()
+        // catch when element is removed from DOM - happens when TextBlock is converted to Rows and Columns
+        if (document.body.contains(element))
+          SelectionUtils.moveCaret(element, position)
       },
     },
     watch: {
