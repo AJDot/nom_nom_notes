@@ -1,5 +1,5 @@
 <template>
-  <component class="gap-4 justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :data-id="block.id" :block="block" :director="director" @input.stop="onInput" @keydown.enter.stop="onEnter" @keydown.arrow-down.stop="onArrowDown" @keydown.arrow-up.stop="onArrowUp" @keydown.delete.stop="onDelete" :draggable="draggable" :droppable="droppable" />
+  <component class="gap-4 items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :data-id="block.id" :block="block" :director="director" @input.stop="onInput" @keydown.enter.stop="onEnter" @keydown.arrow-down.stop="onArrowDown" @keydown.arrow-up.stop="onArrowUp" @keydown.delete.stop="onDelete" :draggable="draggable" :droppable="droppable" />
 </template>
 
 <script lang="ts">
