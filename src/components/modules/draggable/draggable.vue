@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" :draggable="draggable" @dragstart="onStartDrag" @mouseover.stop="onMouseover" @mouseout.stop="onMouseout" @drop="onDrop" @dragover="onDragOver" @dragleave="onDragLeave" class="m-1" :class="hoverClass.concat(dragClass)">
+  <component :is="tag" :draggable="draggable" @dragstart="onStartDrag" @mouseover.stop="onMouseover" @mouseout.stop="onMouseout" @drop="onDrop" @dragover="onDragOver" @dragleave="onDragLeave" class="p-1" :class="hoverClass.concat(dragClass)">
     <slot />
   </component>
 </template>
