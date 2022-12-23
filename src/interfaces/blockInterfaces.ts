@@ -62,6 +62,7 @@ export interface UBlockDirector {
   add(newBlock: Block): void
   addAfter(newBlock: Block, block: Block): void
   addBefore(newBlock: Block, block: Block): void
+  ancestors(block: Block): Block[]
   blockAfter(block: Block): Block | null
   blockBefore(block: Block): Block | null
   captainFor(block: Block, director: this): UBlockCaptain

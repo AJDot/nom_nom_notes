@@ -40,21 +40,21 @@ export default defineComponent({
     onStartDrag(evt) {
       evt.dataTransfer.dropEffect = 'move'
       evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemId', this.item.id)
+      evt.dataTransfer.setData(this.item.id, null)
       evt.stopPropagation()
     },
     onDrop(evt) {
-      if (this.droppable) {
+      if (typeof this.droppable === 'function' ? this.droppable(evt.dataTransfer.types) : this.droppable) {
         evt.stopPropagation()
       } else {
         evt.preventDefault()
         return
       }
-      this.$emit('drop', { dragItemId: evt.dataTransfer.getData('itemId'), dropItemId: this.item.id })
+      this.$emit('drop', { dragItemId: evt.dataTransfer.types[0], dropItemId: this.item.id })
       this.onDragLeave(evt)
     },
     onDragOver(event) {
-      if (this.droppable) {
+      if (typeof this.droppable === 'function' ? this.droppable(event.dataTransfer.types) : this.droppable) {
         event.preventDefault()
         event.stopPropagation()
       } else {
@@ -63,7 +63,7 @@ export default defineComponent({
       this.dragClass = ['bg-blue-100', 'shadow-input']
     },
     onDragLeave(event) {
-      if (this.droppable) {
+      if (typeof this.droppable === 'function' ? this.droppable(event.dataTransfer.types) : this.droppable) {
         event.preventDefault()
       } else {
         return

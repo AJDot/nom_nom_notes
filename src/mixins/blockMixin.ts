@@ -1,9 +1,11 @@
 import { defineComponent, nextTick } from 'vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, UBlockDirector } from '~/interfaces/blockInterfaces'
 import SelectionUtils from '~/utils/selectionUtils'
+import draggableMixin from './draggableMixin'
 
-export default function<B>() {
+export default function<B extends Block>() {
   return defineComponent({
+    mixins: [draggableMixin],
     props: {
       block: {
         type: Object as () => B,
@@ -12,6 +14,19 @@ export default function<B>() {
       director: {
         type: Object as () => UBlockDirector,
         required: true,
+      },
+    },
+    computed: {
+      droppableTest(): (blockId: string) => boolean {
+        const thisBlock = this.block as B
+        return ([blockId]: string) => {
+          const draggedBlock = this.director.find(blockId)
+          if (!draggedBlock) return false
+          return (
+            this.droppable &&
+            !this.director.ancestors(thisBlock).includes(draggedBlock)
+          )
+        }
       },
     },
     methods: {

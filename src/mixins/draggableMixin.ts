@@ -7,7 +7,7 @@ export default defineComponent({
       default: false,
     },
     droppable: {
-      type: Boolean,
+      type: [Boolean, Function],
       default: false,
     },
   },

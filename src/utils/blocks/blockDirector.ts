@@ -77,6 +77,18 @@ export default class BlockDirector implements UBlockDirector {
     newBlock.parentId = block.parentId
   }
 
+  ancestors(block: Block): Block[] {
+    const ancestors: Block[] = []
+    let currentBlock: Block | null = block
+    while (currentBlock) {
+      const parent = this.find(currentBlock.parentId)
+      if (parent) ancestors.push(parent)
+      currentBlock = parent
+    }
+
+    return ancestors
+  }
+
   blockAfter(block: Block): Block | null {
     const index = this.indexOf(block)
     if (index === null) return null
