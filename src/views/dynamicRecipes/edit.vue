@@ -296,6 +296,9 @@ export default defineComponent({
         this.updateFailed(response)
         return
       }
+      if (response.status === HttpStatusCode.Created) {
+        await this.$routerExtension.replace({ name: this.$routerExtension.names.EditDynamicRecipe, params: { clientId: this.dynamicRecipe!.clientId } })
+      }
     },
     updateFailed(error: AxiosResponse) {
       this.processFailedUpdate(error?.data?.error, { signOut: false })

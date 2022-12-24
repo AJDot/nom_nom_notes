@@ -21,7 +21,7 @@ import { mapGetters } from 'vuex'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
-  name: 'RecipeListHeader',
+  name: 'DynamicRecipeListHeader',
   setup() {
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     return {

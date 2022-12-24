@@ -107,7 +107,10 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
   {
     name: RouteName.NewDynamicRecipe,
     path: AppPath.newDynamicRecipe(),
-    component: EditDynamicRecipe,
+    components: {
+      default: EditDynamicRecipe,
+      'secondary-header': EditDynamicRecipeHeader,
+    },
   },
   {
     name: RouteName.EditDynamicRecipe,

@@ -58,7 +58,9 @@ export default defineComponent({
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
     const clientId = router.currentRoute.value.params.clientId
-    store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId)
+    if (clientId) {
+      store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId)
+    }
     return {
       ...getters,
       dynamicRecipe: computed(() => DynamicRecipe.find(clientId)),

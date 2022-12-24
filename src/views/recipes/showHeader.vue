@@ -9,7 +9,7 @@
         <span>Recipe Cards</span>
       </router-link>
     </li>
-    <li v-if="signedIn">
+    <li v-if="signedIn()">
       <router-link
         :to="{ name: $routerExtension.names.EditRecipe }"
         class="flex"
