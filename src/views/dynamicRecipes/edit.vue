@@ -206,21 +206,23 @@ export default defineComponent({
       this.focusAfter(block)
       this.save()
     },
-    onArrowDown({ block }) {
+    onArrowDown({ block, event }) {
       if (!this.dynamicRecipe) return
 
       if (this.dropdownState) {
         this.commandSelector.down()
+        event.preventDefault()
         return
       }
 
       this.focusAfter(block)
     },
-    onArrowUp({ block }) {
+    onArrowUp({ block, event }) {
       if (!this.dynamicRecipe) return
 
       if (this.dropdownState) {
         this.commandSelector.up()
+        event.preventDefault()
         return
       }
 
