@@ -4,7 +4,7 @@
       <dl class="mt-2 mb-4 sm:col-span-2">
         <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
         <dd>
-          <a-input id="name" v-model="dynamicRecipe.name" type="text" name="name" placeholder="My Super Awesome Recipe" />
+          <a-input id="name" v-model="dynamicRecipeName" type="text" name="name" placeholder="My Super Awesome Recipe" />
         </dd>
       </dl>
       <div class="sm:col-span-2">
@@ -110,6 +110,16 @@ export default defineComponent({
     textBlockAttached(): boolean {
       return !!this.blockDirector?.find(this.textBlock.id)
     },
+    dynamicRecipeName: {
+      get(): string | undefined {
+        return this.dynamicRecipe?.name
+      },
+      set(value: string) {
+        if (!this.dynamicRecipe) return
+        this.dynamicRecipe.name = value
+        this.save()
+      }
+    }
   },
   methods: {
     async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
