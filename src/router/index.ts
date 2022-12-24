@@ -12,6 +12,7 @@ import EditDynamicRecipe from '~/views/dynamicRecipes/edit.vue'
 import EditDynamicRecipeHeader from '~/views/dynamicRecipes/editHeader.vue'
 import ListDynamicRecipe from '~/views/dynamicRecipes/list.vue'
 import ListDynamicRecipeHeader from '~/views/dynamicRecipes/listHeader.vue'
+import ShowDynamicRecipeHeader from '~/views/dynamicRecipes/showHeader.vue'
 import NotFound from '~/views/NotFound.vue'
 import EditRecipe from '~/views/recipes/edit.vue'
 import EditRecipeHeader from '~/views/recipes/editHeader.vue'
@@ -29,6 +30,7 @@ const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Recipes,
   RouteName.Recipe,
   RouteName.DynamicRecipes,
+  RouteName.DynamicRecipe,
   RouteName.NotFound,
   RouteName.ForgotPassword,
   RouteName.ChangePassword,
@@ -113,11 +115,25 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
     },
   },
   {
+    name: RouteName.DynamicRecipe,
+    path: AppPath.dynamicRecipe(':clientId'),
+    components: {
+      default: EditDynamicRecipe,
+      'secondary-header': ShowDynamicRecipeHeader,
+    },
+    props: {
+      default: { view: 'show' },
+    },
+  },
+  {
     name: RouteName.EditDynamicRecipe,
     path: AppPath.editDynamicRecipe(':clientId'),
     components: {
       default: EditDynamicRecipe,
       'secondary-header': EditDynamicRecipeHeader,
+    },
+    props: {
+      default: { view: 'edit' },
     },
   },
   {

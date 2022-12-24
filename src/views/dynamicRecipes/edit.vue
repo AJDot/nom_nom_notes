@@ -4,12 +4,12 @@
       <dl class="mt-2 mb-4 sm:col-span-2">
         <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
         <dd>
-          <a-input id="name" v-model="dynamicRecipeName" type="text" name="name" placeholder="My Super Awesome Recipe" />
+          <a-input id="name" v-model="dynamicRecipeName" :editable="isEditable" type="text" name="name" placeholder="My Super Awesome Recipe" />
         </dd>
       </dl>
       <div class="sm:col-span-2">
-        <base-block-group :blocks="topLevelBlocks" :director="blockDirector" draggable droppable />
-        <base-block v-if="!blockDirector.find(textBlock.id)" :block="textBlock" :director="blockDirector" />
+        <base-block-group :blocks="topLevelBlocks" :mode="mode" :director="blockDirector" :draggable="isEditable" :droppable="isEditable" />
+        <base-block v-if="isEditable && !blockDirector.find(textBlock.id)" :block="textBlock" :mode="mode" :director="blockDirector" />
         <dropdown :state="dropdownState" position-type="cursor">
           <ul>
             <template v-if="commandSelector.collections.some(c => c.length)">
@@ -65,6 +65,13 @@ interface Data {
 
 export default defineComponent({
   name: 'DynamicRecipeEdit',
+  props: {
+    view: {
+      type: String,
+      default: 'show',
+      validator: prop => typeof prop === 'string' && ['show', 'edit'].includes(prop)
+    }
+  },
   data(): Data {
     const commandSelector = new Selector()
     return {
@@ -104,8 +111,27 @@ export default defineComponent({
         this.blocks = value
       },
     },
-    mode(): 'create' | 'edit' {
-      return this.dynamicRecipe?.id ? 'edit' : 'create'
+    mode(): 'create' | 'show' | 'edit' {
+      switch (this.view) {
+        case 'show':
+          return 'show'
+        case 'edit':
+          return this.dynamicRecipe?.id ? 'edit' : 'create'
+        default:
+          return 'show'
+      }
+    },
+    isShowMode(): boolean {
+      return this.mode === 'show'
+    },
+    isCreateMode(): boolean {
+      return this.mode === 'create'
+    },
+    isEditMode(): boolean {
+      return this.mode === 'edit'
+    },
+    isEditable(): boolean {
+      return this.isCreateMode || this.isEditMode
     },
     textBlockAttached(): boolean {
       return !!this.blockDirector?.find(this.textBlock.id)
@@ -306,7 +332,7 @@ export default defineComponent({
     updateError(error: AxiosError) {
       let errorText = error.response?.data.error
       const opts: { signOut: boolean | null } = { signOut: null }
-      if (this.mode === 'create') {
+      if (this.isCreateMode) {
         switch (error.response?.status) {
           case (HttpStatusCode.Forbidden):
             opts.signOut = true
@@ -339,7 +365,7 @@ export default defineComponent({
     },
     save() {
       let action: string
-      if (this.mode === 'create') {
+      if (this.isCreateMode) {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.CREATE
       } else {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.UPDATE

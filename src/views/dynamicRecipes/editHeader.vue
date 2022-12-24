@@ -6,6 +6,12 @@
         <span>List</span>
       </router-link>
     </li>
+    <li>
+      <router-link :to="{ name: $routerExtension.names.DynamicRecipe }" class="flex">
+        <i class="material-icons my-auto">receipt</i>
+        <span>Back</span>
+      </router-link>
+    </li>
     <li v-if="signedIn() && dynamicRecipe">
       <a href="#" class="flex" @click.prevent="confirmDestroy">
         <i class="material-icons my-auto">delete</i>

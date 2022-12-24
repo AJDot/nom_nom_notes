@@ -4,7 +4,7 @@
       <ul class="flex gap-4 flex-wrap mb-2 justify-center">
         <li v-for="dynamicRecipe in dynamicRecipesForList" :key="dynamicRecipe.clientId"
           class="w-72 h-16 shadow-md rounded-md flex justify-center justify-items-center">
-          <router-link :to="{ name: $routerExtension.names.EditDynamicRecipe, params: { clientId: dynamicRecipe.clientId } }" class="w-full h-full p-2 uppercase transition-all flex place-content-center place-items-center text-center rounded-md hover:text-green hover:bg-black">
+          <router-link :to="{ name: $routerExtension.names.DynamicRecipe, params: { clientId: dynamicRecipe.clientId } }" class="w-full h-full p-2 uppercase transition-all flex place-content-center place-items-center text-center rounded-md hover:text-green hover:bg-black">
             {{ dynamicRecipe.name }}
           </router-link>
         </li>

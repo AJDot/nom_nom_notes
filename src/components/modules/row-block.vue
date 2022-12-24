@@ -1,6 +1,6 @@
 <template>
   <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1 rounded-md">
-    <base-block-group v-if="childBlocks.length" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" />
+    <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" />
     <div v-else class="flex grow cursor-pointer place-items-center rounded-md">
       <button type="button" @click="addColumn" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
         + Add Column

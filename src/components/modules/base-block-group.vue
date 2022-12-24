@@ -1,5 +1,5 @@
 <template>
-  <base-block v-for="block in blocks" :block="block" :key="block.id" :director="director" :draggable="draggable" :droppable="droppable" />
+  <base-block v-for="block in blocks" :block="block" :key="block.id" :mode="mode" :director="director" :draggable="draggable" :droppable="droppable" />
 </template>
 
 <script lang="ts">
@@ -24,6 +24,11 @@ export default defineComponent({
     director: {
       type: Object as () => UBlockDirector,
       required: true,
+    },
+    mode: {
+      type: String,
+      default: 'show',
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit'].includes(prop)
     },
   },
 })

@@ -1,5 +1,6 @@
 <template>
-  <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" class="outline-none w-full p-2 border border-gray-400 rounded-md transition-background hover:bg-gray-100 hover:shadow-input focus:bg-gray-100 focus:shadow-input">
+  <input v-if="editable" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :class="classes">
+  <div v-else :class="classes">{{ modelValue }}</div>
 </template>
 
 <script lang="ts">
@@ -16,9 +17,18 @@ export default defineComponent({
       ],
       default: null,
     },
+    editable: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: {
     'update:modelValue': null,
+  },
+  data() {
+    return {
+      classes: "outline-none w-full p-2 border border-gray-400 rounded-md transition-background hover:bg-gray-100 hover:shadow-input focus:bg-gray-100 focus:shadow-input tracking-normal"
+    }
   },
 })
 </script>

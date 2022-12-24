@@ -15,6 +15,11 @@ export default function<B extends Block>() {
         type: Object as () => UBlockDirector,
         required: true,
       },
+      mode: {
+        type: String,
+        default: 'show',
+        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit'].includes(prop)
+      },
     },
     computed: {
       droppableTest(): (blockId: string) => boolean {
@@ -27,6 +32,18 @@ export default function<B extends Block>() {
             !this.director.ancestors(thisBlock).includes(draggedBlock)
           )
         }
+      },
+      isShowMode(): boolean {
+        return this.mode === 'show'
+      },
+      isCreateMode(): boolean {
+        return this.mode === 'create'
+      },
+      isEditMode(): boolean {
+        return this.mode === 'edit'
+      },
+      isEditable(): boolean {
+        return this.isCreateMode || this.isEditMode
       },
     },
     methods: {

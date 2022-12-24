@@ -1,8 +1,8 @@
 <template>
   <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex flex-col gap-x-4 gap-y-2 grow basis-0 py-1 rounded-md">
-    <base-block-group v-if="childBlocks.length" :blocks="childBlocks" :director="director" :draggable="draggable"
+    <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable"
       :droppable="droppable" />
-    <div v-else class="flex grow cursor-pointer place-items-center rounded-md">
+    <div v-else-if="isEditable" class="flex grow cursor-pointer place-items-center rounded-md">
       <button type="button" @click="addText" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
         + Add Item
       </button>
@@ -18,7 +18,6 @@ import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { Block, ColumnBlock, TextBlock } from '~/interfaces/blockInterfaces'
 import blockMixin from '~/mixins/blockMixin'
-import draggableMixin from '~/mixins/draggableMixin'
 import Guid from '~/utils/guid'
 
 export default defineComponent({
