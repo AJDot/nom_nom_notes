@@ -18,7 +18,7 @@
       <h3>Delete recipe</h3>
     </template>
     <template #body>
-      <p>Are you sure you want to delete this recipe. This action cannot be undone.</p>
+      <p>Are you sure you want to delete this recipe? This action cannot be undone.</p>
     </template>
     <template #footer>
       <button class="btn ml-3 text-white bg-red hover:text-white hover:bg-red-700" type="button" @click="destroy">
@@ -88,7 +88,7 @@ export default defineComponent({
       }
 
       await this.$router.push({
-        name: this.$routerExtension.names.Home,
+        name: this.$routerExtension.names.Recipes,
       })
       if (this.recipeName) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {

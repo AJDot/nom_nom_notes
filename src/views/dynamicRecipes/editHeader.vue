@@ -1,28 +1,28 @@
 <template>
   <ul class="flex flex-col sm:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
-    <!-- <li>
-      <router-link :to="{ name: $routerExtension.names.DynamicRecipe }" class="flex">
-        <i class="material-icons my-auto">receipt</i>
-        <span>Back to Recipe</span>
+    <li>
+      <router-link :to="{ name: $routerExtension.names.DynamicRecipes }" class="flex">
+        <i class="material-icons my-auto">arrow_back</i>
+        <span>List</span>
       </router-link>
-    </li> -->
-    <!-- <li v-if="signedIn() && dynamicRecipe">
+    </li>
+    <li v-if="signedIn() && dynamicRecipe">
       <a href="#" class="flex" @click.prevent="confirmDestroy">
         <i class="material-icons my-auto">delete</i>
-        <span>Delete Recipe</span>
+        <span>Delete</span>
       </a>
-    </li> -->
+    </li>
   </ul>
   <modal :state="modalState" center>
     <template #header>
-      <h3>Delete recipe</h3>
+      <h3>Delete dynamic recipe</h3>
     </template>
     <template #body>
-      <p>Are you sure you want to delete this recipe. This action cannot be undone.</p>
+      <p>Are you sure you want to delete this dynamic recipe? This action cannot be undone.</p>
     </template>
     <template #footer>
       <button class="btn ml-3 text-white bg-red hover:text-white hover:bg-red-700" type="button" @click="destroy">
-        Delete Recipe
+        Delete Dynamic Recipe
       </button>
       <button class="btn ml-3 text-gray-900 bg-white border-solid border border-gray-400 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100" @click="resetModal">
         Cancel
@@ -74,14 +74,14 @@ export default defineComponent({
   },
   methods: {
     async destroy() {
-      // // need to save this because it can't be referenced after recipe is destroyed
-      // if (this.dynamicRecipe) this.recipeName = this.dynamicRecipe.name ?? 'Unnamed Recipe'
-      // this.resetModal()
-      // this.loading(async () => {
-      //   await this.$store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.DESTROY, this.dynamicRecipe)
-      //     .then((response) => this.destroySuccessful(response))
-      //     .catch((error) => this.destroyError(error))
-      // })
+      // need to save this because it can't be referenced after recipe is destroyed
+      if (this.dynamicRecipe) this.recipeName = this.dynamicRecipe.name ?? 'Unnamed Recipe'
+      this.resetModal()
+      this.loading(async () => {
+        await this.$store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.DESTROY, this.dynamicRecipe)
+          .then((response) => this.destroySuccessful(response))
+          .catch((error) => this.destroyError(error))
+      })
     },
     async destroySuccessful(response: AxiosResponse) {
       if (response.data.error) {
@@ -90,7 +90,7 @@ export default defineComponent({
       }
 
       await this.$router.push({
-        name: this.$routerExtension.names.Home,
+        name: this.$routerExtension.names.DynamicRecipes,
       })
       if (this.recipeName) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {

@@ -14,6 +14,7 @@ export enum DynamicRecipeActionTypes {
   FIND_OR_FETCH = 'FIND_OR_FETCH',
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
+  DESTROY = 'DESTROY',
 }
 
 type DynamicRecipeActions = {
@@ -72,6 +73,11 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
     if (!response.data.error) {
       await dynamicRecipe.save()
     }
+    return response
+  },
+  async [DynamicRecipeActionTypes.DESTROY](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerResponse<DynamicRecipeAttributes>>> {
+    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId))
+    await dynamicRecipe.$delete()
     return response
   },
 }
