@@ -12,12 +12,6 @@
         <span>New Dynamic Recipe</span>
       </router-link>
     </li>
-    <li>
-      <a href="http://localhost:5173/dynamic_recipes/20929632-ae2d-46a3-a98e-b936ffd01301/edit" class="flex">
-        <span>Dynamic Recipe</span>
-      </a>
-    </li>
-
   </ul>
 </template>
 

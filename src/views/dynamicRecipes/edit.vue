@@ -26,13 +26,6 @@
             </template>
           </ul>
         </dropdown>
-        <div>
-          q: {{ q }}
-          <br>
-          dropdownState: {{ dropdownState }}
-          <code><pre>{{ blockDirector.blocks }}</pre></code>
-          <code><pre>{{ textBlock }}</pre></code>
-        </div>
       </div>
     </section>
   </form>
