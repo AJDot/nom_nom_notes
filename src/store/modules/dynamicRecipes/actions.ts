@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { ServerResponse } from 'Interfaces/serverInterfaces'
+import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
 import DynamicRecipe, { DynamicRecipeAttributes } from 'Models/dynamicRecipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
@@ -10,6 +10,7 @@ import { StoreUtils } from '~/utils/storeUtils'
 
 export enum DynamicRecipeActionTypes {
   FETCH = 'FETCH',
+  FETCH_ALL = 'FETCH_ALL',
   FIND_OR_FETCH = 'FIND_OR_FETCH',
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
@@ -34,6 +35,17 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
     } catch (err) {
       throw err
     }
+  },
+  async [DynamicRecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<DynamicRecipesState, RootState>) {
+    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes, Array<ServerData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
+    commit(
+      DynamicRecipeMutationTypes.SET,
+      response.data.data.map((x) => {
+        return { id: x.id, ...x.attributes }
+      }),
+    )
+    await StoreUtils.processIncluded(DynamicRecipe, response.data.included)
+    return response
   },
   async [DynamicRecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<DynamicRecipesState, RootState>, id: string): Promise<DynamicRecipe | null> {
     const dynamicRecipe = DynamicRecipe.find(id)

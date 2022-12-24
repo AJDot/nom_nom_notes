@@ -1,15 +1,15 @@
 <template>
   <ul class="flex gap-5 place-items-center text-2xl mt-4">
     <li v-if="signedIn()">
-      <router-link :to="{ name: $routerExtension.names.NewRecipe }" class="safe">
+      <router-link :to="{ name: $routerExtension.names.NewDynamicRecipe }" class="safe">
         <i class="material-icons my-auto">add_circle_outline</i>
-        <span>New Recipe</span>
+        <span>New Dynamic Recipe</span>
       </router-link>
     </li>
     <li>
-      <router-link :to="{ name: $routerExtension.names.DynamicRecipes }" class="flex">
+      <router-link :to="{ name: $routerExtension.names.Recipes }" class="flex">
         <i class="material-icons my-auto">view_comfy</i>
-        <span>Dynamic Recipe Cards</span>
+        <span>Recipe Cards</span>
       </router-link>
     </li>
   </ul>

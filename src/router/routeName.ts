@@ -7,6 +7,7 @@ export enum RouteName {
   DynamicRecipe = 'dynamic-recipe',
   NewDynamicRecipe = 'new-dynamic-recipe',
   EditDynamicRecipe = 'edit-dynamic-recipe',
+  DynamicRecipes = 'dynamic-recipes',
   SignUp = 'sign-up',
   SignIn = 'sign-in',
   NotFound = 'not-found',
