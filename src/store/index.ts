@@ -1,18 +1,19 @@
-import { createStore, Store } from 'vuex'
-import { RootState } from '~/store/interfaces'
-import { InjectionKey } from 'vue'
 import VuexORM from '@vuex-orm/core'
+import { InjectionKey } from 'vue'
+import { createStore, Store } from 'vuex'
 import database from '~/store/database'
-import recipes from '~/store/modules/recipes'
-import dynamicRecipes from './modules/dynamicRecipes'
-import sessions from '~/store/modules/sessions'
-import flash from '~/store/modules/flash'
-import modal from '~/store/modules/modal'
-import loading from '~/store/modules/loading'
+import { RootState } from '~/store/interfaces'
 import categories from '~/store/modules/categories'
-import users from '~/store/modules/users'
-import signups from '~/store/modules/signups'
 import features from '~/store/modules/features'
+import flash from '~/store/modules/flash'
+import interfaces from '~/store/modules/interfaces'
+import loading from '~/store/modules/loading'
+import modal from '~/store/modules/modal'
+import recipes from '~/store/modules/recipes'
+import sessions from '~/store/modules/sessions'
+import signups from '~/store/modules/signups'
+import users from '~/store/modules/users'
+import dynamicRecipes from './modules/dynamicRecipes'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -29,6 +30,8 @@ export enum StoreModulePath {
   Modal = 'modal/',
   Loading = 'loading/',
   Features = 'features/',
+  Interfaces = 'interfaces/',
+  Toggle = 'toggle/',
 }
 
 export const store = createStore<RootState>({
@@ -44,6 +47,7 @@ export const store = createStore<RootState>({
     modal,
     loading,
     features,
+    interfaces,
   },
   state: {} as RootState,
   mutations: {},

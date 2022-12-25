@@ -1,0 +1,52 @@
+import {
+  Action,
+  ActionTree,
+  Getter,
+  GetterTree,
+  Module,
+  Mutation,
+  MutationTree
+} from 'vuex'
+import { RootState } from '~/store/interfaces'
+import toggle from './modules/toggle'
+
+export interface InterfaceState {}
+
+export enum InterfaceGetterTypes {}
+
+export enum InterfaceMutationTypes {}
+
+export enum InterfaceActionTypes {}
+
+type InterfaceGetters = {
+  [key in InterfaceGetterTypes]: Getter<InterfaceState, RootState>
+}
+
+type InterfaceMutations = {
+  [key in InterfaceMutationTypes]: Mutation<InterfaceState>
+}
+
+type InterfaceActions = {
+  [key in InterfaceActionTypes]: Action<InterfaceState, RootState>
+}
+
+const state: () => InterfaceState = () => ({})
+
+const getters: GetterTree<InterfaceState, RootState> & InterfaceGetters = {}
+
+const mutations: MutationTree<InterfaceState> & InterfaceMutations = {}
+
+const actions: ActionTree<InterfaceState, RootState> & InterfaceActions = {}
+
+const loading: Module<InterfaceState, RootState> = {
+  namespaced: true as const,
+  modules: {
+    toggle,
+  },
+  state,
+  getters,
+  mutations,
+  actions,
+}
+
+export default loading
