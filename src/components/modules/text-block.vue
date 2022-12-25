@@ -1,7 +1,7 @@
 <template>
   <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative basis-full rounded-md"
     :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
-    <div :key="block.id" :placeholder="placeholder" data-focus class="text px-2 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.text" ref="content" v-toggle-state="(key) => isEditable ? null : toggleToggleState(key)"></div>
+    <div :key="block.id" :placeholder="placeholder" data-focus class="text-base min-h-9 px-2 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.text" ref="content" v-toggle-state="(key) => isEditable ? null : toggleToggleState(key)"></div>
   </draggable>
 </template>
 
@@ -27,7 +27,7 @@ export default defineComponent({
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),
     placeholder(): string {
-      return this.director.find(this.block.id) ? "Type '/' for commands" : "Type anything..."
+      return this.isEditable ? this.director.find(this.block.id) ? "Type '/' for commands" : "Type anything..." : ''
     },
   },
   methods: {

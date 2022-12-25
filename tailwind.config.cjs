@@ -13,6 +13,9 @@ module.exports = {
         card: '0 2px 8px 0 rgb(0 0 0 / 30%)',
         input: `0 0 1px 0 ${theme.colors.gray[900]}`,
       }),
+      minHeight: ({ theme }) => ({
+        ...theme('maxHeight')
+      }),
       borderColor: {
         transparent: 'transparent',
       },
