@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { AxiosError, AxiosResponse } from 'axios'
-import { Block, BlockCommand, TextBlock, UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block, BlockCommand, BlockCommandType, TextBlock, UBlockDirector } from 'Interfaces/blockInterfaces'
 import { defineComponent, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { SearchResult, USearcher } from '~/interfaces/searchInterfaces'
@@ -429,11 +429,14 @@ export default defineComponent({
       valueString: 'label',
       type: 'command',
       collection: () => {
-        const allowableCommands: Array<BlockDirector['COMMANDS'][number]['label']> = ['H1', 'H2', 'H3', 'Text', 'Columns']
-        if (this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column')  {
-          allowableCommands.push('Add Column')
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns']
+        if (this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column') {
+          allowableCommands.push('addColumn')
         }
-        return this.blockDirector.COMMANDS.filter(c => allowableCommands.includes(c.label))
+        return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
+          commands.push(this.blockDirector.COMMANDS[commandId])
+          return commands
+        }, [])
       },
       matcher(item, q) {
         return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))

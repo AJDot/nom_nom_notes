@@ -1,4 +1,3 @@
-
 export interface BaseBlock {
   id: string
   type: string
@@ -37,10 +36,14 @@ export interface ColumnBlock extends BaseBlock {
 
 export type Block = H1Block | H2Block | H3Block | TextBlock | RowBlock | ColumnBlock
 
+export type BlockCommandType = 'h1' | 'h2' | 'h3' | 'text' | 'columns' | 'addColumn'
+
 export interface BlockCommand {
-  label: 'H1' | 'H2' | 'H3' | 'Text' | 'Columns' | 'Add Column'
+  label: string
   call(block: Block): void
 }
+
+export type BlockCommandDict = {[key in BlockCommandType]: BlockCommand} 
 
 export interface BlockDirectorOptions {
   blocks: Array<Block>
@@ -57,7 +60,7 @@ export interface BlockDirectorOptions {
 }
 
 export interface UBlockDirector {
-  readonly COMMANDS: Array<BlockCommand>
+  readonly COMMANDS: BlockCommandDict
   readonly blocks: Array<Block>
   add(newBlock: Block): void
   addAfter(newBlock: Block, block: Block): void

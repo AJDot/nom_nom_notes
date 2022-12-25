@@ -1,4 +1,4 @@
-import { Block, BlockCommand, BlockDirectorOptions, ColumnBlock, TextBlock } from '~/interfaces/blockInterfaces'
+import { Block, BlockCommandDict, BlockDirectorOptions, ColumnBlock, TextBlock } from '~/interfaces/blockInterfaces'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 import { UBlockCaptain, UBlockDirector } from './../../interfaces/blockInterfaces'
@@ -10,11 +10,11 @@ import RowBlockCaptain from './rowBlockCaptain'
 import TextBlockCaptain from './textBlockCaptain'
 
 export default class BlockDirector implements UBlockDirector {
-  readonly COMMANDS: BlockCommand[] = [
-    { label: 'H1', call: block => block.type = 'h1' },
-    { label: 'H2', call: block => block.type = 'h2' },
-    { label: 'H3', call: block => block.type = 'h3' },
-    {
+  readonly COMMANDS: BlockCommandDict = {
+    h1: { label: 'H1', call: block => block.type = 'h1' },
+    h2: { label: 'H2', call: block => block.type = 'h2' },
+    h3: { label: 'H3', call: block => block.type = 'h3' },
+    text: {
       label: 'Text',
       call: block => {
         block.type = 'text'
@@ -27,7 +27,7 @@ export default class BlockDirector implements UBlockDirector {
         }
       },
     },
-    {
+    columns: {
       label: 'Columns',
       call: block => {
         const oldType = block.type
@@ -41,7 +41,7 @@ export default class BlockDirector implements UBlockDirector {
         block.content.text = ''
       },
     },
-    {
+    addColumn: {
       label: 'Add Column',
       call: block => {
         const column = this.find(block.parentId)!
@@ -52,7 +52,7 @@ export default class BlockDirector implements UBlockDirector {
         this.moveInside(newText, newColumn)
       }
     },
-  ]
+  }
 
   constructor(private readonly options: BlockDirectorOptions) {
   }
