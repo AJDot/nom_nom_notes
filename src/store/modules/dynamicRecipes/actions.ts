@@ -62,7 +62,7 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
       dynamicRecipe: dynamicRecipe.$toJson(),
     })
     dynamicRecipe.id = response.data.data.id
-    await dynamicRecipe.$update({ data: { id: dynamicRecipe.id, ...response.data.data.attributes } })
+    await dynamicRecipe.$insertOrUpdate({ data: { id: dynamicRecipe.id, ...response.data.data.attributes } })
     return response
   },
   async [DynamicRecipeActionTypes.UPDATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerResponse<DynamicRecipeAttributes>>> {

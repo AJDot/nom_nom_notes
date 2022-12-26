@@ -6,7 +6,7 @@
         <span>List</span>
       </router-link>
     </li>
-    <li>
+    <li v-if="dynamicRecipe">
       <router-link :to="{ name: $routerExtension.names.DynamicRecipe }" class="flex">
         <i class="material-icons my-auto">receipt</i>
         <span>Back</span>
@@ -41,7 +41,7 @@
 import Modal from '@/modal.vue'
 import { AxiosError, AxiosResponse } from 'axios'
 import DynamicRecipe from 'Models/dynamicRecipe'
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { mapGetters, useStore } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
@@ -53,7 +53,7 @@ import { FlashActionTypes } from '~/store/modules/flash'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
-  name: 'DynamicRecipeListHeader',
+  name: 'DynamicRecipeEditHeader',
   components: {
     Modal,
   },
@@ -63,13 +63,17 @@ export default defineComponent({
   setup() {
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
-    const clientId = router.currentRoute.value.params.clientId
-    if (clientId) {
-      store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId)
+    const clientId = computed(() => router.currentRoute.value.params.clientId)
+    if (clientId.value) {
+      store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId.value)
     }
     return {
       ...getters,
-      dynamicRecipe: computed(() => DynamicRecipe.find(clientId)),
+      dynamicRecipe: computed(() => {
+        if (!clientId.value) return null
+
+        return DynamicRecipe.find(clientId.value)
+      }),
       recipeName: '',
     }
   },

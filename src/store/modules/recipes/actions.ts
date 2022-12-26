@@ -62,7 +62,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
       recipe: recipe.$toJson(),
     })
     recipe.id = response.data.data.id
-    await recipe.$update({ data: { id: recipe.id, ...response.data.data.attributes } })
+    await recipe.$insertOrUpdate({ data: { id: recipe.id, ...response.data.data.attributes } })
     return response
   },
   async [RecipeActionTypes.UPDATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerResponse<RecipeAttributes>>> {

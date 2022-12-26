@@ -57,11 +57,17 @@ export default defineComponent({
   setup() {
     const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
-    const clientId = router.currentRoute.value.params.clientId
-    store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId)
+    const clientId = computed(() => router.currentRoute.value.params.clientId)
+    if (clientId.value) {
+      store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId.value)
+    }
     return {
       ...getters,
-      recipe: computed(() => Recipe.find(clientId)),
+      recipe: computed(() => {
+        if (!clientId.value) return null
+
+        return Recipe.find(clientId.value)
+      }),
       recipeName: '',
     }
   },
