@@ -1,10 +1,10 @@
 <template>
   <div>
     <slot name="control" @click="$emit('open')" />
-    <div v-if="state" class="fixed w-screen h-screen top-0" @click="$emit('close')" data-test="side-panel-mask"></div>
+    <div v-if="state" class="fixed w-screen h-screen top-0 left-0 z-10" @click="$emit('close')" data-test="side-panel-mask"></div>
     <transition appear name="slide-fade">
-      <aside v-if="state" class="fixed top-0 left-0 max-w-lg h-screen bg-white shadow-2xl overflow-auto" data-test="side-panel">
-        <button type="button" @click="$emit('close')" class="absolute top-0 right-0 mr-5 mt-3 text-2xl" data-test="close">
+      <aside v-if="state" class="fixed top-0 left-0 w-screen max-w-lg h-screen bg-white shadow-2xl overflow-auto z-20" data-test="side-panel">
+        <button type="button" @click="$emit('close')" class="block ml-auto mr-5 mt-3" data-test="close">
           <i class="material-icons"> close </i>
         </button>
         <slot />
