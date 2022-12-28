@@ -1,5 +1,5 @@
 <template>
-  <base-block v-for="block in blocks" :block="block" :key="block.id" :mode="mode" :director="director" :draggable="draggable" :droppable="droppable" />
+  <base-block class="gap-4 items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" v-for="block in blocks" :block="block" :key="block.id" :mode="mode" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
 </template>
 
 <script lang="ts">
@@ -28,7 +28,11 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+    },
+    editable: {
+      type: Boolean,
+      default: true,
     },
   },
 })

@@ -7,50 +7,77 @@ import H1BlockCaptain from './h1BlockCaptain'
 import H2BlockCaptain from './h2BlockCaptain'
 import H3BlockCaptain from './h3BlockCaptain'
 import RowBlockCaptain from './rowBlockCaptain'
+import SidebarBlockCaptain from './sidebarBlockCaptain'
 import TextBlockCaptain from './textBlockCaptain'
 
 export default class BlockDirector implements UBlockDirector {
   readonly COMMANDS: BlockCommandDict = {
-    h1: { label: 'H1', call: block => block.type = 'h1' },
-    h2: { label: 'H2', call: block => block.type = 'h2' },
-    h3: { label: 'H3', call: block => block.type = 'h3' },
+    h1: {
+      label: 'H1',
+      description: 'Turn into large heading',
+      call: block => block.type = 'h1'
+    },
+    h2: {
+      label: 'H2',
+      description: 'Turn into medium heading',
+      call: block => block.type = 'h2'
+    },
+    h3: {
+      label: 'H3',
+      description: 'Turn into small heading',
+      call: block => block.type = 'h3'
+    },
     text: {
       label: 'Text',
-      call: block => {
-        block.type = 'text'
-        const children = this.childrenFor(block)
-        if (children.length) {
-          block.content.text += '\n' + children.map(b => b.content.text).join('\n')
-        }
-        for (const child of children) {
-          this.destroy(child)
-        }
-      },
+      description: 'Turn into plain text',
+      call: block => block.type = 'text'
     },
     columns: {
       label: 'Columns',
-      call: block => {
-        const oldType = block.type
-        const oldText = block.content.text
+      description: 'Turn into two columns',
+      call: (block: Block) => {
+        let text1: Block
+        switch (block.type) {
+          case 'h1':
+          case 'h2':
+          case 'h3':
+          case 'text':
+            text1 = { id: Guid.create(), type: block.type, content: { text: block.content.text } }
+            break
+          case 'column':
+          case 'row':
+            text1 = { id: Guid.create(), type: block.type }
+            break
+          case 'sidebar':
+            text1 = { id: Guid.create(), type: block.type, content: { text: block.content.text, blockId: block.content.blockId } }
+            break
+        }
         block.type = 'row'
-        const column1: ColumnBlock = { id: Guid.create(), type: 'column', content: { text: '' }, parentId: block.id }
-        const text1: Block = { id: Guid.create(), type: oldType, content: { text: oldText }, parentId: column1.id }
-        const column2: ColumnBlock = { id: Guid.create(), type: 'column', content: { text: '' }, parentId: block.id }
+        const column1: ColumnBlock = { id: Guid.create(), type: 'column', parentId: block.id }
+        text1.parentId = column1.id
+        const column2: ColumnBlock = { id: Guid.create(), type: 'column', parentId: block.id }
         const text2: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' }, parentId: column2.id }
         this.blocks.splice(this.indexOf(block)! + 1, 0, column1, column2, text1, text2)
-        block.content.text = ''
+        if ('content' in block) block.content.text = ''
       },
     },
     addColumn: {
       label: 'Add Column',
+      description: 'Tack on another column',
       call: block => {
-        const column = this.find(block.parentId)!
-        const newColumn: ColumnBlock = { id: Guid.create(), type: 'column', content: { text: '' } }
+        const row = this.findNearest(block, 'row')!
+        const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
         const newText: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
-        this.addAfter(newColumn, column)
+        this.add(newColumn)
+        this.moveInside(newColumn, row)
         this.add(newText)
         this.moveInside(newText, newColumn)
       }
+    },
+    sidebar: {
+      label: 'Sidebar',
+      description: 'Link a block to reveal in a side panel. Place beside a column to display with full column height',
+      call: block => block.type = 'sidebar'
     },
   }
 
@@ -153,21 +180,35 @@ export default class BlockDirector implements UBlockDirector {
     return this.blocks.find(block => block.id === id) || null
   }
 
+  findNearest<T extends Block['type']>(block: Block, type: T): Extract<Block, { type: T }> | null {
+    let currentBlock: Block | null = block
+    while (currentBlock) {
+      const parent = this.find(currentBlock.parentId)
+      if (parent?.type === type) return parent as Extract<Block, { type: T }>
+      currentBlock = parent
+    }
+    return null
+  }
+
   indexOf(block: Block): number | null {
     const index = this.blocks.indexOf(block)
     return index >= 0 ? index : null
   }
 
   isEmpty(block: Block): boolean {
-    return !block.content.text && this.childrenFor(block).length === 0
+    if ('content' in block && block.content.text) return false
+
+    return this.childrenFor(block).length === 0
   }
 
   move(block: Block, to: Block) {
     let moveIndex: number | null = this.indexOf(block)
+    if (moveIndex === null) return
+    const moved = this.blocks.splice(moveIndex, 1)[0]
     let toIndex: number | null = this.indexOf(to)
-    if (moveIndex === null || toIndex === null) return
+    if (toIndex === null) toIndex = moveIndex
 
-    this.blocks.splice(toIndex, 0, this.blocks.splice(moveIndex, 1)[0])
+    this.blocks.splice(toIndex, 0, moved)
     block.parentId = to.parentId
   }
 
@@ -237,11 +278,27 @@ export default class BlockDirector implements UBlockDirector {
     }
   }
 
-  onEnter({ block, event }: { block: Block; event: KeyboardEvent }): void {
+  onEnter({ block, event }: { block: Block, event: KeyboardEvent }): void {
     if (this.options.onEnter) {
       this.options.onEnter({ block, event, call: () => this.onEnterDefault({ block, event }) })
     } else {
       this.onEnterDefault({ block, event })
+    }
+  }
+
+  onChoose({ block, event, choice }: { block: Block, event: PointerEvent, choice: { type: string, args: [Block] } }) {
+    if (this.options.onChoose) {
+      this.options.onChoose({ block, event, choice, call: () => this.onChooseDefault({ block, event, choice }) })
+    } else {
+      this.onChooseDefault({ block, event, choice })
+    }
+  }
+
+  onClick({ block, event }: { block: Block; event: PointerEvent }) {
+    if (this.options.onClick) {
+      this.options.onClick({ block, event, call: () => this.onClickDefault({ block, event }) })
+    } else {
+      this.onClickDefault({ block, event })
     }
   }
 
@@ -253,7 +310,7 @@ export default class BlockDirector implements UBlockDirector {
     }
   }
 
-  onMove({ move, to }: { move: Block , to: Block }) {
+  onMove({ move, to }: { move: Block, to: Block }) {
     if (this.options.onMove) {
       this.options.onMove({ move, to, call: () => this.onMoveDefault({ move, to }), })
     } else {
@@ -279,19 +336,28 @@ export default class BlockDirector implements UBlockDirector {
         return new RowBlockCaptain(block, this)
       case 'column':
         return new ColumnBlockCaptain(block, this)
+      case 'sidebar':
+        return new SidebarBlockCaptain(block, this)
       default:
         assertNever(block)
     }
   }
 
-  private onArrowDownDefault({ block, event }: { block: Block; event: KeyboardEvent }) {
+  private onArrowDownDefault({ block, event }: { block: Block, event: KeyboardEvent }) {
   }
 
-  private onArrowUpDefault({ block, event }: { block: Block; event: KeyboardEvent }) {
+  private onArrowUpDefault({ block, event }: { block: Block, event: KeyboardEvent }) {
   }
 
-  private onBackspaceDefault({ block, event }: { block: Block; event: InputEvent }) {
+  private onBackspaceDefault({ block, event }: { block: Block, event: InputEvent }) {
     return this.destroy(block)
+  }
+
+  private onChooseDefault({ block, event, choice }: { block: Block, event: PointerEvent, choice: { type: string, args: [Block] } }) {
+    this.captainFor(block).onChoose({ event, choice })
+  }
+
+  private onClickDefault({ block, event }: { block: Block; event: PointerEvent }) {
   }
 
   private onDeleteDefault({ block, event }: { block: Block; event: InputEvent }) {
@@ -311,7 +377,7 @@ export default class BlockDirector implements UBlockDirector {
   }
 
   private onMoveDefault({ move, to }: { move: Block, to: Block }): void {
-    this.captainFor(to).onMove({block: move})
+    this.captainFor(to).onMove({ block: move })
   }
 
   private onDropDefault({ moveBlockId, toBlockId, }: { moveBlockId: string, toBlockId: string }) {

@@ -3,7 +3,7 @@ import { Block, UBlockDirector } from '~/interfaces/blockInterfaces'
 import SelectionUtils from '~/utils/selectionUtils'
 import draggableMixin from './draggableMixin'
 
-export default function<B extends Block>() {
+export default function <B extends Block>() {
   return defineComponent({
     mixins: [draggableMixin],
     props: {
@@ -18,7 +18,11 @@ export default function<B extends Block>() {
       mode: {
         type: String,
         default: 'show',
-        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit'].includes(prop)
+        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+      },
+      editable: {
+        type: Boolean,
+        default: true,
       },
     },
     computed: {
@@ -42,8 +46,14 @@ export default function<B extends Block>() {
       isEditMode(): boolean {
         return this.mode === 'edit'
       },
+      isChooseMode(): boolean {
+        return this.mode === 'choose'
+      },
       isEditable(): boolean {
-        return this.isCreateMode || this.isEditMode
+        return this.editable && (this.isCreateMode || this.isEditMode)
+      },
+      hoverColor(): string {
+        return this.isChooseMode ? 'bg-green-100' : 'bg-gray-100'
       },
     },
     methods: {

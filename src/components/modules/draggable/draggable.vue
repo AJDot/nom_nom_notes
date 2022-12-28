@@ -26,6 +26,10 @@ export default defineComponent({
       type: String,
       default: 'div',
     },
+    hoverColor: {
+      type: String,
+      default: 'bg-gray-100'
+    }
   },
   emits: {
     drop: null,
@@ -71,7 +75,7 @@ export default defineComponent({
       this.dragClass = []
     },
     onMouseover(event) {
-      this.hoverClass = ['bg-gray-100', 'shadow-input']
+      this.hoverClass = [this.hoverColor, 'shadow-input']
     },
     onMouseout(event) {
       this.hoverClass = []

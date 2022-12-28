@@ -1,5 +1,5 @@
 <template>
-  <component class="gap-4 items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" @input.stop="onInput" @keydown.enter.stop="onEnter" @keydown.arrow-down.stop="onArrowDown" @keydown.arrow-up.stop="onArrowUp" @keydown.delete.stop="onDelete" :draggable="draggable" :droppable="droppable" />
+  <component class="gap-4 items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
 </template>
 
 <script lang="ts">
@@ -11,6 +11,7 @@ import H1Block from './h1-block.vue'
 import H2Block from './h2-block.vue'
 import H3Block from './h3-block.vue'
 import RowBlock from './row-block.vue'
+import SidebarBlock from './sidebar-block.vue'
 import TextBlock from './text-block.vue'
 
 interface Data {
@@ -26,6 +27,7 @@ export default defineComponent({
     TextBlock,
     RowBlock,
     ColumnBlock,
+    SidebarBlock,
   },
   mixins: [
     draggableMixin,
@@ -42,7 +44,11 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+    },
+    editable: {
+      type: Boolean,
+      default: true,
     },
   },
   data(): Data {
@@ -54,43 +60,9 @@ export default defineComponent({
         text: 'text-block',
         row: 'row-block',
         column: 'column-block',
+        sidebar: 'sidebar-block',
       },
     }
   },
-  methods: {
-    onInput(event: InputEvent) {
-      this.director.onInput({ block: this.block, event })
-    },
-    onEnter(event: KeyboardEvent) {
-      if (event.shiftKey) {
-      } else {
-        this.director.onEnter({ block: this.block, event })
-        event.preventDefault()
-      }
-    },
-    onEnterKeydown(event: KeyboardEvent) {
-      if (event.shiftKey) {
-        // do nothing
-      } else {
-        event.preventDefault()
-      }
-    },
-    onArrowDown(event) {
-      this.director.onArrowDown({ block: this.block, event })
-    },
-    onArrowUp(event) {
-      this.director.onArrowUp({ block: this.block, event })
-    },
-    /**
-     * Handles both "Delete" and "Backspace" keys
-     */
-    onDelete(event) {
-      if (event.key === 'Delete') {
-        this.director.onDelete({ block: this.block, event })
-      } else if (event.key === 'Backspace') {
-        this.director.onBackspace({ block: this.block, event })
-      }
-    },
-  }
 })
 </script>

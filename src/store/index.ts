@@ -32,6 +32,7 @@ export enum StoreModulePath {
   Features = 'features/',
   Interfaces = 'interfaces/',
   Toggle = 'toggle/',
+  Choice = 'choice/',
 }
 
 export const store = createStore<RootState>({

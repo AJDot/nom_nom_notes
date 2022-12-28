@@ -1,12 +1,13 @@
-import { Block, ColumnBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, ColumnBlock, ContentBlockIdBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
 import assertNever from '../assertNever'
 
 export default class ColumnBlockCaptain implements UBlockCaptain {
   constructor(public block: ColumnBlock, public director: UBlockDirector) {
   }
 
-  canDestroy(): boolean {
-    throw new Error('Method not implemented.')
+  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+    const block = choice.args[0]
+    block.content.blockId = this.block.id
   }
 
   onEnter({ event }: { event: KeyboardEvent }): void {
@@ -14,25 +15,24 @@ export default class ColumnBlockCaptain implements UBlockCaptain {
   }
 
   onInput({ event }: { event: InputEvent }) {
-    this.block.content.text = (<HTMLElement>event.target)?.innerText
+    throw new Error('Method not implemented.')
   }
 
   onMove({ block }: { block: Block }) {
-     switch (block.type) {
+    switch (block.type) {
       case 'h1':
       case 'h2':
       case 'h3':
       case 'text':
-        this.director.moveInside(block, this.block)
-        break
-      case 'column':
-        this.director.move(block, this.block)
-        break
       case 'row':
         this.director.moveInside(block, this.block)
         break
+      case 'column':
+      case 'sidebar':
+        this.director.move(block, this.block)
+        break
       default:
         assertNever(block)
-    }   
+    }
   }
 }

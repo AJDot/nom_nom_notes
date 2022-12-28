@@ -113,6 +113,9 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
       default: EditDynamicRecipe,
       'secondary-header': EditDynamicRecipeHeader,
     },
+    props: {
+      default: { view: 'edit' },
+    },
   },
   {
     name: RouteName.DynamicRecipe,

@@ -1,6 +1,6 @@
 <template>
-  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1 rounded-md">
-    <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" />
+  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1 rounded-md" :hover-color="hoverColor" :class="{ 'cursor-pointer': isChooseMode }" @click.self.stop="blockListeners.click">
+    <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
     <div v-else class="flex grow cursor-pointer place-items-center rounded-md">
       <button type="button" @click="addColumn" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
         + Add Column
@@ -16,6 +16,7 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { Block, ColumnBlock, RowBlock } from '~/interfaces/blockInterfaces'
+import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import Guid from '~/utils/guid'
 
@@ -26,6 +27,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<RowBlock>(),
+    blockListeners,
   ],
   computed: {
     childBlocks(): Block[] {
@@ -38,7 +40,7 @@ export default defineComponent({
       this.director.onDrop({ moveBlockId, toBlockId })
     },
     addColumn(): void {
-      const column: ColumnBlock = { id: Guid.create(), type: 'column', content: { text: '' } }
+      const column: ColumnBlock = { id: Guid.create(), type: 'column' }
       this.director.onCreate({ block: column, inside: this.block })
     },
     destroy(): void {

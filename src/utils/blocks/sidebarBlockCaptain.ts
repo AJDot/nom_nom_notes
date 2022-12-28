@@ -1,9 +1,9 @@
-import { Block, ContentBlockIdBlock, H2Block, RowBlock, TextBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class H2BlockCaptain implements UBlockCaptain {
-  constructor(public block: H2Block, public director: UBlockDirector) {
+export default class SidebarBlockCaptain implements UBlockCaptain {
+  constructor(public block: SidebarBlock, public director: UBlockDirector) {
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -19,7 +19,7 @@ export default class H2BlockCaptain implements UBlockCaptain {
   }
 
   onInput({ event }: { event: InputEvent }) {
-    this.block.content.text = (<HTMLElement>event.target)?.innerText
+    this.block.content.text = (<HTMLElement>event.target)?.innerHTML
   }
 
   onMove({ block }: { block: Block }) {
@@ -29,13 +29,18 @@ export default class H2BlockCaptain implements UBlockCaptain {
       case 'h3':
       case 'text':
       case 'row':
-      case 'sidebar':
-        this.director.move(block, this.block)
+        const parent = this.director.find(this.block.parentId)
+        if (parent?.type === 'row') {
+          const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
+          this.director.addBefore(newColumn, this.block)
+          this.director.moveInside(block, newColumn)
+        } else {
+          this.director.move(block, this.block)
+        }
         break
       case 'column':
-        const row: RowBlock = { id: Guid.create(), type: 'row' }
-        this.director.addBefore(row, this.block)
-        this.director.moveInside(block, row)
+      case 'sidebar':
+        this.director.move(block, this.block)
         break
       default:
         assertNever(block)

@@ -8,6 +8,7 @@ import {
   MutationTree
 } from 'vuex'
 import { RootState } from '~/store/interfaces'
+import choice from './modules/choice'
 import toggle from './modules/toggle'
 
 export interface InterfaceState {}
@@ -38,10 +39,11 @@ const mutations: MutationTree<InterfaceState> & InterfaceMutations = {}
 
 const actions: ActionTree<InterfaceState, RootState> & InterfaceActions = {}
 
-const loading: Module<InterfaceState, RootState> = {
+const interfaces: Module<InterfaceState, RootState> = {
   namespaced: true as const,
   modules: {
     toggle,
+    choice,
   },
   state,
   getters,
@@ -49,4 +51,4 @@ const loading: Module<InterfaceState, RootState> = {
   actions,
 }
 
-export default loading
+export default interfaces

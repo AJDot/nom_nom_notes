@@ -40,7 +40,7 @@
               <span class="py-5 vertical-rl text-orient-upright sticky top-0">Ingredients</span>
             </button>
           </template>
-          <section class="m-5">
+          <section class="mb-5 mx-5">
             <h1 class="text-xl border-b border-gray-400">Ingredients</h1>
             <ul class="mt-4">
               <li v-for="ing in sortedIngredients" :key="ing.clientId" v-toggle-state="ingredientsState" class="cursor-pointer hover:text-green hover:font-bold mb-2" :class="{ 'line-through': ingredientsState[ing.clientId] }">
@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent, ImgHTMLAttributes } from "vue"
 import { StoreModulePath } from "~/store"
 import { RecipeActionTypes } from "~/store/modules/recipes/actions"
 import Recipe from "Models/recipe"
@@ -127,7 +127,7 @@ export default defineComponent({
         return []
       }
     },
-    imageAttrs(): ImageAttrs {
+    imageAttrs(): ImgHTMLAttributes {
       if (this.recipe?.image.url) {
         return {
           src: this.recipe.image.url,

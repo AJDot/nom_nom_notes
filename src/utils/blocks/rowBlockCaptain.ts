@@ -1,4 +1,4 @@
-import { Block, RowBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, ContentBlockIdBlock, RowBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
@@ -6,12 +6,17 @@ export default class RowBlockCaptain implements UBlockCaptain {
   constructor(public block: RowBlock, public director: UBlockDirector) {
   }
 
+  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+    const block = choice.args[0]
+    block.content.blockId = this.block.id
+  }
+
   onEnter({ event }: { event: KeyboardEvent }): void {
     throw new Error('Method not implemented.')
   }
 
   onInput({ event }: { event: InputEvent }) {
-    this.block.content.text = (<HTMLElement>event.target)?.innerText
+    throw new Error('Method not implemented.')
   }
 
   onMove({ block }: { block: Block }): void {
@@ -20,20 +25,12 @@ export default class RowBlockCaptain implements UBlockCaptain {
       case 'h2':
       case 'h3':
       case 'text':
-        const children = this.director.childrenFor(this.block)
-        let lastChild: Block | null = children[children.length - 1]
-        if (!lastChild) {
-          lastChild = { id: Guid.create(), type: 'column', content: { text: '' } }
-          this.director.addAfter(lastChild, this.block)
-          this.director.moveInside(lastChild, this.block)
-        }
-        this.director.moveInside(block, lastChild)
-        break
-      case 'column':
-        this.director.moveInside(block, this.block)
-        break
       case 'row':
         this.director.move(block, this.block)
+        break
+      case 'column':
+      case 'sidebar':
+        this.director.moveInside(block, this.block)
         break
       default:
         assertNever(block)

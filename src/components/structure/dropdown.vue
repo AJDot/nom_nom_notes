@@ -1,7 +1,9 @@
 <template>
   <slot name="control" />
-  <div class="absolute" :class="positionType === 'relative' ? 'left-0 right-0' : ''" :style="style" ref="dropdown">
-    <div v-if="state" class="z-10 border border-gray-400 mt-1 max-h-56 min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none" :class="{ 'right-0': right }" tabindex="-1" role="listbox">
+  <div class="absolute z-10" :class="positionClasses" :style="style" ref="dropdown">
+    <div v-if="state"
+      class="z-10 border border-gray-400 mt-1 max-h-56 min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none"
+      :class="{ 'right-0': right }" tabindex="-1" role="listbox">
       <slot />
     </div>
   </div>
@@ -14,6 +16,7 @@ import SelectionUtils from '~/utils/selectionUtils'
 interface Data {
   position: Omit<DOMRectReadOnly, 'toJSON'> | null
   style: CSSProperties
+  closeBuffer: boolean // opening dropdown with button immediately triggers close emit - ignore first close event if opened with mouse
 }
 
 export default defineComponent({
@@ -30,7 +33,14 @@ export default defineComponent({
     positionType: {
       type: String,
       default: 'relative',
-      validator: prop => typeof prop === 'string' && ['relative', 'cursor'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['relative', 'cursor', 'mouse'].includes(prop)
+    },
+    openEvent: {
+      type: [
+        Object as () => MouseEvent,
+      ],
+      required: false,
+      default: null
     },
   },
   emits: {
@@ -40,18 +50,36 @@ export default defineComponent({
     return {
       position: null,
       style: {},
+      closeBuffer: this.positionType === 'mouse',
     }
+  },
+  computed: {
+    positionClasses(): string {
+      switch (this.positionType) {
+        case 'relative':
+          return 'left-0 right-0'
+        default:
+          return ''
+      }
+    },
   },
   methods: {
     updateStyles() {
       if (this.position) {
-        const padding = { x: 0, y: 10 }
+        const padding = { x: 5, y: 15 }
         this.style.top = `${this.position.bottom + padding.y}px`
         this.style.left = `${this.position.x + padding.x}px`
       }
     },
     async close(e: MouseEvent) {
-      if (!this.$el.contains(e.target)) this.$emit('close')
+      if (this.closeBuffer) {
+        this.closeBuffer = false
+        return
+      }
+      const dropdown = this.$refs.dropdown as HTMLElement
+      if (!dropdown) return
+
+      if (!dropdown.contains(e.target as Node)) this.$emit('close')
     },
     handleDropdownPosition() {
       const screenPadding = 16
@@ -67,22 +95,44 @@ export default defineComponent({
       }
     }
   },
-  mounted() {
-    document.addEventListener('click', this.close)
-  },
   beforeDestroy() {
     document.removeEventListener('click', this.close)
   },
   watch: {
     async state(newVal, oldVal) {
-      if (newVal && this.positionType === 'cursor') {
+      if (newVal) {
+        document.addEventListener('click', this.close)
+      } else {
+        document.removeEventListener('click', this.close)
+      }
+      this.closeBuffer = this.positionType === 'mouse'
+
+      if (!newVal) {
+        this.position = null
+        this.style = {}
+      } else if (this.positionType === 'cursor') {
         this.position = SelectionUtils.getCaretRect()
         this.updateStyles()
         await nextTick()
         this.handleDropdownPosition()
-      } else {
-        this.position = null
-        this.style = {}
+      } else if (this.positionType === 'mouse') {
+        const rect = (<HTMLElement>this.$refs.dropdown).getBoundingClientRect()
+        const dx = this.openEvent.x - rect.right
+        const dy = this.openEvent.y - rect.bottom
+
+        this.position = {
+          y: dy,
+          top: dy,
+          bottom: dy,
+          x: dx,
+          left: dx,
+          right: dx,
+          height: 0,
+          width: 0,
+        }
+        this.updateStyles()
+        await nextTick()
+        this.handleDropdownPosition()
       }
     }
   }

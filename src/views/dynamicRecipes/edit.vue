@@ -8,14 +8,17 @@
         </dd>
       </dl>
       <div class="sm:col-span-2">
-        <base-block-group :blocks="topLevelBlocks" :mode="mode" :director="blockDirector" :draggable="isEditable" :droppable="isEditable" />
+        <base-block-group :blocks="topLevelBlocks" :mode="mode" :director="blockDirector" :draggable="isEditable" :droppable="isEditable" :editable="isEditable" />
         <base-block v-if="isEditable && !blockDirector.find(textBlock.id)" :block="textBlock" :mode="mode" :director="blockDirector" />
         <dropdown :state="dropdownState" position-type="cursor">
-          <ul>
+          <ul class="max-w-lg">
             <template v-if="commandSelector.collections.some(c => c.length)">
               <dropdown-item v-for="commandResult in commandSelector.collections.flat()" :class="{ 'select-blue': commandResult === commandSelector.current }">
-                <dropdown-item-button @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })">
-                  {{ commandResult.label }}
+                <dropdown-item-button @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })" class="grid grid-cols-1 text-left">
+                  <h1 class="font-sans text-lg bold">
+                    {{ commandResult.label }}
+                  </h1>
+                  <p v-if="commandResult.raw.description" class="text-gray-500">{{ commandResult.raw.description }}</p>
                 </dropdown-item-button>
               </dropdown-item>
             </template>
@@ -35,7 +38,7 @@
 import { AxiosError, AxiosResponse } from 'axios'
 import { Block, BlockCommand, BlockCommandType, TextBlock, UBlockDirector } from 'Interfaces/blockInterfaces'
 import { defineComponent, nextTick } from 'vue'
-import { useStore } from 'vuex'
+import { mapActions, mapState, useStore } from 'vuex'
 import { SearchResult, USearcher } from '~/interfaces/searchInterfaces'
 import { USelector } from '~/interfaces/selectInterfaces'
 import { default as DynamicRecipe, default as dynamicRecipe } from '~/models/dynamicRecipe'
@@ -44,6 +47,7 @@ import { stateKey, StoreModulePath } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
+import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import BlockDirector from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
@@ -91,6 +95,7 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     blocks: {
       get(): Block[] {
         if (!this.dynamicRecipe) return []
@@ -111,12 +116,18 @@ export default defineComponent({
         this.blocks = value
       },
     },
-    mode(): 'create' | 'show' | 'edit' {
+    mode(): 'create' | 'show' | 'edit' | 'choose' {
       switch (this.view) {
         case 'show':
           return 'show'
         case 'edit':
-          return this.dynamicRecipe?.id ? 'edit' : 'create'
+          if (this.currentChoice) {
+            return 'choose'
+          } else if (this.dynamicRecipe?.id) {
+            return 'edit'
+          } else {
+            return 'create'
+          }
         default:
           return 'show'
       }
@@ -130,7 +141,12 @@ export default defineComponent({
     isEditMode(): boolean {
       return this.mode === 'edit'
     },
+    isChooseMode(): boolean {
+      return this.mode === 'choose'
+    },
     isEditable(): boolean {
+      if (this.currentChoice) return false
+
       return this.isCreateMode || this.isEditMode
     },
     textBlockAttached(): boolean {
@@ -148,6 +164,15 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
+    onClick({ block, event, call }: { block: Block, event: PointerEvent, call: Function }) {
+      if (this.currentChoice) {
+        this.blockDirector.onChoose({ block, event, choice: this.currentChoice })
+        this.unsetCurrentChoice()
+      }
+      call()
+      this.save()
+    },
     async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
       if (!this.dynamicRecipe) return
 
@@ -277,10 +302,12 @@ export default defineComponent({
       command.call(block)
 
       // hack to make block component reload - which wipe the "fake" characters used for command search
-      const text = block.content.text
-      block.content.text = text + ' '
-      await nextTick()
-      block.content.text = text
+      if ('content' in block) {
+        const text = block.content.text
+        block.content.text = text + ' '
+        await nextTick()
+        block.content.text = text
+      }
 
       this.closeSearch()
     },
@@ -300,7 +327,7 @@ export default defineComponent({
       return $(`[data-id="${block.id}"]`).find('[data-id]').addBack().find('[data-focus]').first()
     },
     focusStepBlock(block: Block, step: number) {
-      const $focusables = $('[data-id]:not([data-focusable="false"])')
+      const $focusables = $('[data-id]:not([data-focusable="false"],[aria-disabled="true"])')
       let index = $focusables.index($(`[data-id="${block.id}"]`)) + step
       index %= $focusables.length
       const $focusableRoot = $focusables.eq(index)
@@ -416,6 +443,7 @@ export default defineComponent({
       onArrowDown: this.onArrowDown.bind(this),
       onArrowUp: this.onArrowUp.bind(this),
       onBackspace: this.onBackspace.bind(this),
+      onClick: this.onClick.bind(this),
       onCreate: this.onCreate.bind(this),
       onDelete: this.onDelete.bind(this),
       onDestroy: this.onDestroy.bind(this),
@@ -429,8 +457,11 @@ export default defineComponent({
       valueString: 'label',
       type: 'command',
       collection: () => {
-        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns']
-        if (this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column') {
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar']
+        if (
+          this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
+          this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row'
+        ) {
           allowableCommands.push('addColumn')
         }
         return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
