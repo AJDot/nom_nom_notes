@@ -12,7 +12,7 @@
         <span>Back</span>
       </router-link>
     </li>
-    <li v-if="signedIn() && dynamicRecipe">
+    <li v-if="dynamicRecipe">
       <a href="#" class="flex" @click.prevent="confirmDestroy">
         <i class="material-icons my-auto">delete</i>
         <span>Delete</span>
@@ -41,8 +41,8 @@
 import Modal from '@/modal.vue'
 import { AxiosError, AxiosResponse } from 'axios'
 import DynamicRecipe from 'Models/dynamicRecipe'
-import { computed, defineComponent, ref } from 'vue'
-import { mapGetters, useStore } from 'vuex'
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
 import router from '~/router'
@@ -50,7 +50,6 @@ import { stateKey, StoreModulePath } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'DynamicRecipeEditHeader',
@@ -61,14 +60,12 @@ export default defineComponent({
     loading,
   ],
   setup() {
-    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
     const clientId = computed(() => router.currentRoute.value.params.clientId)
     if (clientId.value) {
       store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FETCH, clientId.value)
     }
     return {
-      ...getters,
       dynamicRecipe: computed(() => {
         if (!clientId.value) return null
 

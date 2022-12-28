@@ -6,7 +6,7 @@
         <span>List</span>
       </router-link>
     </li>
-    <li v-if="signedIn()">
+    <li>
       <router-link :to="{ name: $routerExtension.names.EditDynamicRecipe }" class="flex">
         <i class="material-icons my-auto">edit</i>
         <span>Edit</span>
@@ -17,16 +17,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapGetters } from 'vuex'
-import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'ShowRecipeHeader',
-  setup() {
-    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
-    return {
-      ...getters,
-    }
-  },
 })
 </script>

@@ -6,7 +6,7 @@
         <span>Back to Recipe</span>
       </router-link>
     </li>
-    <li v-if="signedIn() && recipe">
+    <li v-if="recipe">
       <a href="#" class="flex" @click.prevent="confirmDestroy">
         <i class="material-icons my-auto">delete</i>
         <span>Delete Recipe</span>
@@ -32,19 +32,18 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { mapGetters, useStore } from 'vuex'
-import { RootState } from '~/store/interfaces'
-import { stateKey, StoreModulePath } from '~/store'
-import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import router from '~/router'
-import Recipe from 'Models/recipe'
-import { AxiosError, AxiosResponse } from 'axios'
-import { FlashActionTypes } from '~/store/modules/flash'
 import Modal from '@/modal.vue'
+import { AxiosError, AxiosResponse } from 'axios'
+import Recipe from 'Models/recipe'
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
-import { SessionGetterTypes } from '~/store/modules/sessions/getters'
+import router from '~/router'
+import { stateKey, StoreModulePath } from '~/store'
+import { RootState } from '~/store/interfaces'
+import { FlashActionTypes } from '~/store/modules/flash'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 
 export default defineComponent({
   name: 'RecipeListHeader',
@@ -55,14 +54,12 @@ export default defineComponent({
     loading,
   ],
   setup() {
-    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
     const store = useStore<RootState>(stateKey)
     const clientId = computed(() => router.currentRoute.value.params.clientId)
     if (clientId.value) {
       store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH, clientId.value)
     }
     return {
-      ...getters,
       recipe: computed(() => {
         if (!clientId.value) return null
 

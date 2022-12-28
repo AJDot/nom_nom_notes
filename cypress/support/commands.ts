@@ -107,7 +107,7 @@ Cypress.Commands.add('getByLabel', (text: string | RegExp) => {
     })
 })
 
-Cypress.Commands.add('trim', {prevSubject: true}, (subject) => {
+Cypress.Commands.add('trim', { prevSubject: true }, (subject) => {
   cy.wrap(subject).invoke('text').then(text => text.trim())
 })
 
@@ -152,7 +152,7 @@ Cypress.Commands.add('assertUrl', (path: string, options?: AssertUrlOptionType) 
 Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => {
   // programmatically upload the logo
   cy.fixture(options.path).as(options.path)
-  cy.get('input[type=file]').then(function(el) {
+  cy.get('input[type=file]').then(function (el) {
     // convert the logo base64 string to a blob
     const blob = Cypress.Blob.base64StringToBlob(this[options.path], 'image/jpeg')
 
