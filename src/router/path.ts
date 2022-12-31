@@ -1,4 +1,3 @@
-import { RRecord } from 'Interfaces/modelInterfaces'
 import AppConfig from '~/appConfig'
 
 class Path {
@@ -49,11 +48,11 @@ class AppPath extends Path {
     return this.recipes() + '/new'
   }
 
-  recipe(recipeClientId: RRecord['clientId']) {
+  recipe(recipeClientId: string) {
     return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
   }
 
-  editRecipe(recipeClientId: RRecord['clientId']) {
+  editRecipe(recipeClientId: string) {
     return this.recipe(recipeClientId) + '/edit'
   }
 
@@ -65,11 +64,11 @@ class AppPath extends Path {
     return this.dynamicRecipes() + '/new'
   }
 
-  dynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+  dynamicRecipe(dynamicRecipeClientId: string) {
     return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
   }
 
-  editDynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+  editDynamicRecipe(dynamicRecipeClientId: string) {
     return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
   }
 
@@ -111,7 +110,7 @@ class ApiPath extends Path {
     return '/recipes'
   }
 
-  recipe(recipeClientId: RRecord['clientId']) {
+  recipe(recipeClientId: string) {
     return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
   }
 
@@ -119,7 +118,7 @@ class ApiPath extends Path {
     return '/dynamic_recipes'
   }
 
-  dynamicRecipe(dynamicRecipeClientId: RRecord['clientId']) {
+  dynamicRecipe(dynamicRecipeClientId: string) {
     return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
   }
 
@@ -153,6 +152,14 @@ class ApiPath extends Path {
 
   changePassword() {
     return this.password() + '/change'
+  }
+
+  fileUploads() {
+    return '/file_uploads'
+  }
+
+  fileUpload(fileUploadClientId: string) {
+    return Path.buildPath(this.fileUploads() + '/:clientId', { clientId: fileUploadClientId })
   }
 }
 

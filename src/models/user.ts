@@ -1,15 +1,15 @@
-import AModel, { AModelAttributes } from 'Models/aModel'
 import { Attribute } from '@vuex-orm/core'
+import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 
-export type UserAttributes = {
+export type UserAttributes = AModelAttributes & {
   email: string
   username: string
 }
 
-export interface RUser extends AModelAttributes, UserAttributes {
+export interface RUser extends UserAttributes {
 }
 
-type UserFields = {
+type UserFields = AModelFields & {
   [key in keyof UserAttributes]: Attribute
 }
 

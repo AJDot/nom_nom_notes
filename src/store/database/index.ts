@@ -7,6 +7,7 @@ import RecipeCategory from 'Models/recipeCategory'
 import Step from 'Models/step'
 import User from 'Models/user'
 import DynamicRecipe from '~/models/dynamicRecipe'
+import FileUpload from '~/models/fileUpload'
 
 const database = new VuexORM.Database()
 database.register(Feature)
@@ -17,5 +18,6 @@ database.register(Ingredient)
 database.register(Category)
 database.register(RecipeCategory)
 database.register(DynamicRecipe)
+database.register(FileUpload)
 
 export default database

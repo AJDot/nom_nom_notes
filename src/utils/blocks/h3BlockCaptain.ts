@@ -1,9 +1,9 @@
-import { Block, ContentBlockIdBlock, H3Block, RowBlock, TextBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, BlockDirector, ContentBlockIdBlock, H3Block, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class H3BlockCaptain implements UBlockCaptain {
-  constructor(public block: H3Block, public director: UBlockDirector) {
+export default class H3BlockCaptain<FType> implements UBlockCaptain<H3Block, FType> {
+  constructor(public block: H3Block, public director: BlockDirector<FType>) {
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -30,6 +30,7 @@ export default class H3BlockCaptain implements UBlockCaptain {
       case 'text':
       case 'row':
       case 'sidebar':
+      case 'image':
         this.director.move(block, this.block)
         break
       case 'column':

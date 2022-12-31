@@ -1,17 +1,18 @@
-import { Attribute, Fields } from '@vuex-orm/core'
+import { Attribute } from '@vuex-orm/core'
 import { HasMany, Nameable } from 'Interfaces/modelInterfaces'
-import AModel, { AModelAttributes } from 'Models/aModel'
-import RecipeCategory from 'Models/recipeCategory'
+import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 import Recipe from 'Models/recipe'
+import RecipeCategory from 'Models/recipeCategory'
 
-export type CategoryAttributes = Nameable &
-HasMany<'recipeCategories', RecipeCategory> &
-HasMany<'recipes', Recipe>
+export type CategoryAttributes = AModelAttributes &
+  Nameable &
+  HasMany<'recipeCategories', RecipeCategory> &
+  HasMany<'recipes', Recipe>
 
-export interface RCategory extends AModelAttributes, CategoryAttributes {
+export interface RCategory extends CategoryAttributes {
 }
 
-type CategoryFields = Fields & {
+type CategoryFields = AModelFields & {
   [key in keyof CategoryAttributes]: Attribute
 }
 

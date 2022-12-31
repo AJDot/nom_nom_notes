@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue'
-import { Block, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block } from '~/interfaces/blockInterfacesGeneral'
 
 export default defineComponent({
   props: {

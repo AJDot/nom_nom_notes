@@ -8,7 +8,7 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { TextBlock } from '~/interfaces/blockInterfaces'
+import { TextBlock } from '~/interfaces/blockInterfacesGeneral'
 import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'

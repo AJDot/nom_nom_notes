@@ -377,7 +377,7 @@ export default defineComponent({
       let cat
       if (item.data.type === 'command') {
         if (item.data.raw.command)
-        cat = (await Category.insertOrUpdate({ data: { name: item.data.value.trim() } })).categories[0]
+          cat = (await Category.insertOrUpdate({ data: { name: item.data.value.trim() } })).categories[0]
       } else {
         await Category.insertOrUpdate({ data: item.data.raw })
         cat = Category.find(item.data.value)

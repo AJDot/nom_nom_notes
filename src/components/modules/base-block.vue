@@ -4,12 +4,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Block, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, UBlockDirector } from '~/interfaces/blockInterfacesGeneral'
 import draggableMixin from '~/mixins/draggableMixin'
 import ColumnBlock from './column-block.vue'
 import H1Block from './h1-block.vue'
 import H2Block from './h2-block.vue'
 import H3Block from './h3-block.vue'
+import ImageBlock from './image-block.vue'
 import RowBlock from './row-block.vue'
 import SidebarBlock from './sidebar-block.vue'
 import TextBlock from './text-block.vue'
@@ -28,6 +29,7 @@ export default defineComponent({
     RowBlock,
     ColumnBlock,
     SidebarBlock,
+    ImageBlock,
   },
   mixins: [
     draggableMixin,
@@ -61,6 +63,7 @@ export default defineComponent({
         row: 'row-block',
         column: 'column-block',
         sidebar: 'sidebar-block',
+        image: 'image-block',
       },
     }
   },

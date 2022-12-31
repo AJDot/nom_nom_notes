@@ -31,7 +31,7 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions } from 'vuex'
-import { Block, SidebarBlock } from '~/interfaces/blockInterfaces'
+import { Block, SidebarBlock } from '~/interfaces/blockInterfacesGeneral'
 import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'

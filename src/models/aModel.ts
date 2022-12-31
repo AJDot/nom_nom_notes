@@ -1,17 +1,22 @@
-import { Fields, Model } from '@vuex-orm/core'
-import { Destroyable, RRecord } from 'Interfaces/modelInterfaces'
+import { Attribute, Fields, Model } from '@vuex-orm/core'
+import { ClientIdable, Destroyable } from 'Interfaces/modelInterfaces'
 import Guid from '~/utils/guid'
 
-export type AModelAttributes = RRecord & Destroyable
+export type AModelAttributes = ClientIdable
+export type AModelComputed = Destroyable
 
-export default abstract class AModel extends Model implements AModelAttributes {
+export type AModelFields = Fields & {
+  [key in keyof AModelAttributes | 'id']: Attribute
+}
+
+export default abstract class AModel extends Model implements AModelAttributes, AModelComputed {
   id!: string
   clientId!: string
   _destroy!: boolean
 
   static primaryKey: string | string[] = 'clientId'
 
-  static fields(): Fields {
+  static fields(): AModelFields {
     return {
       ...super.fields(),
       id: this.attr(null),

@@ -1,5 +1,6 @@
 import { defineComponent, nextTick } from 'vue'
-import { Block, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block } from '~/interfaces/blockInterfacesGeneral'
 import SelectionUtils from '~/utils/selectionUtils'
 import draggableMixin from './draggableMixin'
 

@@ -36,22 +36,29 @@
 
 <script lang="ts">
 import { AxiosError, AxiosResponse } from 'axios'
-import { Block, BlockCommand, BlockCommandType, TextBlock, UBlockDirector } from 'Interfaces/blockInterfaces'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
+import { UBlockDirector } from '~/interfaces/blockInterfaces'
+import { AllBlock, Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import { FileUpload as IFileUpload } from '~/interfaces/fileUploadInterfaces'
+import { Uploader as IUploader } from '~/interfaces/imageInterfaces'
 import { SearchResult, USearcher } from '~/interfaces/searchInterfaces'
 import { USelector } from '~/interfaces/selectInterfaces'
 import { default as DynamicRecipe, default as dynamicRecipe } from '~/models/dynamicRecipe'
+import FileUpload, { FileUploadAttributes } from '~/models/fileUpload'
 import router from '~/router'
+import { ApiPath } from '~/router/path'
 import { stateKey, StoreModulePath } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
-import BlockDirector from '~/utils/blocks/blockDirector'
+import Uploader from '~/uploaders/uploader'
+import { default as blockDirector, default as BlockDirector } from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import { ObjectUtils } from '~/utils/objectUtils'
 import Searcher from '~/utils/searcher'
 import Selector from '~/utils/selector'
 
@@ -173,6 +180,47 @@ export default defineComponent({
       call()
       this.save()
     },
+    async onImageUpload({ block, image, call }: { block: ContentAttachmentIdBlock, image: IUploader, call: Function }) {
+      if (this.dynamicRecipe && image.raw) {
+        const uploader = new Uploader(ApiPath.base() + ApiPath.fileUploads())
+        const imageResponse = await uploader.post<FileUploadAttributes>({
+          root: 'file_upload',
+          data: {
+            clientId: Guid.create(),
+            file: image.raw,
+            attachableType: 'DynamicRecipe',
+            attachableId: this.dynamicRecipe.clientId,
+          },
+        })
+        await FileUpload.insertOrUpdate({ data: { id: imageResponse.data.data.id, ...imageResponse.data.data.attributes } })
+        const imageUpload = FileUpload.find(imageResponse.data.data.attributes.clientId!)!
+        this.dynamicRecipe.attachments.push(imageUpload)
+        const oldAttachmentId = block.content.attachmentId
+        let oldAttachment: FileUpload | null = null
+        block.content.attachmentId = imageUpload.clientId
+
+        if (oldAttachmentId) {
+          ({ attachment: oldAttachment } = this.findAttachment({ id: oldAttachmentId }))
+          oldAttachment?.markForDestruction()
+        }
+        call()
+        await this.save()
+        if (oldAttachment) {
+          const index = this.dynamicRecipe.attachments.indexOf(oldAttachment)
+          if (index >= 0) this.dynamicRecipe.attachments.splice(index, 1)
+        }
+      }
+    },
+    findAttachment({ id }: { id: string | null | undefined }): FindAttachmentReturn<FileUpload> {
+      if (!this.dynamicRecipe) return { attachment: null, url: null }
+
+      const attachment: FileUpload | null = this.dynamicRecipe.attachments.find(a => a.clientId === id) as FileUpload | null
+      if (attachment) {
+        return { attachment, url: ApiPath.base() + ApiPath.fileUpload(attachment.clientId) }
+      } else {
+        return { attachment: null, url: null }
+      }
+    },
     async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
       if (!this.dynamicRecipe) return
 
@@ -287,9 +335,21 @@ export default defineComponent({
       call()
       this.save()
     },
-    onDestroy({ block, call }: { block: Block, call: Function }) {
+    async onDestroy({ block, call }: { block: Block, call: Function }) {
       call()
-      this.save()
+      const b: AllBlock = block as AllBlock
+      const attachmentId = ObjectUtils.dig(b, 'content', 'attachmentId')
+      let attachment: FileUpload | null = null
+      if (attachmentId) b.content.attachmentId = null
+      if (this.dynamicRecipe) {
+        attachment = this.dynamicRecipe!.attachments.find(a => a.clientId === attachmentId) || null
+        attachment?.markForDestruction()
+      }
+      await this.save()
+      if (this.dynamicRecipe && attachment) {
+        const index = this.dynamicRecipe.attachments.indexOf(attachment)
+        if (index >= 0) this.dynamicRecipe.attachments.splice(index, 1)
+      }
     },
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
@@ -302,7 +362,7 @@ export default defineComponent({
       command.call(block)
 
       // hack to make block component reload - which wipe the "fake" characters used for command search
-      if ('content' in block) {
+      if ('content' in block && 'text' in block.content) {
         const text = block.content.text
         block.content.text = text + ' '
         await nextTick()
@@ -413,7 +473,7 @@ export default defineComponent({
           StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
           clientId,
         )
-        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).first()!
+        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments').first()!
         if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
         if (this.dynamicRecipe.blocks.length === 0) {
           this.dynamicRecipe.blocks.push(
@@ -438,8 +498,9 @@ export default defineComponent({
       })
     }
 
-    this.blockDirector = new BlockDirector({
+    this.blockDirector = new BlockDirector<IFileUpload>({
       blocks: this.dynamicRecipe.blocks,
+      findAttachment: this.findAttachment.bind(this),
       onArrowDown: this.onArrowDown.bind(this),
       onArrowUp: this.onArrowUp.bind(this),
       onBackspace: this.onBackspace.bind(this),
@@ -448,6 +509,7 @@ export default defineComponent({
       onDelete: this.onDelete.bind(this),
       onDestroy: this.onDestroy.bind(this),
       onEnter: this.onEnter.bind(this),
+      onImageUpload: this.onImageUpload.bind(this),
       onInput: this.onInput.bind(this),
       onMove: this.onMove.bind(this),
     })
@@ -457,7 +519,7 @@ export default defineComponent({
       valueString: 'label',
       type: 'command',
       collection: () => {
-        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar']
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image']
         if (
           this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
           this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row'

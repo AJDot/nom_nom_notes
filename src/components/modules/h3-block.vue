@@ -7,7 +7,7 @@
 <script lang="ts">
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
-import { H3Block } from '~/interfaces/blockInterfaces'
+import { H3Block } from '~/interfaces/blockInterfacesGeneral'
 import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'

@@ -15,7 +15,7 @@
 <script lang="ts">
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
-import { Block, ColumnBlock, TextBlock } from '~/interfaces/blockInterfaces'
+import { Block, ColumnBlock, TextBlock } from '~/interfaces/blockInterfacesGeneral'
 import blockMixin from '~/mixins/blockMixin'
 import blockListeners from '~/mixins/blockListeners'
 import Guid from '~/utils/guid'

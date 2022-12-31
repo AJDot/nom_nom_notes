@@ -1,9 +1,9 @@
-import { Block, BlockDirector, ContentBlockIdBlock, H1Block, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class H1BlockCaptain<FType> implements UBlockCaptain<H1Block, FType> {
-  constructor(public block: H1Block, public director: BlockDirector<FType>) {
+export default class ImageBlockCaptain<FType> implements UBlockCaptain<ImageBlock, FType> {
+  constructor(public block: ImageBlock, public director: BlockDirector<FType>) {
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -12,14 +12,11 @@ export default class H1BlockCaptain<FType> implements UBlockCaptain<H1Block, FTy
   }
 
   onEnter({ event }: { event: KeyboardEvent }): void {
-    const parent = this.director.find(this.block.parentId)
-    const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
-    if (parent) newBlock.parentId = parent.id
-    this.director.addAfter(newBlock, this.block)
+    throw new Error('Method not implemented.')
   }
 
   onInput({ event }: { event: InputEvent }) {
-    this.block.content.text = (<HTMLElement>event.target)?.innerText
+    throw new Error('Method not implemented.')
   }
 
   onMove({ block }: { block: Block }) {

@@ -1,8 +1,8 @@
-import { Block, ColumnBlock, ContentBlockIdBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 
-export default class ColumnBlockCaptain implements UBlockCaptain {
-  constructor(public block: ColumnBlock, public director: UBlockDirector) {
+export default class ColumnBlockCaptain<FType> implements UBlockCaptain<ColumnBlock, FType> {
+  constructor(public block: ColumnBlock, public director: BlockDirector<FType>) {
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -25,6 +25,7 @@ export default class ColumnBlockCaptain implements UBlockCaptain {
       case 'h3':
       case 'text':
       case 'row':
+      case 'image':
         this.director.moveInside(block, this.block)
         break
       case 'column':

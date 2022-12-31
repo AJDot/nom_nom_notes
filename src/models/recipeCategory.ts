@@ -1,13 +1,13 @@
-import { Attribute, Fields } from '@vuex-orm/core'
-import AModel, { AModelAttributes } from 'Models/aModel'
+import { Attribute } from '@vuex-orm/core'
 import { BCategory, BRecipe } from 'Interfaces/modelInterfaces'
+import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 
-export type RecipeCategoryAttributes = BRecipe & BCategory
+export type RecipeCategoryAttributes = AModelAttributes & BRecipe & BCategory
 
-export interface RRecipeCategory extends AModelAttributes, RecipeCategoryAttributes {
+export interface RRecipeCategory extends RecipeCategoryAttributes {
 }
 
-type RecipeCategoryFields = Fields & {
+type RecipeCategoryFields = AModelFields & {
   [key in keyof RecipeCategoryAttributes]: Attribute
 }
 

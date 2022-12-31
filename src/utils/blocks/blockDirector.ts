@@ -1,16 +1,18 @@
-import { Block, BlockCommandDict, BlockDirectorOptions, ColumnBlock, TextBlock } from '~/interfaces/blockInterfaces'
+import { AllBlock, Block, BlockCommandDict, BlockDirector as GBLockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Uploader } from '~/interfaces/imageInterfaces'
+import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
 import Guid from '../guid'
-import { UBlockCaptain, UBlockDirector } from './../../interfaces/blockInterfaces'
 import ColumnBlockCaptain from './columnBlockCaptain'
 import H1BlockCaptain from './h1BlockCaptain'
 import H2BlockCaptain from './h2BlockCaptain'
 import H3BlockCaptain from './h3BlockCaptain'
+import ImageBlockCaptain from './imageBlockCaptain'
 import RowBlockCaptain from './rowBlockCaptain'
 import SidebarBlockCaptain from './sidebarBlockCaptain'
 import TextBlockCaptain from './textBlockCaptain'
 
-export default class BlockDirector implements UBlockDirector {
+export default class BlockDirector<FType> implements GBLockDirector<FType> {
   readonly COMMANDS: BlockCommandDict = {
     h1: {
       label: 'H1',
@@ -36,29 +38,15 @@ export default class BlockDirector implements UBlockDirector {
       label: 'Columns',
       description: 'Turn into two columns',
       call: (block: Block) => {
-        let text1: Block
-        switch (block.type) {
-          case 'h1':
-          case 'h2':
-          case 'h3':
-          case 'text':
-            text1 = { id: Guid.create(), type: block.type, content: { text: block.content.text } }
-            break
-          case 'column':
-          case 'row':
-            text1 = { id: Guid.create(), type: block.type }
-            break
-          case 'sidebar':
-            text1 = { id: Guid.create(), type: block.type, content: { text: block.content.text, blockId: block.content.blockId } }
-            break
-        }
-        block.type = 'row'
-        const column1: ColumnBlock = { id: Guid.create(), type: 'column', parentId: block.id }
-        text1.parentId = column1.id
-        const column2: ColumnBlock = { id: Guid.create(), type: 'column', parentId: block.id }
-        const text2: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' }, parentId: column2.id }
-        this.blocks.splice(this.indexOf(block)! + 1, 0, column1, column2, text1, text2)
-        if ('content' in block) block.content.text = ''
+        const row: RowBlock = { id: Guid.create(), type: 'row' }
+        const column1: ColumnBlock = { id: Guid.create(), type: 'column' }
+        const column2: ColumnBlock = { id: Guid.create(), type: 'column' }
+        const text2: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
+        this.addBefore(row, block)
+        this.addInside(column1, row)
+        this.moveInside(block, column1)
+        this.addInside(column2, row)
+        this.addInside(text2, column2)
       },
     },
     addColumn: {
@@ -79,9 +67,17 @@ export default class BlockDirector implements UBlockDirector {
       description: 'Link a block to reveal in a side panel. Place beside a column to display with full column height',
       call: block => block.type = 'sidebar'
     },
+    image: {
+      label: 'Image',
+      description: 'Upload an image',
+      call: block => {
+        const newImage: ImageBlock = { id: Guid.create(), type: 'image', content: { attachmentId: null } }
+        this.addAfter(newImage, block)
+      }
+    }
   }
 
-  constructor(private readonly options: BlockDirectorOptions) {
+  constructor(private readonly options: BlockDirectorOptions<FType>) {
   }
 
   get blocks() {
@@ -102,6 +98,13 @@ export default class BlockDirector implements UBlockDirector {
     const index = this.blocks.indexOf(block)
     this.blocks.splice(index, 0, newBlock)
     newBlock.parentId = block.parentId
+  }
+
+  addInside(newBlock: Block, block: Block): void {
+    const children = this.childrenFor(block)
+    let index: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
+    this.blocks.splice(index, 0, newBlock)
+    newBlock.parentId = block.id
   }
 
   ancestors(block: Block): Block[] {
@@ -180,6 +183,14 @@ export default class BlockDirector implements UBlockDirector {
     return this.blocks.find(block => block.id === id) || null
   }
 
+  findAttachment({ id }: { id: string }): FindAttachmentReturn<FType> {
+    if (this.options.findAttachment) {
+      return this.options.findAttachment({ id })
+    } else {
+      return this.findAttachmentDefault({ id })
+    }
+  }
+
   findNearest<T extends Block['type']>(block: Block, type: T): Extract<Block, { type: T }> | null {
     let currentBlock: Block | null = block
     while (currentBlock) {
@@ -195,8 +206,8 @@ export default class BlockDirector implements UBlockDirector {
     return index >= 0 ? index : null
   }
 
-  isEmpty(block: Block): boolean {
-    if ('content' in block && block.content.text) return false
+  isEmpty(block: AllBlock): boolean {
+    if (ObjectUtils.dig(block, 'content', 'text')) return false
 
     return this.childrenFor(block).length === 0
   }
@@ -302,6 +313,14 @@ export default class BlockDirector implements UBlockDirector {
     }
   }
 
+  async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock; image: Uploader }) {
+    if (this.options.onImageUpload) {
+      this.options.onImageUpload({ block, image, call: () => this.onImageUploadDefault({ block, image }) })
+    } else {
+      this.onImageUploadDefault({ block, image })
+    }
+  }
+
   async onInput({ block, event }: { block: Block; event: InputEvent }) {
     if (this.options.onInput) {
       this.options.onInput({ block, event, call: () => this.onInputDefault({ block, event }) })
@@ -322,25 +341,31 @@ export default class BlockDirector implements UBlockDirector {
     this.options.blocks = blocks
   }
 
-  captainFor(block: Block): UBlockCaptain {
+  captainFor(block: Block): UBlockCaptain<Block, FType> {
     switch (block.type) {
       case 'h1':
-        return new H1BlockCaptain(block, this)
+        return new H1BlockCaptain<FType>(block, this)
       case 'h2':
-        return new H2BlockCaptain(block, this)
+        return new H2BlockCaptain<FType>(block, this)
       case 'h3':
-        return new H3BlockCaptain(block, this)
+        return new H3BlockCaptain<FType>(block, this)
       case 'text':
-        return new TextBlockCaptain(block, this)
+        return new TextBlockCaptain<FType>(block, this)
       case 'row':
-        return new RowBlockCaptain(block, this)
+        return new RowBlockCaptain<FType>(block, this)
       case 'column':
-        return new ColumnBlockCaptain(block, this)
+        return new ColumnBlockCaptain<FType>(block, this)
       case 'sidebar':
-        return new SidebarBlockCaptain(block, this)
+        return new SidebarBlockCaptain<FType>(block, this)
+      case 'image':
+        return new ImageBlockCaptain<FType>(block, this)
       default:
         assertNever(block)
     }
+  }
+
+  private findAttachmentDefault({ id }: { id: string | null | undefined }): FindAttachmentReturn<FType> {
+    return { attachment: null, url: null }
   }
 
   private onArrowDownDefault({ block, event }: { block: Block, event: KeyboardEvent }) {
@@ -370,6 +395,9 @@ export default class BlockDirector implements UBlockDirector {
 
   private onEnterDefault({ block, event }: { block: Block; event: KeyboardEvent }) {
     this.captainFor(block).onEnter({ event })
+  }
+
+  private onImageUploadDefault({ block, image }: { block: Block; image: Uploader }) {
   }
 
   private onInputDefault({ block, event }: { block: Block; event: InputEvent }) {

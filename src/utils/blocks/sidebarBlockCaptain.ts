@@ -1,9 +1,9 @@
-import { Block, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain, UBlockDirector } from '~/interfaces/blockInterfaces'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class SidebarBlockCaptain implements UBlockCaptain {
-  constructor(public block: SidebarBlock, public director: UBlockDirector) {
+export default class SidebarBlockCaptain<FType> implements UBlockCaptain<SidebarBlock, FType> {
+  constructor(public block: SidebarBlock, public director: BlockDirector<FType>) {
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -29,6 +29,7 @@ export default class SidebarBlockCaptain implements UBlockCaptain {
       case 'h3':
       case 'text':
       case 'row':
+      case 'image':
         const parent = this.director.find(this.block.parentId)
         if (parent?.type === 'row') {
           const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
