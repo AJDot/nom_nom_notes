@@ -201,6 +201,21 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
     return null
   }
 
+  findWhere<T extends Record<string, any>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[] {
+    opts = opts ?? {}
+    opts.order = opts.order ?? 'display'
+
+    return this.order('display').filter<Extract<Block, T>>((block => {
+      for (const [key, value] of Object.entries(criteria)) {
+        const keys = key.split('.')
+        if (value !== ObjectUtils.dig(block, ...keys)) {
+          return false
+        }
+      }
+      return true
+    }) as ((block) => block is Extract<Block, T>))
+  }
+
   indexOf(block: Block): number | null {
     const index = this.blocks.indexOf(block)
     return index >= 0 ? index : null
@@ -334,6 +349,17 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
       this.options.onMove({ move, to, call: () => this.onMoveDefault({ move, to }), })
     } else {
       this.onMoveDefault({ move, to })
+    }
+  }
+
+  order(order: 'display', blocks: Block[] = this.blocks.filter(b => !b.parentId)): Block[] {
+    if (blocks.length === 0) {
+      return []
+    } else if (blocks.length === 1) {
+      const block = blocks[0]
+      return [block, ...this.order(order, this.childrenFor(block))].flat()
+    } else {
+      return blocks.map(b => this.order(order, [b])).flat()
     }
   }
 

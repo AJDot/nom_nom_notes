@@ -98,6 +98,7 @@ export interface BlockDirector<FType> {
   find(id: string | null | undefined): Block | null
   findAttachment(args: { id: string | null | undefined }): FindAttachmentReturn<FType>
   findNearest(block: Block, type: Block['type']): Block | null
+  findWhere<T extends Record<string, any>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[]
   indexOf(block: Block): number | null
   isEmpty(block: Block): boolean
   move(block: Block, to: Block): void
@@ -115,6 +116,7 @@ export interface BlockDirector<FType> {
   onImageUpload(args: { block: Block, image: Uploader }): void
   onInput(args: { block: Block, event: Event }): void
   onMove(args: { move: Block, to: Block }): void
+  order(order: 'display'): Block[]
   set(blocks: Array<Block>): void
 }
 
