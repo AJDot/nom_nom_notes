@@ -1,5 +1,5 @@
 <template>
-  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1 rounded-md" :hover-color="hoverColor" :class="{ 'cursor-pointer': isChooseMode }" @click.self.stop="blockListeners.click">
+  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" @drop="onDrop" :data-focusable="false" class="flex basis-full gap-4 p-1 rounded-md" :hover-color="hoverColor" :class="{ 'cursor-pointer': isChooseMode }" @click.self.stop="blockListeners.click" data-test-block="row">
     <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
     <div v-else class="flex grow cursor-pointer place-items-center rounded-md">
       <button type="button" @click="addColumn" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">

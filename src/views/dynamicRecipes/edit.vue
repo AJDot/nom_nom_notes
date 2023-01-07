@@ -213,13 +213,13 @@ export default defineComponent({
       }
     },
     findAttachment({ id }: { id: string | null | undefined }): FindAttachmentReturn<FileUpload> {
-      if (!this.dynamicRecipe) return { attachment: null, url: null }
+      if (!this.dynamicRecipe) return { attachment: null, url: null, alt: null }
 
       const attachment: FileUpload | null = this.dynamicRecipe.attachments.find(a => a.clientId === id) as FileUpload | null
       if (attachment) {
-        return { attachment, url: ApiPath.base() + ApiPath.fileUpload(attachment.clientId) }
+        return { attachment, url: ApiPath.base() + ApiPath.fileUpload(attachment.clientId), alt: this.dynamicRecipe.name }
       } else {
-        return { attachment: null, url: null }
+        return { attachment: null, url: null, alt: null }
       }
     },
     async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {

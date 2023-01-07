@@ -1,8 +1,8 @@
 <template>
   <div class="px-5 pt-5 overflow-hidden">
     <main class="overflow-hidden after:block after:clear-both">
-      <ul class="flex gap-4 flex-wrap mb-2 justify-center">
-        <li v-for="dynamicRecipe in dynamicRecipesForList" :key="dynamicRecipe.clientId" class="w-72 shadow-md rounded-3xl flex justify-center justify-items-center">
+      <ul class="flex gap-4 flex-wrap mb-2 justify-center" data-test="dynamic-recipe-list">
+        <li v-for="dynamicRecipe in dynamicRecipesForList" :key="dynamicRecipe.clientId" class="w-72 shadow-md rounded-3xl flex justify-center justify-items-center" data-test="dynamic-recipe-list-item">
           <router-link :to="{ name: $routerExtension.names.DynamicRecipe, params: { clientId: dynamicRecipe.clientId } }" class="w-full h-full uppercase transition-all place-content-center text-center border border-gray-400 rounded-3xl overflow-hidden group hover:cursor-pointer">
             <article class="flex flex-col h-full">
               <h1 class="text-xl p-2 group-hover:text-green group-hover:bg-black">{{ dynamicRecipe.name }}</h1>

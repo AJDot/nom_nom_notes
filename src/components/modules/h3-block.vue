@@ -1,5 +1,5 @@
 <template>
-  <draggable :draggable="draggable" :droppable="droppableTest" class="relative basis-full rounded-md" :hover-color="hoverColor" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
+  <draggable :draggable="draggable" :droppable="droppableTest" class="relative basis-full rounded-md" :hover-color="hoverColor" :item="block" @drop="onDrop" data-test-block="h3">
     <h3 :placeholder="placeholder" class="text-xl px-2 py-1 min-h-10 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }" :contenteditable="isEditable" data-focus ref="content" v-html="block.content.text" v-on="blockListeners"></h3>
   </draggable>
 </template>

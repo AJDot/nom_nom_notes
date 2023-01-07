@@ -61,7 +61,7 @@ export interface BlockCommand {
 
 export type BlockCommandDict = { [key in BlockCommandType]: BlockCommand }
 
-export type FindAttachmentReturn<T> = { attachment: T, url: string } | { attachment: null, url: null }
+export type FindAttachmentReturn<T> = { attachment: T, url: string, alt?: string | null } | { attachment: null, url: null, alt: null }
 
 export interface BlockDirectorOptions<FType> {
   blocks: Array<Block>

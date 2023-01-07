@@ -39,11 +39,23 @@ Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
 
+Cypress.Commands.add('getContentEditable', (placeholder: string) => {
+  return cy.get(`[contenteditable="true"][placeholder="${placeholder}"]:empty`).first()
+})
+
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
   if (typeof indexOrName === 'number') {
     return cy.get(`[data-test="card-list"] > [data-test="card-list-item"]:nth-child(${indexOrName + 1})`)
   } else {
     return cy.contains('[data-test="card-list"] > [data-test="card-list-item"]', indexOrName)
+  }
+})
+
+Cypress.Commands.add('getDynamicRecipeCard', (indexOrName: string | number) => {
+  if (typeof indexOrName === 'number') {
+    return cy.get(`[data-test="dynamic-recipe-list-item"]:nth-child(${indexOrName + 1})`)
+  } else {
+    return cy.contains('[data-test="dynamic-recipe-list-item"]', indexOrName)
   }
 })
 
@@ -82,6 +94,11 @@ Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string,
       localStorage.setItem('csrf', response.csrf)
       localStorage.setItem('signedIn', 'true')
     })
+})
+
+Cypress.Commands.add('forceSignOut', () => {
+  localStorage.removeItem('csrf')
+  localStorage.removeItem('signedIn')
 })
 
 Cypress.Commands.add('getFlash', (text: string) => {
@@ -167,4 +184,25 @@ Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => 
     el[0].files = myFileList
     el[0].dispatchEvent(new Event('change', { bubbles: true }))
   })
+})
+
+Cypress.Commands.add("drag", { prevSubject: "element" }, (subject: Cypress.JQueryWithSelector<HTMLElement>, target: string | { target: string, dragOpts?: Record<string, any>, dropOpts?: Record<string, any> }, _options?: Partial<Cypress.TypeOptions>) => {
+  const dataTransfer = new DataTransfer()
+  let dragOpts: Record<string, any> = { dataTransfer, force: true }
+  let dropOpts: Record<string, any> = { dataTransfer, force: true }
+  if (typeof target === 'string') {
+    target = target
+  } else {
+    dragOpts = Object.assign(dragOpts, target.dragOpts ?? {})
+    dropOpts = Object.assign(dropOpts, target.dropOpts ?? {})
+    target = target.target
+  }
+  console.log(dragOpts, dropOpts)
+  cy.wrap(subject).trigger('dragstart', dragOpts)
+  cy.get(target)
+    .trigger('dragenter', dropOpts)
+    .trigger('dragover', dropOpts)
+    .trigger('drop', dropOpts)
+    .wait(50)
+    .trigger('dragend', dropOpts)
 })

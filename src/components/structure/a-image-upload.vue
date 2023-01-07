@@ -1,15 +1,15 @@
 <template>
   <div>
-    <div class="flex group">
+    <div class="flex group" @mouseenter="showControls" @mouseleave="hideControls">
       <Ellipsis v-if="loading" class="mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain" />
       <img v-show="!loading" v-bind="imageAttrs" class="mx-auto mb-4 rounded-2xl x-52 h-52 object-cover" @load="onLoad">
-      <button v-if="editable" type="button" class="hidden group-hover:inline absolute -top-2 right-6">
+      <button v-if="editable && controlsVisible" type="button" class="absolute -top-2 right-6">
         <label class="cursor-pointer">
           <i class="material-icons my-auto">add_a_photo</i>
           <input type="file" name="image" class="hidden" @change="onFileChange">
         </label>
       </button>
-      <button v-if="editable" @click="$emit('destroy')" type="button" class="hidden group-hover:inline absolute -top-2 -right-2">
+      <button v-if="editable && controlsVisible" @click="$emit('destroy')" type="button" class="inline absolute -top-2 -right-2">
         <i class="material-icons my-auto">delete</i>
       </button>
     </div>
@@ -25,6 +25,7 @@ import ImagePlaceholder from '/icons/image_placeholder.svg'
 interface Data {
   tmpImage: Uploader
   loading: boolean
+  controlsVisible: boolean,
 }
 
 export default defineComponent({
@@ -50,6 +51,7 @@ export default defineComponent({
     return {
       tmpImage: {},
       loading: true,
+      controlsVisible: false,
     }
   },
   computed: {
@@ -57,13 +59,15 @@ export default defineComponent({
       if (this.modelValue.image) {
         return {
           src: this.modelValue.image.toString(),
-          alt: "Upload an Image",
+          alt: this.modelValue.alt ?? "Upload an Image",
+          title: this.modelValue.alt ?? "Upload an Image",
         }
       }
       else if (this.modelValue?.url) {
         return {
           src: this.modelValue.url,
-          alt: "Upload an Image",
+          alt: this.modelValue.alt ?? "Upload an Image",
+          title: this.modelValue.alt ?? "Upload an Image",
         }
       }
       else {
@@ -72,6 +76,7 @@ export default defineComponent({
           class: "img-placeholder",
           src: ImagePlaceholder,
           alt: "Upload an Image",
+          title: "Upload an Image",
         }
       }
     },
@@ -98,6 +103,12 @@ export default defineComponent({
     },
     onLoad() {
       this.loading = false
+    },
+    showControls() {
+      this.controlsVisible = true
+    },
+    hideControls() {
+      this.controlsVisible = false
     },
   },
   watch: {

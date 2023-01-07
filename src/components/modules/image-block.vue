@@ -1,5 +1,5 @@
 <template>
-  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 group" :hover-color="hoverColor" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop" @click.stop="blockListeners.click">
+  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 group" :hover-color="hoverColor" :item="block" @drop="onDrop" @click.stop="blockListeners.click" data-test-block="image">
     <AImageUpload class="grow" :model-value="tmpImage" @update:model-value="save" :editable="isEditable" @destroy="destroy" />
   </draggable>
 </template>
@@ -41,9 +41,9 @@ export default defineComponent({
   },
   methods: {
     updateAttachment() {
-      const { attachment, url } = this.director.findAttachment({ id: this.block.content.attachmentId })
+      const { attachment, url, alt } = this.director.findAttachment({ id: this.block.content.attachmentId })
       if (url) {
-        this.tmpImage = { url }
+        this.tmpImage = { url, alt }
       } else {
         this.tmpImage = {}
       }

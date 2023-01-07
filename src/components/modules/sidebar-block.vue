@@ -1,6 +1,6 @@
 <template>
-  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 shadow-input bg-gray-100 group" :hover-color="hoverColor" :item="block" :list-id="block.parentId ?? ''" @drop="onDrop">
-    <button v-if="isEditable" @click="openDropdown" type="button" class="hidden group-hover:inline absolute -top-2 -right-2">
+  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 shadow-input bg-gray-100" :hover-color="hoverColor" :item="block" @drop="onDrop" @mouseenter="showControls" @mouseleave="hideControls" data-test-block="sidebar">
+    <button v-if="isEditable && controlsVisible" @click="openDropdown" type="button" class="absolute -top-2 -right-2">
       <i class="material-icons my-auto">edit</i>
     </button>
     <SidePanel :state="sidePanelState" @close="sidePanelState = false" class="flex self-stretch grow">
@@ -54,6 +54,7 @@ export default defineComponent({
       sidePanelState: false,
       editDropdownState: false,
       dropdownOpenEvent: null,
+      controlsVisible: false,
     }
   },
   computed: {
@@ -94,6 +95,12 @@ export default defineComponent({
     enterChooseBlockMode() {
       this.setChoiceState({ type: 'block', args: [this.block] })
       this.closeDropdown()
+    },
+    showControls() {
+      this.controlsVisible = true
+    },
+    hideControls() {
+      this.controlsVisible = false
     },
   },
 })

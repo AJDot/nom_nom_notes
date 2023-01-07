@@ -1,3 +1,4 @@
+import { RowBlock } from './../../interfaces/blockInterfacesGeneral'
 import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
@@ -23,6 +24,7 @@ export default class SidebarBlockCaptain<FType> implements UBlockCaptain<Sidebar
   }
 
   onMove({ block }: { block: Block }) {
+    const parent = this.director.find(this.block.parentId)
     switch (block.type) {
       case 'h1':
       case 'h2':
@@ -30,7 +32,6 @@ export default class SidebarBlockCaptain<FType> implements UBlockCaptain<Sidebar
       case 'text':
       case 'row':
       case 'image':
-        const parent = this.director.find(this.block.parentId)
         if (parent?.type === 'row') {
           const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
           this.director.addBefore(newColumn, this.block)
@@ -40,6 +41,14 @@ export default class SidebarBlockCaptain<FType> implements UBlockCaptain<Sidebar
         }
         break
       case 'column':
+        if (parent?.type === 'row') {
+          this.director.move(block, this.block)
+        } else {
+          const newRow: RowBlock = { id: Guid.create(), type: 'row' }
+          this.director.addBefore(newRow, this.block)
+          this.director.moveInside(block, newRow)
+        }
+        break
       case 'sidebar':
         this.director.move(block, this.block)
         break
