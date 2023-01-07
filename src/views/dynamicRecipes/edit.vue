@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import { debounce } from 'lodash'
 import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
@@ -452,7 +453,7 @@ export default defineComponent({
         })
       }
     },
-    save() {
+    save: debounce(function (this) {
       let action: string
       if (this.isCreateMode) {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.CREATE
@@ -462,7 +463,7 @@ export default defineComponent({
       this.$store.dispatch(action, this.dynamicRecipe)
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
-    },
+    }, 500)
   },
   async beforeMount() {
     const clientId = router.currentRoute.value.params.clientId
