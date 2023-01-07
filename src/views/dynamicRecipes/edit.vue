@@ -476,12 +476,6 @@ export default defineComponent({
         )
         this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments').first()!
         if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
-        if (this.dynamicRecipe.blocks.length === 0) {
-          this.dynamicRecipe.blocks.push(
-            { id: Guid.create(), type: 'h1', content: { text: 'My First Block' } }
-          )
-        }
-
       } catch (e) {
         await this.$router.push({
           name: this.$routerExtension.names.Home,
@@ -492,11 +486,7 @@ export default defineComponent({
         return
       }
     } else {
-      this.dynamicRecipe = new DynamicRecipe({
-        blocks: [
-          { id: Guid.create(), type: 'h1', content: { text: 'My First Block' } }
-        ]
-      })
+      this.dynamicRecipe = new DynamicRecipe()
     }
 
     this.blockDirector = new BlockDirector<IFileUpload>({
