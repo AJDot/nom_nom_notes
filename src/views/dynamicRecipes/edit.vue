@@ -478,10 +478,10 @@ export default defineComponent({
         if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
       } catch (e) {
         await this.$router.push({
-          name: this.$routerExtension.names.Home,
+          name: this.$routerExtension.names.DynamicRecipes,
         })
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: 'Recipe not found.' },
+          flash: { alert: 'Dynamic Recipe not found.' },
         })
         return
       }

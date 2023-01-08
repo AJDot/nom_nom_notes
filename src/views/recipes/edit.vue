@@ -264,7 +264,7 @@ export default defineComponent({
         }
       } catch {
         await this.$router.push({
-          name: this.$routerExtension.names.Home,
+          name: this.$routerExtension.names.Recipes,
         })
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: 'Recipe not found.' },

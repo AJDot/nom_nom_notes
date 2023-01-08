@@ -1,0 +1,46 @@
+describe('Delete Dynamic Recipe Block', () => {
+  beforeEach(() => {
+    cy.createFry().as('fry')
+    cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
+      dynamic_recipe: {
+        name: 'Space Soup',
+      },
+    }).its('body.data.0').as('dynamicRecipe')
+    cy.forceSignIn()
+  })
+
+
+  it('allows me to destroy a dynamic recipe', function () {
+    // catch recipe not found error when going to edit page after destruction
+    cy.on('uncaught:exception', (err, runnable) => {
+      expect(err.message).to.include('Dynamic Recipe not found')
+
+      // return false to prevent the error from
+      // failing this test
+      return false
+    })
+
+
+    const dynamicRecipeId = this.dynamicRecipe.attributes.clientId
+    cy.visit(`/dynamic_recipes/${dynamicRecipeId}/edit`)
+    cy.contains('Delete').click()
+    cy.getModal().should('exist')
+      .within(() => {
+        cy.contains('Delete Dynamic Recipe').should('exist')
+        // can cancel destroying
+        cy.contains('Cancel').should('exist').click()
+        cy.url().should('contain', `/dynamic_recipes/${dynamicRecipeId}/edit`)
+      })
+
+    cy.contains('Delete').click()
+    cy.getModal().should('exist')
+      .within(() => {
+        cy.contains('Delete Dynamic Recipe').click()
+      })
+    cy.assertUrl('/dynamic_recipes')
+    cy.getFlash('Space Soup was deleted successfully').should('exist')
+    cy.visit(`/dynamic_recipes/${dynamicRecipeId}/edit`)
+    cy.assertUrl('/dynamic_recipes')
+    cy.getFlash('Dynamic Recipe not found').should('exist')
+  })
+})
