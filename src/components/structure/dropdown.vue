@@ -1,9 +1,9 @@
 <template>
-  <slot name="control" />
+  <div @click.capture="storeEvent">
+    <slot name="control" />
+  </div>
   <div class="absolute z-10" :class="positionClasses" :style="style" ref="dropdown">
-    <div v-if="state"
-      class="z-10 border border-gray-400 mt-1 max-h-56 min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none"
-      :class="{ 'right-0': right }" tabindex="-1" role="listbox">
+    <div v-if="state" class="z-10 border border-gray-400 mt-1 max-h-56 min-w-[14em] overflow-auto rounded-md bg-white text-base shadow-lg focus:outline-none" :class="{ 'right-0': right }" tabindex="-1" role="listbox">
       <slot />
     </div>
   </div>
@@ -17,6 +17,7 @@ interface Data {
   position: Omit<DOMRectReadOnly, 'toJSON'> | null
   style: CSSProperties
   closeBuffer: boolean // opening dropdown with button immediately triggers close emit - ignore first close event if opened with mouse
+  controlClickEvent: MouseEvent | null
 }
 
 export default defineComponent({
@@ -51,6 +52,7 @@ export default defineComponent({
       position: null,
       style: {},
       closeBuffer: this.positionType === 'mouse',
+      controlClickEvent: null
     }
   },
   computed: {
@@ -93,6 +95,9 @@ export default defineComponent({
       } else if (dropdownRightX > window.innerWidth) {
         this.style.transform = `translateX(${(window.innerWidth - dropdownRightX) - screenPadding}px)`
       }
+    },
+    storeEvent(event) {
+      this.controlClickEvent = event
     }
   },
   beforeDestroy() {
@@ -117,8 +122,8 @@ export default defineComponent({
         this.handleDropdownPosition()
       } else if (this.positionType === 'mouse') {
         const rect = (<HTMLElement>this.$refs.dropdown).getBoundingClientRect()
-        const dx = this.openEvent.x - rect.right
-        const dy = this.openEvent.y - rect.bottom
+        const dx = (this.openEvent ?? this.controlClickEvent).x - rect.right
+        const dy = (this.openEvent ?? this.controlClickEvent).y - rect.bottom
 
         this.position = {
           y: dy,

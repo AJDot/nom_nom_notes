@@ -29,11 +29,11 @@ export enum ModalActionTypes {
 }
 
 type ModalGetters = {
-  [key in ModalGetterTypes]: Getter<ModalState, RootState>;
+  [key in ModalGetterTypes]: Getter<ModalState, RootState>
 }
 type ModalMutations = { [key in ModalMutationTypes]: Mutation<ModalState> }
 type ModalActions = {
-  [key in ModalActionTypes]: Action<ModalState, RootState>;
+  [key in ModalActionTypes]: Action<ModalState, RootState>
 }
 
 const state: () => ModalState = () => ({
@@ -59,25 +59,13 @@ const mutations: MutationTree<ModalState> & ModalMutations = {
 
 const actions: ActionTree<ModalState, RootState> & ModalActions = {
   [ModalActionTypes.ADD]({ commit }: { commit: Commit }, { id }: { id: ModalId }) {
-    commit(ModalMutationTypes.TOGGLE, {
-      id,
-      state: true,
-    })
+    commit(ModalMutationTypes.TOGGLE, { id, state: true, })
   },
   [ModalActionTypes.REMOVE]({ commit }: { commit: Commit }, { id }: { id: ModalId }) {
-    commit(ModalMutationTypes.TOGGLE, {
-      id,
-      state: false,
-    })
+    commit(ModalMutationTypes.TOGGLE, { id, state: false, })
   },
-  [ModalActionTypes.TOGGLE]({ commit }: { commit: Commit }, {
-    id,
-    state,
-  }: { id: ModalId, state?: boolean }) {
-    commit(ModalMutationTypes.TOGGLE, {
-      id,
-      state,
-    })
+  [ModalActionTypes.TOGGLE]({ commit }: { commit: Commit }, { id, state, }: { id: ModalId, state?: boolean }) {
+    commit(ModalMutationTypes.TOGGLE, { id, state, })
   },
 }
 

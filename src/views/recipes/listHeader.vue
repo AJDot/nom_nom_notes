@@ -1,7 +1,7 @@
 <template>
   <ul class="flex gap-5 place-items-center text-2xl mt-4">
     <li>
-      <router-link :to="{ name: $routerExtension.names.NewRecipe }" class="safe">
+      <router-link :to="{ name: $routerExtension.names.NewRecipe }">
         <i class="material-icons my-auto">add_circle_outline</i>
         <span>New Recipe</span>
       </router-link>

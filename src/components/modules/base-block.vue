@@ -1,5 +1,5 @@
 <template>
-  <component class="gap-4 items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
+  <component class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
 </template>
 
 <script lang="ts">

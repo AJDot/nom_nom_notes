@@ -69,6 +69,7 @@ module.exports = {
         400: 'rgb(var(--color-gray-400) / <alpha-value>)',
         DEFAULT: 'rgb(var(--color-gray-500) / <alpha-value>)',
         500: 'rgb(var(--color-gray-500) / <alpha-value>)',
+        700: 'rgb(var(--color-gray-700) / <alpha-value>)',
         900: 'rgb(var(--color-gray-900) / <alpha-value>)',
       },
       'white': {
@@ -85,7 +86,7 @@ module.exports = {
     }
   },
   plugins: [
-    plugin(function({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
         '.horizontal-tb': {
           'writing-mode': 'horizontal-tb',

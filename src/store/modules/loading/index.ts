@@ -26,11 +26,11 @@ export enum LoadingActionTypes {
 }
 
 type LoadingGetters = {
-  [key in LoadingGetterTypes]: Getter<LoadingState, RootState>;
+  [key in LoadingGetterTypes]: Getter<LoadingState, RootState>
 }
 type LoadingMutations = { [key in LoadingMutationTypes]: Mutation<LoadingState> }
 type LoadingActions = {
-  [key in LoadingActionTypes]: Action<LoadingState, RootState>;
+  [key in LoadingActionTypes]: Action<LoadingState, RootState>
 }
 
 const state: () => LoadingState = () => ({
@@ -42,6 +42,7 @@ const getters: GetterTree<LoadingState, RootState> & LoadingGetters = {}
 
 const mutations: MutationTree<LoadingState> & LoadingMutations = {
   [LoadingMutationTypes.SET](state, loading: boolean) {
+    console.log(loading)
     if (loading) {
       state.count++
       state.loading = true
