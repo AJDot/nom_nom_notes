@@ -1,18 +1,20 @@
 import { Attribute } from '@vuex-orm/core'
 import { Uploader } from 'Interfaces/imageInterfaces'
-import { CookTime, Description, HasMany, HasUploader, Nameable, Notable } from 'Interfaces/modelInterfaces'
+import { CookTime, Description, HasMany, HasOne, HasUploader, Nameable, Notable } from 'Interfaces/modelInterfaces'
 import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 import Category from 'Models/category'
 import Ingredient from 'Models/ingredient'
 import RecipeCategory from 'Models/recipeCategory'
 import Step from 'Models/step'
+import User from 'Models/user'
 
 export type RecipeAttributes = AModelAttributes & Nameable & Description & CookTime & Notable &
   HasMany<'steps', Step> &
   HasMany<'ingredients', Ingredient> &
   HasMany<'recipeCategories', RecipeCategory> &
   HasMany<'categories', Category> &
-  HasUploader<'image'>
+  HasUploader<'image'> &
+  HasOne<'owner', User>
 
 export interface RRecipe extends RecipeAttributes {
 }
@@ -36,6 +38,8 @@ export default class Recipe extends AModel implements RRecipe {
       recipeCategories: this.hasMany(RecipeCategory, 'recipeId'),
       categories: this.belongsToMany(Category, RecipeCategory, 'recipeId', 'categoryId'),
       image: this.attr({}),
+      ownerId: this.string(null),
+      owner: this.belongsTo(User, 'ownerId', 'clientId')
     }
   }
 
@@ -48,6 +52,8 @@ export default class Recipe extends AModel implements RRecipe {
   recipeCategories!: Array<RecipeCategory>
   categories!: Array<Category>
   image!: Uploader
+  ownerId!: string
+  owner!: User
 
   save(): Promise<void> {
     this.steps.forEach(x => x.save())
@@ -65,6 +71,7 @@ export default class Recipe extends AModel implements RRecipe {
     } else {
       delete json.image
     }
+    delete json.owner
     return json
   }
 }

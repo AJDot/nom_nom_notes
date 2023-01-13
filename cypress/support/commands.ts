@@ -84,11 +84,10 @@ Cypress.Commands.add('createFry', () => {
   })
 })
 
-Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string, username?: string }) => {
+Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string }) => {
   cy.apiRequest('POST', '/signin', {
     email: user?.email || 'philip.fry@planet-express.com',
     password: user?.password || 'ah123456',
-    username: user?.username || 'orangejoe',
   }).its('body').as('signIn')
     .then((response) => {
       localStorage.setItem('csrf', response.csrf)
@@ -197,7 +196,6 @@ Cypress.Commands.add("drag", { prevSubject: "element" }, (subject: Cypress.JQuer
     dropOpts = Object.assign(dropOpts, target.dropOpts ?? {})
     target = target.target
   }
-  console.log(dragOpts, dropOpts)
   cy.wrap(subject).trigger('dragstart', dragOpts)
   cy.get(target)
     .trigger('dragenter', dropOpts)

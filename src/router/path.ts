@@ -161,6 +161,10 @@ class ApiPath extends Path {
   fileUpload(fileUploadClientId: string) {
     return Path.buildPath(this.fileUploads() + '/:clientId', { clientId: fileUploadClientId })
   }
+
+  currentAbility() {
+    return '/ability'
+  }
 }
 
 const appPath = new AppPath()

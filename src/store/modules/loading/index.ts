@@ -42,7 +42,6 @@ const getters: GetterTree<LoadingState, RootState> & LoadingGetters = {}
 
 const mutations: MutationTree<LoadingState> & LoadingMutations = {
   [LoadingMutationTypes.SET](state, loading: boolean) {
-    console.log(loading)
     if (loading) {
       state.count++
       state.loading = true

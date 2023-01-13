@@ -74,7 +74,6 @@ import DynamicRecipe from "~/models/dynamicRecipe"
 import { StoreModulePath } from "~/store"
 import { DynamicRecipeActionTypes } from "~/store/modules/dynamicRecipes/actions"
 import { FlashActionTypes } from "~/store/modules/flash"
-import { LoadingActionTypes } from "~/store/modules/loading"
 import { SessionGetterTypes } from "~/store/modules/sessions/getters"
 import { SessionMutationTypes } from "~/store/modules/sessions/mutations"
 import BlockDirector from "~/utils/blocks/blockDirector"
@@ -150,7 +149,7 @@ export default defineComponent({
       let errorText = error.response?.data.error
       const opts: { signOut: boolean | null } = { signOut: null }
       switch (error.response?.status) {
-        case (HttpStatusCode.Forbidden):
+        case (HttpStatusCode.Unauthorized):
           opts.signOut = true
           break
         case (HttpStatusCode.NotFound):

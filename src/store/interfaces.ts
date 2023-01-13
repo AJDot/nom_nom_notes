@@ -1,7 +1,8 @@
-import { FlashState } from '~/store/modules/flash'
-import { ModalState } from '~/store/modules/modal'
-import { LoadingState } from '~/store/modules/loading'
 import User from 'Models/user'
+import { AppAbility } from '~/appAbility'
+import { FlashState } from '~/store/modules/flash'
+import { LoadingState } from '~/store/modules/loading'
+import { ModalState } from '~/store/modules/modal'
 
 export interface RecipesState {
 }
@@ -27,6 +28,10 @@ export interface SignupsState {
 export interface FeaturesState {
 }
 
+export interface AbilityState {
+  ability: AppAbility
+}
+
 export enum StoreModuleType {
   Session = 'sessions',
   Features = 'features',
@@ -37,6 +42,7 @@ export enum StoreModuleType {
   Recipes = 'recipes',
   DynamicRecipes = 'dynamicRecipes',
   Categories = 'categories',
+  Ability = 'ability',
 }
 
 export interface RootState {
@@ -48,4 +54,5 @@ export interface RootState {
   [StoreModuleType.DynamicRecipes]: DynamicRecipesState
   [StoreModuleType.Categories]: CategoriesState
   [StoreModuleType.Users]: UsersState
+  [StoreModuleType.Ability]: AbilityState
 }

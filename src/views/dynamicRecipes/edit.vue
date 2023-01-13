@@ -424,7 +424,7 @@ export default defineComponent({
       const opts: { signOut: boolean | null } = { signOut: null }
       if (this.isCreateMode) {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
           case (HttpStatusCode.NotFound):
@@ -435,7 +435,7 @@ export default defineComponent({
         }
       } else {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
           default:

@@ -74,7 +74,6 @@ describe('Edit Dynamic Recipe', () => {
         { type: 'sidebar', text: 'Sidebar button' },
         { type: 'image' },
       ]
-      console.log(cy.get('[data-test-block]'))
       cy.get('[data-test-block]')
         .should('have.length', data.length)
         .each((block, i) => {

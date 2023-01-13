@@ -13,6 +13,7 @@ import recipes from '~/store/modules/recipes'
 import sessions from '~/store/modules/sessions'
 import signups from '~/store/modules/signups'
 import users from '~/store/modules/users'
+import ability from './modules/ability'
 import dynamicRecipes from './modules/dynamicRecipes'
 
 // define injection key
@@ -33,6 +34,7 @@ export enum StoreModulePath {
   Interfaces = 'interfaces/',
   Toggle = 'toggle/',
   Choice = 'choice/',
+  Ability = 'ability/',
 }
 
 export const store = createStore<RootState>({
@@ -49,6 +51,7 @@ export const store = createStore<RootState>({
     loading,
     features,
     interfaces,
+    ability,
   },
   state: {} as RootState,
   mutations: {},

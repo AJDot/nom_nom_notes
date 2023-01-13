@@ -1,5 +1,5 @@
-import BaseBlock from '@/modules/base-block.vue'
 import BaseBlockGroup from '@/modules/base-block-group.vue'
+import BaseBlock from '@/modules/base-block.vue'
 import AInput from '@/structure/a-input.vue'
 import ATextarea from '@/structure/a-textarea.vue'
 import 'Styles/index.css'

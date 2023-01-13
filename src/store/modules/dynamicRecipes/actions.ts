@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
+import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import DynamicRecipe, { DynamicRecipeAttributes } from 'Models/dynamicRecipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
@@ -24,7 +24,7 @@ type DynamicRecipeActions = {
 const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions = {
   async [DynamicRecipeActionTypes.FETCH]({ commit }: ActionContext<DynamicRecipesState, RootState>, id: string) {
     try {
-      const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipe(id))
+      const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipe(id))
       if (!response.data) throw new Error('Dynamic Recipe not found')
 
       commit(DynamicRecipeMutationTypes.ADD, {
@@ -38,7 +38,7 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
     }
   },
   async [DynamicRecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<DynamicRecipesState, RootState>) {
-    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes, Array<ServerData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
     commit(
       DynamicRecipeMutationTypes.SET,
       response.data.data.map((x) => {
@@ -57,16 +57,16 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
       return Promise.resolve(DynamicRecipe.find(id))
     }
   },
-  async [DynamicRecipeActionTypes.CREATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.dynamicRecipes(), {
+  async [DynamicRecipeActionTypes.CREATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.dynamicRecipes(), {
       dynamicRecipe: dynamicRecipe.$toJson(),
     })
     dynamicRecipe.id = response.data.data.id
     await dynamicRecipe.$insertOrUpdate({ data: { id: dynamicRecipe.id, ...response.data.data.attributes } })
     return response
   },
-  async [DynamicRecipeActionTypes.UPDATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.patch(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId), {
+  async [DynamicRecipeActionTypes.UPDATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.patch(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId), {
       dynamicRecipe: dynamicRecipe.$toJson(),
     })
 
@@ -75,8 +75,8 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
     }
     return response
   },
-  async [DynamicRecipeActionTypes.DESTROY](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId))
+  async [DynamicRecipeActionTypes.DESTROY](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId))
     await dynamicRecipe.$delete()
     return response
   },

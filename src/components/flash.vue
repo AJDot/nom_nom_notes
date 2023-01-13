@@ -60,13 +60,13 @@ export default defineComponent({
     },
   },
   watch: {
-    [`$store.state.${StoreModuleType.Flash}.trigger`]: function(
+    [`$store.state.${StoreModuleType.Flash}.trigger`]: function (
       newVal,
       _oldVal,
     ) {
       if (newVal) this.getFlash()
     },
-    '$route.fullPath': function(newVal, oldVal) {
+    '$route.fullPath': function (newVal, oldVal) {
       if (newVal !== oldVal) {
         this.getFlash()
       }

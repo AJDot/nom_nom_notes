@@ -1,10 +1,10 @@
-import { SearchOptionsEndpoint, SearchOptionsLocal } from './../interfaces/searchInterfaces'
+import { AxiosResponse } from 'axios'
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
+import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import { KeysOfType } from 'Interfaces/utilInterfaces'
 import { securedAxiosInstance } from '~/backend/axios'
-import { AxiosResponse } from 'axios'
-import { ServerData, ServerResponse } from 'Interfaces/serverInterfaces'
 import { ObjectUtils } from '~/utils/objectUtils'
+import { SearchOptionsEndpoint, SearchOptionsLocal } from './../interfaces/searchInterfaces'
 
 function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T, options: { q: string }) => V), options: { q: string }): V {
   if (getter instanceof Function) {
@@ -29,7 +29,7 @@ export default class Searcher<T> implements USearcher<T> {
   }
 
   private async searchEndpoint(q = '', options: SearchOptionsEndpoint<T>): Promise<void> {
-    const response: AxiosResponse<ServerResponse<T, Array<ServerData<T>>>> = await securedAxiosInstance.get(
+    const response: AxiosResponse<ServerRecordResponse<T, Array<ServerRecordData<T>>>> = await securedAxiosInstance.get(
       options.endpoint,
       {
         params: {

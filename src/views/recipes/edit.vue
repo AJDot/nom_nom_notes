@@ -250,7 +250,7 @@ export default defineComponent({
   async beforeMount() {
     const store = useStore<RootState>(stateKey)
     if (this.mode === 'create') {
-      this.recipe = new Recipe()
+      this.recipe = new Recipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
     } else {
       const clientId = router.currentRoute.value.params.clientId
       try {
@@ -327,7 +327,7 @@ export default defineComponent({
       const opts: { signOut: boolean | null } = { signOut: null }
       if (this.mode === 'create') {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
           case (HttpStatusCode.NotFound):

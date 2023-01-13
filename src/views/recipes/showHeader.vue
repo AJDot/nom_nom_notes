@@ -6,7 +6,7 @@
         <span>Recipe Cards</span>
       </router-link>
     </li>
-    <li>
+    <li v-if="recipe && ability.can('update', recipe)">
       <router-link :to="{ name: $routerExtension.names.EditRecipe }" class="flex">
         <i class="material-icons my-auto">edit</i>
         <span>Edit Recipe</span>
@@ -17,8 +17,21 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useStore } from 'vuex'
+import Recipe from '~/models/recipe'
+import { stateKey } from '~/store'
+import { RootState } from '~/store/interfaces'
 
 export default defineComponent({
   name: 'ShowRecipeHeader',
+  computed: {
+    recipe(): Recipe | null {
+      return Recipe.query().find(this.$router.currentRoute.value.params.clientId)
+    },
+    ability() {
+      const store = useStore<RootState>(stateKey)
+      return store.state.ability.ability
+    }
+  }
 })
 </script>
