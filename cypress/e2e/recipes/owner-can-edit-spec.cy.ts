@@ -1,4 +1,3 @@
-import { RegexUtils } from './../../../src/utils/regexUtils'
 describe('Owner Can Edit Recipe', () => {
   beforeEach(() => {
     cy.createUser({ email: 'philip.fry@planet-express.com', password: 'ah123456', username: 'orangejoe' })

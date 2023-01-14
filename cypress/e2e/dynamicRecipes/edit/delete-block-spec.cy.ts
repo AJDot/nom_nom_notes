@@ -10,7 +10,7 @@ describe('Delete Dynamic Recipe Block', () => {
       })
   }
 
-  beforeEach(() => {
+  beforeEach(function () {
     cy.createFry().as('fry')
   })
 
@@ -19,7 +19,7 @@ describe('Delete Dynamic Recipe Block', () => {
       cy.forceSignIn()
     })
 
-    it('allows me to delete a block with "backspace" or "delete"', () => {
+    it('allows me to delete a block with "backspace" or "delete"', function () {
       const rowId = Guid.create()
       const column1Id = Guid.create()
       const column2Id = Guid.create()
@@ -47,7 +47,7 @@ describe('Delete Dynamic Recipe Block', () => {
 
       cy.intercept('PATCH', '/api/v1/dynamic_recipes/*').as('update')
       cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
-        dynamic_recipe: { name: 'Pasta', blocks },
+        dynamic_recipe: { name: 'Pasta', ownerId: this.fry.attributes.clientId, blocks },
       }).its('body.data.0').as('dynamicRecipe')
         .then(function () {
 

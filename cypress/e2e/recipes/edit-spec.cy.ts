@@ -3,39 +3,43 @@ import { AssertInputOptionTypes, AssertTextOptionTypes } from '../../support/tes
 describe('Edit Recipe', () => {
   beforeEach(() => {
     cy.createFry().as('fry')
-    cy.apiRequest('POST', '/testing/api/v1/categories', {
-      categories: [
-        { name: 'Italian' },
-        { name: 'American' },
-        { name: 'Chinese' },
-      ],
-    }).its('body.data').as('categories')
-      .then(categories => {
-        cy.apiRequest('POST', '/testing/api/v1/recipes', {
-          recipe: {
-            name: 'Space Soup',
-            description: 'Some alien gunk in a pot.',
-            cook_time: (60 * 60) + 2 * (60), // 1 hours and 2 minutes
-            recipeCategoriesAttributes: [
-              { category_id: categories.find(x => x.attributes.name === 'Italian').attributes.clientId },
-              { category_id: categories.find(x => x.attributes.name === 'Chinese').attributes.clientId },
-            ],
-            stepsAttributes: [
-              { description: 'Grab a chicken.' },
-              { description: 'Put all ingredients on it.' },
-            ],
-            ingredientsAttributes: [
-              { description: '1 cup applesauce' },
-              { description: '2 tsp banana pudding' },
-            ],
-            note: 'Or ignore everything I said.',
-          },
-        })
-      }).its('body.data.0').as('recipe')
+      .then(function () {
+
+        cy.apiRequest('POST', '/testing/api/v1/categories', {
+          categories: [
+            { name: 'Italian' },
+            { name: 'American' },
+            { name: 'Chinese' },
+          ],
+        }).its('body.data').as('categories')
+          .then(categories => {
+            cy.apiRequest('POST', '/testing/api/v1/recipes', {
+              recipe: {
+                name: 'Space Soup',
+                ownerId: this.fry.attributes.clientId,
+                description: 'Some alien gunk in a pot.',
+                cook_time: (60 * 60) + 2 * (60), // 1 hours and 2 minutes
+                recipeCategoriesAttributes: [
+                  { category_id: categories.find(x => x.attributes.name === 'Italian').attributes.clientId },
+                  { category_id: categories.find(x => x.attributes.name === 'Chinese').attributes.clientId },
+                ],
+                stepsAttributes: [
+                  { description: 'Grab a chicken.' },
+                  { description: 'Put all ingredients on it.' },
+                ],
+                ingredientsAttributes: [
+                  { description: '1 cup applesauce' },
+                  { description: '2 tsp banana pudding' },
+                ],
+                note: 'Or ignore everything I said.',
+              },
+            })
+          }).its('body.data.0').as('recipe')
+      })
   })
 
-  context('Not logged in', function() {
-    it('redirects to sign in first', function() {
+  context('Not logged in', function () {
+    it('redirects to sign in first', function () {
       cy.visit(`/recipes/${this.recipe.attributes.clientId}/edit`)
       cy.url().should('contain', '/sign_in')
       cy.contains('Email').type(this.fry.attributes.email)
@@ -130,7 +134,7 @@ describe('Edit Recipe', () => {
       cy.forceSignIn()
     })
 
-    it('validates recipe data', function() {
+    it('validates recipe data', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -150,7 +154,7 @@ describe('Edit Recipe', () => {
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
           cy.wrap(data).its('response.body.data')
-            .then(function() {
+            .then(function () {
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)
                 .and('not.contain', 'edit')
@@ -162,7 +166,7 @@ describe('Edit Recipe', () => {
         })
     })
 
-    it('allows recipe update with all data', function() {
+    it('allows recipe update with all data', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -233,7 +237,7 @@ describe('Edit Recipe', () => {
       cy.wait('@updateRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
-            .then(function() {
+            .then(function () {
               // on show page
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)
@@ -246,7 +250,7 @@ describe('Edit Recipe', () => {
         })
     })
 
-    it('allows editing image', function() {
+    it('allows editing image', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.visit(`/recipes/${recipeId}/edit`)
       cy.uploadFile({
@@ -260,7 +264,7 @@ describe('Edit Recipe', () => {
         .and('have.attr', 'title', 'Space Soup')
     })
 
-    it('allows removing and adding back a category', function() {
+    it('allows removing and adding back a category', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
@@ -284,7 +288,7 @@ describe('Edit Recipe', () => {
       cy.wait('@updateRecipe')
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 200)
-            .then(function() {
+            .then(function () {
               // on show page
               cy.url()
                 .should('contain', `/recipes/${recipeId}`)

@@ -1,11 +1,14 @@
-describe('Delete Dynamic Recipe Block', () => {
-  beforeEach(() => {
+describe('Delete Dynamic Recipe Block', function () {
+  beforeEach(function () {
     cy.createFry().as('fry')
-    cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
-      dynamic_recipe: {
-        name: 'Space Soup',
-      },
-    }).its('body.data.0').as('dynamicRecipe')
+      .then(function () {
+        cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
+          dynamic_recipe: {
+            name: 'Space Soup',
+            ownerId: this.fry.attributes.clientId
+          },
+        }).its('body.data.0').as('dynamicRecipe')
+      })
     cy.forceSignIn()
   })
 
@@ -25,7 +28,7 @@ describe('Delete Dynamic Recipe Block', () => {
     cy.visit(`/dynamic_recipes/${dynamicRecipeId}/edit`)
     cy.contains('Delete').click()
     cy.getModal().should('exist')
-      .within(() => {
+      .within(function () {
         cy.contains('Delete Dynamic Recipe').should('exist')
         // can cancel destroying
         cy.contains('Cancel').should('exist').click()
@@ -34,7 +37,7 @@ describe('Delete Dynamic Recipe Block', () => {
 
     cy.contains('Delete').click()
     cy.getModal().should('exist')
-      .within(() => {
+      .within(function () {
         cy.contains('Delete Dynamic Recipe').click()
       })
     cy.assertUrl('/dynamic_recipes')

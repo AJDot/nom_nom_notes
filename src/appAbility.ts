@@ -2,7 +2,7 @@ import { Ability, AbilityClass, AbilityTuple, MongoQuery, RawRuleFrom, Subject }
 import { AnyObject } from '@casl/ability/dist/types/types'
 
 type Actions = 'create' | 'read' | 'update' | 'delete'
-type Subjects = 'Recipe'
+type Subjects = 'Recipe' | 'DynamicRecipe'
 
 export type AppAbilityTuple = AbilityTuple<Actions, Subjects | Subject>
 

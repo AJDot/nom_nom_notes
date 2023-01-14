@@ -330,6 +330,9 @@ export default defineComponent({
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to create this recipe.'
+            break
           case (HttpStatusCode.NotFound):
             errorText = errorText ?? 'An unknown error occurred. Please contact the app admin.'
             break
@@ -338,8 +341,11 @@ export default defineComponent({
         }
       } else {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
+            break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to update this recipe.'
             break
           default:
             opts.signOut = false

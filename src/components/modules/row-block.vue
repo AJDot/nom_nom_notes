@@ -16,7 +16,6 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { Block, ColumnBlock, RowBlock } from '~/interfaces/blockInterfacesGeneral'
-import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import Guid from '~/utils/guid'
 
@@ -27,7 +26,6 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<RowBlock>(),
-    blockListeners,
   ],
   computed: {
     childBlocks(): Block[] {

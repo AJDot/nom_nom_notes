@@ -15,7 +15,6 @@ export type RecipeAttributes = AModelAttributes & Nameable & Description & CookT
   HasMany<'categories', Category> &
   HasUploader<'image'> &
   HasOne<'owner', User>
-
 export interface RRecipe extends RecipeAttributes {
 }
 

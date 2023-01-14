@@ -1,13 +1,13 @@
 import { Block } from "../../../../src/interfaces/blockInterfacesGeneral"
 import Guid from "../../../../src/utils/guid"
 
-describe('Drag n Drop Dynamic Recipe Blocks', () => {
+describe('Drag n Drop Dynamic Recipe Blocks', function () {
   function assertDrag(blocks: Block[], before: { id?: string, text: string }[], dragId: string, dropId: string, after: { id?: string, text: string }[], opts: { dragOpts?, dropOpts?} = {}) {
     const dragOpts = opts.dragOpts ?? {}
     const dropOpts = opts.dropOpts ?? {}
     cy.intercept('PATCH', '/api/v1/dynamic_recipes/*').as('update')
     cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
-      dynamic_recipe: { name: 'Pasta', blocks },
+      dynamic_recipe: { name: 'Pasta', ownerId: this.fry.attributes.clientId, blocks },
     }).its('body.data.0').as('dynamicRecipe')
       .then(function () {
 
@@ -32,15 +32,15 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
     cy.wait('@update') // ensure last autosave is complete before ending test
   }
 
-  beforeEach(() => {
+  beforeEach(function () {
     cy.createFry().as('fry')
     cy.forceSignIn()
   })
 
-  describe('onto h1 block', () => {
+  describe('onto h1 block', function () {
     const dropType = 'h1'
 
-    it('allows me to move an h1 block into an h1 block', () => {
+    it('allows me to move an h1 block into an h1 block', function () {
       const h1Id = Guid.create()
       const h1Id2 = Guid.create()
       const blocks: Block[] = [
@@ -61,10 +61,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an h1 block', () => {
+    it('allows me to move an h2 block into an h1 block', function () {
       const h1Id = Guid.create()
       const h2Id = Guid.create()
       const blocks: Block[] = [
@@ -85,10 +85,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an h1 block', () => {
+    it('allows me to move an h3 block into an h1 block', function () {
       const h1Id = Guid.create()
       const h3Id = Guid.create()
       const blocks: Block[] = [
@@ -109,10 +109,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an h1 block', () => {
+    it('allows me to move a text block into an h1 block', function () {
       const h1Id = Guid.create()
       const textId = Guid.create()
       const blocks: Block[] = [
@@ -133,10 +133,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an h1 block', () => {
+    it('allows me to move a row block into an h1 block', function () {
       const h1Id = Guid.create()
       const rowId = Guid.create()
       const columnId = Guid.create()
@@ -165,10 +165,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an h1 block', () => {
+    it('allows me to move a column block into an h1 block', function () {
       const h1Id = Guid.create()
       const rowId = Guid.create()
       const columnId = Guid.create()
@@ -198,10 +198,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an h1 block', () => {
+    it('allows me to move an sidebar block into an h1 block', function () {
       const h1Id = Guid.create()
       const sidebarId = Guid.create()
       const blocks: Block[] = [
@@ -222,10 +222,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an h1 block', () => {
+    it('allows me to move an image block into an h1 block', function () {
       const h1Id = Guid.create()
       const imageId = Guid.create()
       const blocks: Block[] = [
@@ -246,14 +246,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto h2 block', () => {
+  describe('onto h2 block', function () {
     const dropType = 'h2'
 
-    it('allows me to move an h1 block into an h2 block', () => {
+    it('allows me to move an h1 block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -272,10 +272,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an h2 block', () => {
+    it('allows me to move an h2 block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -294,10 +294,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an h2 block', () => {
+    it('allows me to move an h3 block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -316,10 +316,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an h2 block', () => {
+    it('allows me to move a text block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -338,10 +338,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an h2 block', () => {
+    it('allows me to move a row block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -368,10 +368,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an h2 block', () => {
+    it('allows me to move a column block into an h2 block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -399,10 +399,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an h2 block', () => {
+    it('allows me to move an sidebar block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -421,10 +421,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an h2 block', () => {
+    it('allows me to move an image block into an h2 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -443,14 +443,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto h3 block', () => {
+  describe('onto h3 block', function () {
     const dropType = 'h3'
 
-    it('allows me to move an h1 block into an h3 block', () => {
+    it('allows me to move an h1 block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -469,10 +469,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an h3 block', () => {
+    it('allows me to move an h2 block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -491,10 +491,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an h3 block', () => {
+    it('allows me to move an h3 block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -513,10 +513,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an h3 block', () => {
+    it('allows me to move a text block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -535,10 +535,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an h3 block', () => {
+    it('allows me to move a row block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -565,10 +565,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an h3 block', () => {
+    it('allows me to move a column block into an h3 block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -596,10 +596,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an h3 block', () => {
+    it('allows me to move an sidebar block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -618,10 +618,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an h3 block', () => {
+    it('allows me to move an image block into an h3 block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -640,14 +640,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto text block', () => {
+  describe('onto text block', function () {
     const dropType = 'text'
 
-    it('allows me to move an h1 block into an text block', () => {
+    it('allows me to move an h1 block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -666,10 +666,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an text block', () => {
+    it('allows me to move an h2 block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -688,10 +688,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an text block', () => {
+    it('allows me to move an h3 block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -710,10 +710,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an text block', () => {
+    it('allows me to move a text block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -732,10 +732,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an text block', () => {
+    it('allows me to move a row block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -762,10 +762,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an text block', () => {
+    it('allows me to move a column block into an text block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -793,10 +793,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an text block', () => {
+    it('allows me to move an sidebar block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -815,10 +815,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an text block', () => {
+    it('allows me to move an image block into an text block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -837,14 +837,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto sidebar block', () => {
+  describe('onto sidebar block', function () {
     const dropType = 'sidebar'
 
-    it('allows me to move an h1 block into an sidebar block', () => {
+    it('allows me to move an h1 block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -863,10 +863,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an sidebar block', () => {
+    it('allows me to move an h2 block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -885,10 +885,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an sidebar block', () => {
+    it('allows me to move an h3 block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -907,10 +907,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an sidebar block', () => {
+    it('allows me to move a text block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -929,10 +929,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an sidebar block', () => {
+    it('allows me to move a row block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -959,10 +959,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an sidebar block', () => {
+    it('allows me to move a column block into an sidebar block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -990,10 +990,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an sidebar block', () => {
+    it('allows me to move an sidebar block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1012,10 +1012,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an sidebar block', () => {
+    it('allows me to move an image block into an sidebar block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1034,14 +1034,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto image block', () => {
+  describe('onto image block', function () {
     const dropType = 'image'
 
-    it('allows me to move an h1 block into an image block', () => {
+    it('allows me to move an h1 block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1060,10 +1060,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an image block', () => {
+    it('allows me to move an h2 block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1082,10 +1082,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an image block', () => {
+    it('allows me to move an h3 block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1104,10 +1104,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an image block', () => {
+    it('allows me to move a text block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1126,10 +1126,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an image block', () => {
+    it('allows me to move a row block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -1156,10 +1156,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an image block', () => {
+    it('allows me to move a column block into an image block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -1187,10 +1187,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an image block', () => {
+    it('allows me to move an sidebar block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1209,10 +1209,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an image block', () => {
+    it('allows me to move an image block into an image block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1231,14 +1231,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto row block', () => {
+  describe('onto row block', function () {
     const dropType = 'row'
 
-    it('allows me to move an h1 block into an row block', () => {
+    it('allows me to move an h1 block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1257,10 +1257,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an row block', () => {
+    it('allows me to move an h2 block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1279,10 +1279,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an row block', () => {
+    it('allows me to move an h3 block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1301,10 +1301,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an row block', () => {
+    it('allows me to move a text block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1323,10 +1323,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an row block', () => {
+    it('allows me to move a row block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const columnId = Guid.create()
@@ -1353,10 +1353,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an row block', () => {
+    it('allows me to move a column block into an row block', function () {
       const dropId = Guid.create()
       const rowId = Guid.create()
       const dragId = Guid.create()
@@ -1383,10 +1383,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an row block', () => {
+    it('allows me to move an sidebar block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1405,10 +1405,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an row block', () => {
+    it('allows me to move an image block into an row block', function () {
       const dropId = Guid.create()
       const dragId = Guid.create()
       const blocks: Block[] = [
@@ -1427,14 +1427,14 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto column block', () => {
+  describe('onto column block', function () {
     const dropType = 'column'
 
-    it('allows me to move an h1 block into an column block', () => {
+    it('allows me to move an h1 block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1461,10 +1461,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h2 block into an column block', () => {
+    it('allows me to move an h2 block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1491,10 +1491,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an h3 block into an column block', () => {
+    it('allows me to move an h3 block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1521,10 +1521,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into an column block', () => {
+    it('allows me to move a text block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1551,10 +1551,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a row block into an column block', () => {
+    it('allows me to move a row block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId2 = Guid.create()
@@ -1589,10 +1589,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a column block into an column block', () => {
+    it('allows me to move a column block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1627,10 +1627,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an sidebar block into an column block', () => {
+    it('allows me to move an sidebar block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1657,10 +1657,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into an column block', () => {
+    it('allows me to move an image block into an column block', function () {
       const rowId = Guid.create()
       const dropId = Guid.create()
       const textId = Guid.create()
@@ -1687,12 +1687,12 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 
-  describe('onto text block in column', () => {
-    it('allows me to move a text block from one column to another', () => {
+  describe('onto text block in column', function () {
+    it('allows me to move a text block from one column to another', function () {
       const rowId = Guid.create()
       const column1Id = Guid.create()
       const column2Id = Guid.create()
@@ -1732,10 +1732,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a text block into a column block', () => {
+    it('allows me to move a text block into a column block', function () {
       const text1Id = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1764,10 +1764,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a h1 block into a column block', () => {
+    it('allows me to move a h1 block into a column block', function () {
       const h1Id = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1796,10 +1796,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a h2 block into a column block', () => {
+    it('allows me to move a h2 block into a column block', function () {
       const h2Id = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1828,10 +1828,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a h3 block into a column block', () => {
+    it('allows me to move a h3 block into a column block', function () {
       const h3Id = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1860,10 +1860,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move a sidebar block into a column block', () => {
+    it('allows me to move a sidebar block into a column block', function () {
       const sidebarId = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1892,10 +1892,10 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
 
-    it('allows me to move an image block into a column block', () => {
+    it('allows me to move an image block into a column block', function () {
       const imageId = Guid.create()
       const rowId = Guid.create()
       const column1Id = Guid.create()
@@ -1924,7 +1924,7 @@ describe('Drag n Drop Dynamic Recipe Blocks', () => {
         { text: '' }, // the "type anything... placeholder block"
       ]
 
-      assertDrag(blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
   })
 })

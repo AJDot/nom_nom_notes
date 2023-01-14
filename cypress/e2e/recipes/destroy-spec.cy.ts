@@ -1,11 +1,15 @@
 describe('Destroy recipe', () => {
   beforeEach(() => {
     cy.createFry().as('fry')
-    cy.apiRequest('POST', '/testing/api/v1/recipes', {
-      recipe: {
-        name: 'Space Soup',
-      },
-    }).its('body.data.0').as('recipe')
+      .then(function () {
+        cy.apiRequest('POST', '/testing/api/v1/recipes', {
+          recipe: {
+            name: 'Space Soup',
+            ownerId: this.fry.attributes.clientId,
+          },
+        }).its('body.data.0').as('recipe')
+
+      })
     cy.forceSignIn()
   })
 
@@ -40,6 +44,6 @@ describe('Destroy recipe', () => {
     cy.getFlash('Space Soup was deleted successfully').should('exist')
     cy.visit(`/recipes/${recipeId}/edit`)
     cy.assertUrl('/recipes')
-    cy.getFlash('Recipe not found').should('exist')
+    cy.getFlash('The specified recipe was not found.').should('exist')
   })
 })

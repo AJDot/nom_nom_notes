@@ -427,6 +427,9 @@ export default defineComponent({
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to create this dynamic recipe.'
+            break
           case (HttpStatusCode.NotFound):
             errorText = errorText ?? 'An unknown error occurred. Please contact the app admin.'
             break
@@ -437,6 +440,9 @@ export default defineComponent({
         switch (error.response?.status) {
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
+            break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to update this dynamic recipe.'
             break
           default:
             opts.signOut = false
@@ -486,7 +492,7 @@ export default defineComponent({
         return
       }
     } else {
-      this.dynamicRecipe = new DynamicRecipe()
+      this.dynamicRecipe = new DynamicRecipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
     }
 
     this.blockDirector = new BlockDirector<IFileUpload>({

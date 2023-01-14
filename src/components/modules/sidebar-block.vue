@@ -32,7 +32,6 @@ import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions } from 'vuex'
 import { Block, SidebarBlock } from '~/interfaces/blockInterfacesGeneral'
-import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
@@ -46,7 +45,6 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<SidebarBlock>(),
-    blockListeners,
     preserveCaretMixin,
   ],
   data() {

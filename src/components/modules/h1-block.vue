@@ -8,7 +8,6 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { H1Block } from '~/interfaces/blockInterfacesGeneral'
-import blockListeners from '~/mixins/blockListeners'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 
@@ -19,7 +18,6 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<H1Block>(),
-    blockListeners,
     preserveCaretMixin,
   ],
   computed: {

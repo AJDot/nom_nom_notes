@@ -75,7 +75,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
         store.commit(
           StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
         )
-        if (error.response.config.url.endsWith('current_user')) {
+        if (error.response.config.url.endsWith('refresh')) {
           return Promise.reject(error)
         } else {
           // redirect to signin if refresh fails

@@ -132,7 +132,7 @@ export default defineComponent({
       return this.selectedTemplate === template
     },
     async startDynamicRecipe() {
-      const dynamicRecipe = new DynamicRecipe({ name: `New Recipe ${Guid.create()}`, blocks: this.selectedTemplate!.blocks })
+      const dynamicRecipe = new DynamicRecipe({ name: `New Recipe ${Guid.create()}`, blocks: this.selectedTemplate!.blocks, owner: this.currentUser, ownerId: this.currentUser.clientId })
       this.loading(async () => {
         await this.$store.dispatch(StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.CREATE, dynamicRecipe)
           .then(async (response) => {

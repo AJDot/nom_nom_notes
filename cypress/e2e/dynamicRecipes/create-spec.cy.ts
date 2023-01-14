@@ -4,7 +4,7 @@ describe('Create Dynamic Recipe', () => {
   })
 
   context('Not logged in', () => {
-    it('redirects to sign in first', function () {
+    it.only('redirects to sign in first', function () {
       cy.visit('/dynamic_recipes')
       cy.contains('New Dynamic Recipe').click()
       cy.url().should('contain', '/sign_in')

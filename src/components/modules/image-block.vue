@@ -1,5 +1,5 @@
 <template>
-  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 group" :hover-color="hoverColor" :item="block" @drop="onDrop" @click.stop="blockListeners.click" data-test-block="image">
+  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 group" :hover-color="hoverColor" :item="block" @drop="onDrop" @click.stop="blockListeners.click(isEditable)" data-test-block="image">
     <AImageUpload class="grow" :model-value="tmpImage" @update:model-value="save" :editable="isEditable" @destroy="destroy" />
   </draggable>
 </template>
@@ -11,7 +11,6 @@ import draggable from "vuedraggable"
 import { ImageBlock } from "~/interfaces/blockInterfacesGeneral"
 import { FileUpload } from "~/interfaces/fileUploadInterfaces"
 import { Uploader as IUploader, Uploader } from "~/interfaces/imageInterfaces"
-import blockListeners from "~/mixins/blockListeners"
 import blockMixin from "~/mixins/blockMixin"
 import AImageUpload from "../structure/a-image-upload.vue"
 
@@ -28,7 +27,6 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<ImageBlock>(),
-    blockListeners,
   ],
   data(): Data {
     return {
