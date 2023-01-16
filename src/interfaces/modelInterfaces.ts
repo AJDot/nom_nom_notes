@@ -34,8 +34,13 @@ export interface BRecipe {
   recipeId: string | undefined
 }
 
-export interface BCategory {
-  categoryId: string | undefined
+export interface BTag {
+  tagId: string | undefined
+}
+
+export interface BTaggable {
+  taggableId: string | undefined
+  taggableType: string | undefined
 }
 
 export interface Notable {

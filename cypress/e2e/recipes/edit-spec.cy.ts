@@ -5,23 +5,23 @@ describe('Edit Recipe', () => {
     cy.createFry().as('fry')
       .then(function () {
 
-        cy.apiRequest('POST', '/testing/api/v1/categories', {
-          categories: [
+        cy.apiRequest('POST', '/testing/api/v1/tags', {
+          tags: [
             { name: 'Italian' },
             { name: 'American' },
             { name: 'Chinese' },
           ],
-        }).its('body.data').as('categories')
-          .then(categories => {
+        }).its('body.data').as('tags')
+          .then(tags => {
             cy.apiRequest('POST', '/testing/api/v1/recipes', {
               recipe: {
                 name: 'Space Soup',
                 ownerId: this.fry.attributes.clientId,
                 description: 'Some alien gunk in a pot.',
                 cook_time: (60 * 60) + 2 * (60), // 1 hours and 2 minutes
-                recipeCategoriesAttributes: [
-                  { category_id: categories.find(x => x.attributes.name === 'Italian').attributes.clientId },
-                  { category_id: categories.find(x => x.attributes.name === 'Chinese').attributes.clientId },
+                taggingsAttributes: [
+                  { tag_id: tags.find(x => x.attributes.name === 'Italian').attributes.clientId },
+                  { tag_id: tags.find(x => x.attributes.name === 'Chinese').attributes.clientId },
                 ],
                 stepsAttributes: [
                   { description: 'Grab a chicken.' },
@@ -180,12 +180,12 @@ describe('Edit Recipe', () => {
       // Remove 2nd ingredient
       cy.getTest('ingredient-1').find('[data-test="more"]').click()
       cy.getDropdownItem('Delete').click()
-      // Delete Italian category
-      cy.getTest('category-Italian').within(() => {
-        cy.getTest('category-destroy').click()
+      // Delete Italian tag
+      cy.getTest('tag-Italian').within(() => {
+        cy.getTest('tag-destroy').click()
       })
-      // Add category
-      cy.getByLabel('Categories').type('Ame')
+      // Add tag
+      cy.getByLabel('Tags').type('Ame')
       cy.getDropdownItem('American').click()
       // Add step
       cy.contains('Add Step').click()
@@ -264,16 +264,16 @@ describe('Edit Recipe', () => {
         .and('have.attr', 'title', 'Space Soup')
     })
 
-    it('allows removing and adding back a category', function () {
+    it('allows removing and adding back a tag', function () {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
-      // Delete Italian category
-      cy.getTest('category-Italian').within(() => {
-        cy.getTest('category-destroy').click()
+      // Delete Italian tag
+      cy.getTest('tag-Italian').within(() => {
+        cy.getTest('tag-destroy').click()
       })
-      // Add Italian category back
-      cy.getByLabel('Categories').type('Ita')
+      // Add Italian tag back
+      cy.getByLabel('Tags').type('Ita')
       cy.getDropdownItem('Italian').click()
 
       cy.contains('input', 'Update Recipe').click()

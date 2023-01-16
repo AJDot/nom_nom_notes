@@ -3,7 +3,7 @@ import { InjectionKey } from 'vue'
 import { createStore, Store } from 'vuex'
 import database from '~/store/database'
 import { RootState } from '~/store/interfaces'
-import categories from '~/store/modules/categories'
+import tags from '~/store/modules/tags'
 import features from '~/store/modules/features'
 import flash from '~/store/modules/flash'
 import interfaces from '~/store/modules/interfaces'
@@ -24,7 +24,7 @@ export enum StoreModulePath {
   Users = 'users/',
   Recipes = 'recipes/',
   DynamicRecipes = 'dynamicRecipes/',
-  Categories = 'categories/',
+  Tags = 'tags/',
   Session = 'sessions/',
   Signup = 'signups/',
   Flash = 'flash/',
@@ -43,7 +43,7 @@ export const store = createStore<RootState>({
     users,
     recipes,
     dynamicRecipes,
-    categories,
+    tags,
     signups,
     sessions,
     flash,

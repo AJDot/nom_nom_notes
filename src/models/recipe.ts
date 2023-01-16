@@ -2,17 +2,17 @@ import { Attribute } from '@vuex-orm/core'
 import { Uploader } from 'Interfaces/imageInterfaces'
 import { CookTime, Description, HasMany, HasOne, HasUploader, Nameable, Notable } from 'Interfaces/modelInterfaces'
 import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
-import Category from 'Models/category'
 import Ingredient from 'Models/ingredient'
-import RecipeCategory from 'Models/recipeCategory'
 import Step from 'Models/step'
+import Tagging from 'Models/tagging'
 import User from 'Models/user'
+import Tag from '~/models/tag'
 
 export type RecipeAttributes = AModelAttributes & Nameable & Description & CookTime & Notable &
   HasMany<'steps', Step> &
   HasMany<'ingredients', Ingredient> &
-  HasMany<'recipeCategories', RecipeCategory> &
-  HasMany<'categories', Category> &
+  HasMany<'taggings', Tagging> &
+  HasMany<'tags', Tag> &
   HasUploader<'image'> &
   HasOne<'owner', User>
 export interface RRecipe extends RecipeAttributes {
@@ -34,8 +34,8 @@ export default class Recipe extends AModel implements RRecipe {
       note: this.string('').nullable(),
       steps: this.hasMany(Step, 'recipeId'),
       ingredients: this.hasMany(Ingredient, 'recipeId'),
-      recipeCategories: this.hasMany(RecipeCategory, 'recipeId'),
-      categories: this.belongsToMany(Category, RecipeCategory, 'recipeId', 'categoryId'),
+      taggings: this.morphMany(Tagging, 'taggableId', 'taggableType'),
+      tags: this.belongsToMany(Tag, Tagging, 'taggableId', 'tagId'),
       image: this.attr({}),
       ownerId: this.string(null),
       owner: this.belongsTo(User, 'ownerId', 'clientId')
@@ -48,8 +48,8 @@ export default class Recipe extends AModel implements RRecipe {
   note!: string
   steps!: Array<Step>
   ingredients!: Array<Ingredient>
-  recipeCategories!: Array<RecipeCategory>
-  categories!: Array<Category>
+  taggings!: Array<Tagging>
+  tags!: Array<Tag>
   image!: Uploader
   ownerId!: string
   owner!: User
@@ -57,7 +57,7 @@ export default class Recipe extends AModel implements RRecipe {
   save(): Promise<void> {
     this.steps.forEach(x => x.save())
     this.ingredients.forEach(x => x.save())
-    this.recipeCategories.forEach(x => x.save())
+    this.taggings.forEach(x => x.save())
     return super.save()
   }
 

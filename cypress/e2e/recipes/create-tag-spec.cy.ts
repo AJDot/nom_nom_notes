@@ -1,19 +1,19 @@
-describe('Create Categories', function () {
+describe('Create Tags', function () {
   beforeEach(function () {
     cy.viewport(420, 600)
     cy.createFry().as('fry')
       .then(function () {
         cy.forceSignIn()
-        cy.apiRequest('POST', '/testing/api/v1/categories', {
-          categories: [{ name: 'Italian' }, { name: 'American' }],
-        }).its('body.data').as('categories')
-          .then(function (categories) {
+        cy.apiRequest('POST', '/testing/api/v1/tags', {
+          tags: [{ name: 'Italian' }, { name: 'American' }],
+        }).its('body.data').as('tags')
+          .then(function (tags) {
             cy.apiRequest('POST', '/testing/api/v1/recipes', {
               recipe: {
                 name: 'Space Soup',
                 ownerId: this.fry.attributes.clientId,
-                recipeCategoriesAttributes: [
-                  { category_id: categories.find(x => x.attributes.name === 'Italian').attributes.clientId },
+                taggingsAttributes: [
+                  { tag_id: tags.find(x => x.attributes.name === 'Italian').attributes.clientId },
                 ],
               },
             })
@@ -21,21 +21,21 @@ describe('Create Categories', function () {
       })
   })
 
-  it('allows creating categories on the fly', function () {
+  it('allows creating tags on the fly', function () {
     const recipeId = this.recipe.attributes.clientId
     cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
     cy.visit(`/recipes/${recipeId}/edit`)
-    // Add existing category
-    cy.getByLabel('Categories').type('Ame')
+    // Add existing tag
+    cy.getByLabel('Tags').type('Ame')
     cy.contains('American').should('exist')
-    cy.getByLabel('Categories').type('{enter}')
+    cy.getByLabel('Tags').type('{enter}')
 
-    // Add new category
-    cy.getByLabel('Categories').clear().type('Chinese')
-    cy.getDropdownItem('+ Create category Chinese').click()
+    // Add new tag
+    cy.getByLabel('Tags').clear().type('Chinese')
+    cy.getDropdownItem('+ Create tag Chinese').click()
 
-    // Can't add category if already exists
-    cy.getByLabel('Categories').clear().type('Chinese')
+    // Can't add tag if already exists
+    cy.getByLabel('Tags').clear().type('Chinese')
     cy.getTest('dropdown-item')
       .should('have.length', 1)
       .trim()

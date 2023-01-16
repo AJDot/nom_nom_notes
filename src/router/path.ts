@@ -122,8 +122,8 @@ class ApiPath extends Path {
     return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
   }
 
-  categories() {
-    return '/categories'
+  tags() {
+    return '/tags'
   }
 
   flipperBase() {
@@ -171,3 +171,4 @@ const appPath = new AppPath()
 const apiPath = new ApiPath()
 
 export { appPath as AppPath, apiPath as ApiPath }
+

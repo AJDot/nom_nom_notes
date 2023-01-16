@@ -31,7 +31,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
         id: response.data.data.id,
         ...response.data.data.attributes,
       })
-      await StoreUtils.processIncluded(Recipe, response.data.included)
+      await StoreUtils.processIncluded(Recipe, response.data.included, response.data.data.relationships)
       return response
     } catch (err) {
       throw err
@@ -45,7 +45,7 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await StoreUtils.processIncluded(Recipe, response.data.included)
+    await Promise.all(response.data.data.map(datum => StoreUtils.processIncluded(Recipe, response.data.included, datum.relationships)))
     return response
   },
   async [RecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {

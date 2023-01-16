@@ -10,7 +10,7 @@ export interface RecipesState {
 export interface DynamicRecipesState {
 }
 
-export interface CategoriesState {
+export interface TagsState {
 }
 
 export interface SessionsState {
@@ -41,7 +41,7 @@ export enum StoreModuleType {
   Loading = 'loading',
   Recipes = 'recipes',
   DynamicRecipes = 'dynamicRecipes',
-  Categories = 'categories',
+  Tags = 'tags',
   Ability = 'ability',
 }
 
@@ -52,7 +52,7 @@ export interface RootState {
   [StoreModuleType.Loading]: LoadingState
   [StoreModuleType.Recipes]: RecipesState
   [StoreModuleType.DynamicRecipes]: DynamicRecipesState
-  [StoreModuleType.Categories]: CategoriesState
+  [StoreModuleType.Tags]: TagsState
   [StoreModuleType.Users]: UsersState
   [StoreModuleType.Ability]: AbilityState
 }

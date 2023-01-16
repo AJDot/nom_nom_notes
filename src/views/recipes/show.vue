@@ -11,11 +11,11 @@
             </li>
           </ul>
           <ul class="text-xs mb-2">
-            <template v-for="(cat, i) in recipe.categories" :key="cat.clientId">
+            <template v-for="(tag, i) in recipe.tags" :key="tag.clientId">
               <li class="inline-block font-bold">
-                {{ cat.name }}
+                {{ tag.name }}
               </li>
-              <span v-if="i < recipe.categories.length - 1"> | </span>
+              <span v-if="i < recipe.tags.length - 1"> | </span>
             </template>
           </ul>
           <p v-if="recipe.description" class="whitespace-pre-line">
@@ -72,18 +72,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ImgHTMLAttributes } from "vue"
-import { StoreModulePath } from "~/store"
-import { RecipeActionTypes } from "~/store/modules/recipes/actions"
-import Recipe from "Models/recipe"
-import { FlashActionTypes } from "~/store/modules/flash"
-import { RouteName } from "~/router/routeName"
-import Step from "Models/step"
+import { ImageSource } from "Interfaces/imageInterfaces"
 import Sorter from "Models/concerns/sorter"
 import Ingredient from "Models/ingredient"
-import ImagePlaceholder from "/icons/image_placeholder.svg"
-import { ImageSource } from "Interfaces/imageInterfaces"
+import Recipe from "Models/recipe"
+import Step from "Models/step"
+import { defineComponent, ImgHTMLAttributes } from "vue"
 import SidePanel from "~/components/structure/side-panel.vue"
+import { RouteName } from "~/router/routeName"
+import { StoreModulePath } from "~/store"
+import { FlashActionTypes } from "~/store/modules/flash"
+import { RecipeActionTypes } from "~/store/modules/recipes/actions"
+import ImagePlaceholder from "/icons/image_placeholder.svg"
 
 interface ImageAttrs {
   src: ImageSource
@@ -105,11 +105,10 @@ export default defineComponent({
   },
   computed: {
     recipe(): Recipe | null {
-      const r = Recipe.query()
+      return Recipe.query()
         .whereId(this.$router.currentRoute.value.params.clientId)
-        .with("steps|ingredients|categories")
+        .with("steps|ingredients|tags")
         .first()
-      return r
     },
     sortedSteps(): Array<Step> {
       if (this.recipe) {

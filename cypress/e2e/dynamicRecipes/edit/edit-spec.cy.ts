@@ -26,7 +26,7 @@ describe('Edit Dynamic Recipe', () => {
           cy.contains('Sidebar button').trigger('mouseenter')
           cy.contains('edit').click()
           cy.contains('Choose Display Block').click()
-          cy.contains('Ingredients').closest('[data-test-block="column"]').click()
+          cy.contains('Ingredients').closest('[data-test-block="column"]').click(2, 2)
 
           cy.contains('Sidebar button').type('/image{enter}')
           cy.get('[data-test-block="image"]').trigger('mouseenter')

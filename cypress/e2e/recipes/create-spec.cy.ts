@@ -4,7 +4,7 @@ describe('Create Recipe', () => {
   })
 
   context('Not logged in', () => {
-    it('redirects to sign in first', function() {
+    it('redirects to sign in first', function () {
       cy.visit('/')
       cy.contains('New Recipe').click()
       cy.url().should('contain', '/sign_in')
@@ -21,7 +21,7 @@ describe('Create Recipe', () => {
       cy.forceSignIn()
     })
 
-    it('allows creating a recipe with minimal data', function() {
+    it('allows creating a recipe with minimal data', function () {
       cy.intercept('POST', '/api/v1/recipes').as('createRecipe')
       cy.visit('/recipes/new')
 
@@ -32,7 +32,7 @@ describe('Create Recipe', () => {
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
           cy.wrap(data).its('response.body.data')
-            .then(function(recipe) {
+            .then(function (recipe) {
               cy.url().should('contain', `/recipes/${recipe.attributes.clientId}`)
             })
         })
@@ -56,20 +56,20 @@ describe('Create Recipe', () => {
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
           cy.wrap(data).its('response.body.data').as('thing')
-            .then(function(recipe) {
+            .then(function (recipe) {
               cy.url().should('contain', `/recipes/${recipe.attributes.clientId}`)
             })
         })
     })
 
     it('allows recipe creation with all data', () => {
-      cy.apiRequest('POST', '/testing/api/v1/categories', {
-        categories: [
+      cy.apiRequest('POST', '/testing/api/v1/tags', {
+        tags: [
           { name: 'Italian' },
           { name: 'American' },
           { name: 'Chinese' },
         ],
-      }).its('body').as('categories')
+      }).its('body').as('tags')
 
       cy.intercept('POST', '/api/v1/recipes').as('createRecipe')
       cy.visit('/recipes/new')
@@ -83,10 +83,10 @@ describe('Create Recipe', () => {
       cy.contains('Add Ingredient').click()
       cy.getTest('ingredient-1').find('input').type('2 tsp banana pudding')
 
-      // Add categories
-      cy.contains('label', 'Categories').type('It')
+      // Add tags
+      cy.contains('label', 'Tags').type('It')
       cy.getDropdownItem('Italian').click()
-      cy.getByLabel('Categories').clear().type('Ch')
+      cy.getByLabel('Tags').clear().type('Ch')
       cy.getDropdownItem('Chinese').click()
 
       // Create steps
@@ -136,7 +136,7 @@ describe('Create Recipe', () => {
         .then((data) => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
           cy.wrap(data).its('response.body.data')
-            .then(function(recipe) {
+            .then(function (recipe) {
               cy.url().should('contain', `/recipes/${recipe.attributes.clientId}`)
               checkData()
             })
