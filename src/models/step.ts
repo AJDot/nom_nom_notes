@@ -12,7 +12,8 @@ type StepFields = AModelFields & {
 }
 
 export default class Step extends AModel implements RStep {
-  static entity = 'steps'
+  static entity = 'Step'
+  static modelName = 'Step'
 
   static fields(): StepFields {
     return {

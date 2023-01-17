@@ -10,9 +10,12 @@ import { AppPath } from '~/router/path'
 import { RouteName } from '~/router/routeName'
 import { store, StoreModulePath } from '~/store'
 import { StoreModuleType } from '~/store/interfaces'
+import { AbilityActionTypes } from '~/store/modules/ability/actions'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
 import { UserActionTypes } from '~/store/modules/users/actions'
+import { BrowserUtils } from '~/utils/browserUtils'
 import EditDynamicRecipe from '~/views/dynamicRecipes/edit.vue'
 import EditDynamicRecipeHeader from '~/views/dynamicRecipes/editHeader.vue'
 import ListDynamicRecipe from '~/views/dynamicRecipes/list.vue'
@@ -27,8 +30,6 @@ import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
-import { AbilityActionTypes } from './../store/modules/ability/actions'
-import { RecipeActionTypes } from './../store/modules/recipes/actions'
 
 const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.Home,
@@ -116,6 +117,18 @@ const checkAbilityFactory: <T extends AppAbilityTuple[1]>(action: AppAbilityTupl
   }
 }
 
+const checkNotMobile: NavigationGuard = async (to, from) => {
+  if (BrowserUtils.isMobile()) {
+    await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+      flash: { alert: 'Action not supported on mobile device.' },
+      hold: true,
+    })
+    return from
+  } else {
+    return true
+  }
+}
+
 const routes: (RouteRecordRaw & { name: RouteName })[] = [
   {
     name: RouteName.Home,
@@ -177,6 +190,7 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
     props: {
       default: { view: 'edit' },
     },
+    beforeEnter: checkNotMobile,
   },
   {
     name: RouteName.DynamicRecipe,
@@ -199,13 +213,16 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
     props: {
       default: { view: 'edit' },
     },
-    beforeEnter: checkAbilityFactory('update', getDynamicRecipe, async (_record, to, _from) => {
-      await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-        flash: { alert: 'Unable to edit dynamic recipe. Action is forbidden.' },
-        hold: true,
-      })
-      return { name: RouteName.DynamicRecipe, params: { clientId: to.params.clientId } }
-    }),
+    beforeEnter: [
+      checkAbilityFactory('update', getDynamicRecipe, async (_record, to, _from) => {
+        await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: 'Unable to edit dynamic recipe. Action is forbidden.' },
+          hold: true,
+        })
+        return { name: RouteName.DynamicRecipe, params: { clientId: to.params.clientId } }
+      }),
+      checkNotMobile,
+    ],
   },
   {
     name: RouteName.SignIn,

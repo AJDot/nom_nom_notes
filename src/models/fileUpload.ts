@@ -12,7 +12,8 @@ type FileUploadFields = AModelFields & {
 }
 
 export default class FileUpload extends AModel implements RFileUpload {
-  static entity = 'fileUploads'
+  static entity = 'FileUpload'
+  static modelName = 'FileUpload'
 
   static fields(): FileUploadFields {
     return {

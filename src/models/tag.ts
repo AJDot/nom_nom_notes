@@ -17,7 +17,8 @@ type TagFields = AModelFields & {
 }
 
 export default class Tag extends AModel implements RTag {
-  static entity = 'tags'
+  static entity = 'Tag'
+  static modelName = 'Tag'
 
   static fields(): TagFields {
     return {

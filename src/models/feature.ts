@@ -26,7 +26,8 @@ type FeatureFields = AModelFields & {
 type FeatureKey = 'signup'
 
 export default class Feature extends AModel implements RFeature {
-  static entity = 'features'
+  static entity = 'Feature'
+  static modelName = 'Feature'
   static primaryKey = 'key'
 
   static fields(): FeatureFields {

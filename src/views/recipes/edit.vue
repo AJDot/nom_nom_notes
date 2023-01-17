@@ -54,7 +54,7 @@
       <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
         <dt class="text-lg border-b border-gray-400"><label for="tags">Tags</label></dt>
         <dd>
-          <search id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" />
+          <search id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" class="mt-1" />
           <ul class="grid grid-cols-1">
             <li v-for="tag in unmarkedTags" :key="tag.clientId" :data-test="`tag-${tag.name}`" class="flex p-1">
               <span class="grow inline-block my-auto">
@@ -400,7 +400,7 @@ export default defineComponent({
           data: {
             tagId: tag.clientId,
             taggableId: this.recipe.clientId,
-            taggableType: this.recipe.selfClass.name,
+            taggableType: this.recipe.selfClass.modelName,
           },
         })
         const tagging = Tagging.find(taggingId)
