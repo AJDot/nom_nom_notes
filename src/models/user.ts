@@ -19,7 +19,8 @@ type UserFields = AModelFields & {
 }
 
 export default class User extends AModel implements RUser {
-  static entity = 'users'
+  static entity = 'User'
+  static modelName = 'User'
 
   static fields(): UserFields {
     return {

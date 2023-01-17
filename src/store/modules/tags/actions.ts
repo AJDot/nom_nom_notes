@@ -19,14 +19,16 @@ type TagActions = {
 
 const actions: ActionTree<TagsState, RootState> & TagActions = {
   async [TagActionTypes.FETCH_ALL]({ commit }: ActionContext<TagsState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<TagAttributes, Array<ServerRecordData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.tags())
+    const response: AxiosResponse<ServerRecordResponse<TagAttributes, Array<ServerRecordData<TagAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.tags())
     commit(
       TagMutationTypes.SET,
       response.data.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await StoreUtils.processIncluded(Tag, response.data.included)
+    await Promise.all(response.data.data.map(datum => {
+      return StoreUtils.processIncluded(Tag.find(datum.attributes.clientId!)!, response.data.included)
+    }))
     return response
   },
   async [TagActionTypes.CREATE](_store: ActionContext<TagsState, RootState>, tag: Tag): Promise<AxiosResponse<ServerRecordResponse<TagAttributes>>> {
@@ -34,7 +36,7 @@ const actions: ActionTree<TagsState, RootState> & TagActions = {
       tag: tag.$toJson(),
     })
     tag.id = response.data.data.id
-    await tag.$update({ data: { id: tag.id, ...response.data.data.attributes } })
+    await tag.$insertOrUpdate({ data: { id: tag.id, ...response.data.data.attributes } })
     return response
   },
 }

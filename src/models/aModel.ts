@@ -14,6 +14,7 @@ export default abstract class AModel extends Model implements AModelAttributes, 
   clientId!: string
   _destroy!: boolean
 
+  static modelName: string
   static primaryKey: string | string[] = 'clientId'
 
   static fields(): AModelFields {

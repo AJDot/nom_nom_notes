@@ -4,9 +4,9 @@ import { CookTime, Description, HasMany, HasOne, HasUploader, Nameable, Notable 
 import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 import Ingredient from 'Models/ingredient'
 import Step from 'Models/step'
+import Tag from 'Models/tag'
 import Tagging from 'Models/tagging'
 import User from 'Models/user'
-import Tag from '~/models/tag'
 
 export type RecipeAttributes = AModelAttributes & Nameable & Description & CookTime & Notable &
   HasMany<'steps', Step> &
@@ -15,6 +15,7 @@ export type RecipeAttributes = AModelAttributes & Nameable & Description & CookT
   HasMany<'tags', Tag> &
   HasUploader<'image'> &
   HasOne<'owner', User>
+
 export interface RRecipe extends RecipeAttributes {
 }
 
@@ -23,7 +24,8 @@ type RecipeFields = AModelFields & {
 }
 
 export default class Recipe extends AModel implements RRecipe {
-  static entity = 'recipes'
+  static entity = 'Recipe'
+  static modelName = 'Recipe'
 
   static fields(): RecipeFields {
     return {
@@ -37,7 +39,7 @@ export default class Recipe extends AModel implements RRecipe {
       taggings: this.morphMany(Tagging, 'taggableId', 'taggableType'),
       tags: this.belongsToMany(Tag, Tagging, 'taggableId', 'tagId'),
       image: this.attr({}),
-      ownerId: this.string(null),
+      ownerId: this.string(''),
       owner: this.belongsTo(User, 'ownerId', 'clientId')
     }
   }

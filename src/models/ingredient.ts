@@ -12,7 +12,8 @@ type IngredientFields = AModelFields & {
 }
 
 export default class Ingredient extends AModel implements RIngredient {
-  static entity = 'ingredients'
+  static entity = 'Ingredient'
+  static modelName = 'Ingredient'
 
   static fields(): IngredientFields {
     return {

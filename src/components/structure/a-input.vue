@@ -1,5 +1,5 @@
 <template>
-  <input v-if="editable" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :class="classes">
+  <input v-if="editable" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :class="classes" :disabled="disabled">
   <div v-else :class="classes">{{ modelValue }}</div>
 </template>
 
@@ -20,6 +20,10 @@ export default defineComponent({
     editable: {
       type: Boolean,
       default: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: {

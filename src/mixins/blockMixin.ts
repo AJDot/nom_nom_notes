@@ -76,7 +76,7 @@ export default function <B extends Block>() {
           SelectionUtils.moveCaret(element, position)
       },
       onClick(event: PointerEvent) {
-        if (!this.isEditable) return
+        if (!this.isEditable && !this.isChooseMode) return
 
         this.director.onClick({ block: this.block as B, event })
       },

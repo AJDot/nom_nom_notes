@@ -1,10 +1,26 @@
 <template>
   <form v-if="dynamicRecipe" class="mx-3" @submit.prevent>
     <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
-      <dl class="mt-2 mb-4 sm:col-span-2">
+      <dl class="mt-2 mb-4 sm:col-span-1">
         <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
         <dd>
           <a-input id="name" v-model="dynamicRecipeName" :editable="isEditable" type="text" name="name" placeholder="My Super Awesome Recipe" />
+        </dd>
+      </dl>
+      <dl class="mt-2 mb-4 sm:col-span-1">
+        <dt class="text-lg border-b border-gray-400 mb-2"><label for="tags">Tags</label></dt>
+        <dd>
+          <search v-if="!isShowMode" id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" :disabled="!isEditMode" />
+          <ul :class="isShowMode ? 'flex flex-wrap gap-x-2' : ''">
+            <li v-for="tag in unmarkedTags" :key="tag.clientId" :data-test="`tag-${tag.name}`" class="mt-2" :class="isShowMode ? 'inline-block' : 'flex'">
+              <span class="grow my-auto">
+                {{ tag.name }}
+              </span>
+              <button v-if="isEditMode" type="button" class="btn" data-test="tag-destroy" @click="destroyTagging(tag)">
+                <i class="material-icons align-middle">delete</i>
+              </button>
+            </li>
+          </ul>
         </dd>
       </dl>
       <div class="sm:col-span-2">
@@ -35,18 +51,22 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash'
+import Search from '@/structure/search.vue'
 import { AxiosError, AxiosResponse } from 'axios'
+import { debounce } from 'lodash'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
+import { Command } from '~/enums/command'
 import { UBlockDirector } from '~/interfaces/blockInterfaces'
 import { AllBlock, Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
 import { FileUpload as IFileUpload } from '~/interfaces/fileUploadInterfaces'
 import { Uploader as IUploader } from '~/interfaces/imageInterfaces'
-import { SearchResult, USearcher } from '~/interfaces/searchInterfaces'
+import { SearchOptions, SearchResult, USearcher } from '~/interfaces/searchInterfaces'
 import { USelector } from '~/interfaces/selectInterfaces'
 import { default as DynamicRecipe, default as dynamicRecipe } from '~/models/dynamicRecipe'
 import FileUpload, { FileUploadAttributes } from '~/models/fileUpload'
+import Tag, { RTag } from '~/models/tag'
+import Tagging from '~/models/tagging'
 import router from '~/router'
 import { ApiPath } from '~/router/path'
 import { stateKey, StoreModulePath } from '~/store'
@@ -55,10 +75,12 @@ import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions
 import { FlashActionTypes } from '~/store/modules/flash'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { TagActionTypes } from '~/store/modules/tags/actions'
 import Uploader from '~/uploaders/uploader'
 import { default as blockDirector, default as BlockDirector } from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import Logger from '~/utils/logger'
 import { ObjectUtils } from '~/utils/objectUtils'
 import Searcher from '~/utils/searcher'
 import Selector from '~/utils/selector'
@@ -77,6 +99,9 @@ interface Data {
 
 export default defineComponent({
   name: 'DynamicRecipeEdit',
+  components: {
+    Search,
+  },
   props: {
     view: {
       type: String,
@@ -169,10 +194,51 @@ export default defineComponent({
         this.dynamicRecipe.name = value
         this.save()
       }
-    }
+    },
+    unmarkedTags(): Array<Tag> {
+      return this.dynamicRecipe?.tags.filter(tag => {
+        const tagging = this.dynamicRecipe?.taggings.find(tagging => tagging.tagId === tag.$id)
+        return !tagging?.markedForDestruction
+      }) || []
+    },
+    tagSearcher(): Searcher<Tag> {
+      const options: SearchOptions<Tag> = {
+        type: 'result',
+        label: 'name',
+        valueString: 'clientId',
+        endpoint: ApiPath.base() + ApiPath.tags(),
+      }
+      if (this.dynamicRecipe) {
+        options.query = {
+          not: {
+            client_id: this.dynamicRecipe.tags.map(tag => tag.clientId),
+          },
+        }
+      }
+      return new Searcher(options)
+    },
+    createTagSearcher(): Searcher<{ command: Command, name: string }> {
+      return new Searcher<{ command: Command, name: string }>({
+        type: 'command',
+        label: (item, { q }) => `${item.name} ${q}`,
+        valueString: (_item, { q }) => {
+          const tagExists = Tag.query().where((tag: Tag) => {
+            return tag.name.toLocaleLowerCase() === q.toLocaleLowerCase().trim()
+          }).exists()
+          // ? never match : always match
+          return tagExists ? '' : q
+        },
+        collection: [{ command: Command.CreateTag, name: '+ Create tag' }],
+      })
+    },
   },
   methods: {
     ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
+    getDynamicRecipe(): DynamicRecipe {
+      const clientId = router.currentRoute.value.params.clientId
+      this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
+      return this.dynamicRecipe
+    },
     onClick({ block, event, call }: { block: Block, event: PointerEvent, call: Function }) {
       if (this.currentChoice) {
         this.blockDirector.onChoose({ block, event, choice: this.currentChoice })
@@ -459,17 +525,74 @@ export default defineComponent({
         })
       }
     },
-    save: debounce(function (this) {
+    save: debounce(async function (this) {
       let action: string
       if (this.isCreateMode) {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.CREATE
       } else {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.UPDATE
       }
+      await Promise.all(Tag.query().where('id', null).get().map(tag => {
+        return this.$store.dispatch(StoreModulePath.Tags + TagActionTypes.CREATE, tag)
+      }))
       this.$store.dispatch(action, this.dynamicRecipe)
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
-    }, 500)
+    }, 500),
+    async addTag(item: { data: SearchResult<RTag, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
+      if (!this.dynamicRecipe) return
+      let tag
+      if (item.data.type === 'command') {
+        if (item.data.raw.command) {
+          tag = (await Tag.insertOrUpdate({ data: { name: item.data.value.trim() } })).Tag[0]
+        }
+      } else {
+        await Tag.insertOrUpdate({ data: item.data.raw })
+        tag = Tag.find(item.data.value)
+      }
+
+      if (tag) {
+        if (!this.dynamicRecipe.tags.find(c => c.clientId === tag.clientId)) {
+          this.dynamicRecipe.tags.push(tag)
+        }
+
+        const taggingId = [tag.clientId, this.dynamicRecipe.clientId]
+
+        await Tagging.insertOrUpdate({
+          data: {
+            tagId: tag.clientId,
+            taggableId: this.dynamicRecipe.clientId,
+            taggableType: this.dynamicRecipe.selfClass.modelName,
+          },
+        })
+        const tagging = Tagging.find(taggingId)
+        if (tagging) {
+          const dynamicRecipeTagging = this.dynamicRecipe.taggings.find(x => x.$id === tagging.$id)
+          if (dynamicRecipeTagging) {
+            dynamicRecipeTagging.unmarkForDestruction()
+          } else {
+            this.dynamicRecipe.taggings.push(tagging)
+          }
+        }
+      }
+      this.save()
+    },
+    destroyTagging(item: Tag) {
+      if (this.dynamicRecipe) {
+        const tagging = this.dynamicRecipe.taggings.find(tagging => tagging.tagId === item.$id)
+        const tag = this.dynamicRecipe.tags.find(tag => tag.$id === item.$id)
+        if (tag) {
+          const tagIndex = this.dynamicRecipe.tags.indexOf(tag)
+          this.dynamicRecipe.tags.splice(tagIndex, 1)
+        }
+        if (tagging) {
+          tagging.markForDestruction()
+        } else {
+          Logger.warn('Tagging not found!')
+        }
+      }
+      this.save()
+    },
   },
   async beforeMount() {
     const clientId = router.currentRoute.value.params.clientId
@@ -480,7 +603,7 @@ export default defineComponent({
           StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
           clientId,
         )
-        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments').first()!
+        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
         if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
       } catch (e) {
         await this.$router.push({
