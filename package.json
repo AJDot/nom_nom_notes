@@ -1,7 +1,7 @@
 {
   "name": "nom_nom_notes",
   "description": "SPA website for Nom Nom Notes api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "alex.henegar19@gmail.com",
   "license": "MIT",
   "private": true,
