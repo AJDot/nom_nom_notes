@@ -2,7 +2,7 @@
   <div class="relative">
     <dropdown :state="dropdownState" @close="hideResults">
       <template #control>
-        <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent="select(currentResult)" placeholder="Search..." class="mt-1" @keydown.prevent.down="down" @keydown.prevent.up="up" @blur="(makeCurrent(null))" />
+        <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent="select(currentResult)" placeholder="Search..." :disabled="disabled" @keydown.prevent.down="down" @keydown.prevent.up="up" @blur="(makeCurrent(null))" />
       </template>
       <ul>
         <template v-if="hasResults">
@@ -49,6 +49,10 @@ export default defineComponent({
     id: {
       type: String,
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: {

@@ -6,7 +6,7 @@
       </button>
       <template v-if="showFilters">
         <h2>
-          <label for="filter-tag" class="lone">
+          <label for="filter-tag">
             Filter by Tag
           </label>
         </h2>
@@ -91,7 +91,7 @@ export default defineComponent({
     recipesForList(): Array<Recipe> {
       return this.sortedRecipes.filter(r => {
         const tagName = this.recipeFilters.tagName
-        return !tagName || r.tags.some(c => c.name === tagName)
+        return !tagName || r.tags.some(tag => tag.name === tagName)
       })
     },
     tagFilterSearcher(): Searcher<Tag> {
