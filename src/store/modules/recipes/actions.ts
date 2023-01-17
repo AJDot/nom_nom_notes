@@ -31,21 +31,24 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
         id: response.data.data.id,
         ...response.data.data.attributes,
       })
-      await StoreUtils.processIncluded(Recipe, response.data.included, response.data.data.relationships)
+      const recipe = Recipe.find(response.data.data.attributes.clientId!)!
+      await StoreUtils.processIncluded(recipe, response.data.included, response.data.data.relationships)
       return response
     } catch (err) {
       throw err
     }
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes, Array<ServerRecordData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipes())
+    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes, Array<ServerRecordData<RecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipes())
     commit(
       RecipeMutationTypes.SET,
       response.data.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await Promise.all(response.data.data.map(datum => StoreUtils.processIncluded(Recipe, response.data.included, datum.relationships)))
+    await Promise.all(response.data.data.map(datum => {
+      return StoreUtils.processIncluded(Recipe.find(datum.attributes.clientId!)!, response.data.included, datum.relationships)
+    }))
     return response
   },
   async [RecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {

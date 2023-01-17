@@ -1,10 +1,8 @@
-import { RouterExtension } from '~/router/routerExtension'
-import { ModalStore } from '~/plugins/store/modals'
 import { Flipper } from '~/plugins/flipper'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ComponentCustomProperties } from '@vue/runtime-core'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Vue from 'vue'
+import { ModalStore } from '~/plugins/store/modals'
+import { RouterExtension } from '~/router/routerExtension'
+import '@vue/runtime-core'
+
 declare module '@vue/runtime-core' {
   export interface ComponentCustomProperties {
     $routerExtension: RouterExtension

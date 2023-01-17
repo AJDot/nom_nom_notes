@@ -3,6 +3,7 @@ import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfa
 import DynamicRecipe, { DynamicRecipeAttributes } from 'Models/dynamicRecipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
+import Tagging from '~/models/tagging'
 import { ApiPath } from '~/router/path'
 import { DynamicRecipesState, RootState } from '~/store/interfaces'
 import { DynamicRecipeMutationTypes } from '~/store/modules/dynamicRecipes/mutations'
@@ -31,21 +32,24 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
         id: response.data.data.id,
         ...response.data.data.attributes,
       })
-      await StoreUtils.processIncluded(DynamicRecipe, response.data.included, response.data.data.relationships)
+      const dynamicRecipe = DynamicRecipe.find(response.data.data.attributes.clientId!)!
+      await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
       return response
     } catch (err) {
       throw err
     }
   },
   async [DynamicRecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<DynamicRecipesState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData<DynamicRecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
     commit(
       DynamicRecipeMutationTypes.SET,
       response.data.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await Promise.all(response.data.data.map(datum => StoreUtils.processIncluded(DynamicRecipe, response.data.included, datum.relationships)))
+    await Promise.all(response.data.data.map(datum => {
+      return StoreUtils.processIncluded(DynamicRecipe.find(datum.attributes.clientId!)!, response.data.included, datum.relationships)
+    }))
     return response
   },
   async [DynamicRecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<DynamicRecipesState, RootState>, id: string): Promise<DynamicRecipe | null> {
@@ -72,6 +76,7 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
 
     if (!response.data.error) {
       await dynamicRecipe.save()
+      await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
     }
     return response
   },

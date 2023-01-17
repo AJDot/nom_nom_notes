@@ -23,7 +23,7 @@ type RecipeFields = AModelFields & {
 }
 
 export default class Recipe extends AModel implements RRecipe {
-  static entity = 'recipes'
+  static entity = 'Recipe'
 
   static fields(): RecipeFields {
     return {
@@ -37,7 +37,7 @@ export default class Recipe extends AModel implements RRecipe {
       taggings: this.morphMany(Tagging, 'taggableId', 'taggableType'),
       tags: this.belongsToMany(Tag, Tagging, 'taggableId', 'tagId'),
       image: this.attr({}),
-      ownerId: this.string(null),
+      ownerId: this.string(''),
       owner: this.belongsTo(User, 'ownerId', 'clientId')
     }
   }

@@ -29,16 +29,4 @@ export default class Tagging extends AModel implements RTagging {
   tagId!: string
   taggableId!: string
   taggableType!: string
-
-  static beforeCreate(tagging) {
-    if (tagging.taggableType === 'Recipe') {
-      tagging.taggableType = 'recipes'
-    }
-  }
-
-  $toJson(): Record<string, unknown> {
-    const json = super.$toJson()
-    if (json.taggableType === 'recipes') json.taggableType = 'Recipe'
-    return json
-  }
 }
