@@ -5,11 +5,20 @@
     "strict": true,
     "baseUrl": "../node_modules",
     "target": "es5",
-    "lib": ["es5", "dom", "es2018"],
-    "types": ["cypress", "node"]
+    "lib": [
+      "es5",
+      "dom",
+      "es2018"
+    ],
+    "types": [
+      "cypress",
+      "node"
+    ]
   },
   "include": [
     "../**/*.ts"
   ],
-  "files": ["support/index.d.ts"]
+  "files": [
+    "support/index.d.ts"
+  ]
 }

@@ -12,9 +12,8 @@ export enum UserMutationTypes {
 type UserMutations = { [key in UserMutationTypes]: Mutation<UsersState> }
 
 const mutations: MutationTree<UsersState> & UserMutations = {
-  async [UserMutationTypes.SET_CURRENT](state, user: RRecord) {
-    const response: Record<string, Collection<User>> = await User.insertOrUpdate<typeof User>({ data: user }) as Record<string, Collection<User>>
-    state.current = response[User.entity][0]
+  async [UserMutationTypes.SET_CURRENT](state, user: User) {
+    state.current = user
   },
   async [UserMutationTypes.UNSET_CURRENT](state) {
     state.current = null

@@ -1,7 +1,7 @@
 {
   "name": "nom_nom_notes",
   "description": "SPA website for Nom Nom Notes api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "alex.henegar19@gmail.com",
   "license": "MIT",
   "private": true,
@@ -22,10 +22,13 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
+    "@casl/ability": "^6.3.3",
+    "@casl/vue": "^2.2.1",
     "@vuex-orm/core": "^0.36.3",
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "jquery": "^3.5.1",
+    "lodash": "^4.17.21",
     "qs": "^6.9.4",
     "vue": "3.2.30",
     "vue-axios": "^3.2.0",

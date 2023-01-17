@@ -1,8 +1,14 @@
 import { DirectiveBinding, VNode } from '@vue/runtime-core'
 
-function toggleStateFactory(state: Record<string, boolean>, key: PropertyKey | null) {
+function toggleStateFactory<K = PropertyKey | null>(state: Record<string, boolean> | ((key: K) => void), key: K) {
   return (ev) => {
-    if (key) state[key.toString()] = !state[key.toString()]
+    if (key) {
+      if (typeof state === 'function') {
+        state(key)
+      } else {
+        state[key.toString()] = !state[key.toString()]
+      }
+    }
   }
 }
 

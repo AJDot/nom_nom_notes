@@ -1,5 +1,5 @@
 <template>
-  <modal state transparent center>
+  <modal state transparent center class="z-20">
     <ellipsis />
   </modal>
 </template>

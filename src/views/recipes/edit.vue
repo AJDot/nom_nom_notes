@@ -52,15 +52,15 @@
         </dd>
       </dl>
       <dl class="col-span-2 mt-2 mb-4 sm:col-span-1">
-        <dt class="text-lg border-b border-gray-400"><label for="categories">Categories</label></dt>
+        <dt class="text-lg border-b border-gray-400"><label for="tags">Tags</label></dt>
         <dd>
-          <search id="categories" :searchers="[categorySearcher, createCategorySearcher]" @select="addCategory" />
+          <search id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" class="mt-1" />
           <ul class="grid grid-cols-1">
-            <li v-for="cat in unmarkedCategories" :key="cat.clientId" :data-test="`category-${cat.name}`" class="flex p-1">
+            <li v-for="tag in unmarkedTags" :key="tag.clientId" :data-test="`tag-${tag.name}`" class="flex p-1">
               <span class="grow inline-block my-auto">
-                {{ cat.name }}
+                {{ tag.name }}
               </span>
-              <button type="button" class="btn" data-test="category-destroy" @click="destroyRecipeCategory(cat)">
+              <button type="button" class="btn" data-test="tag-destroy" @click="destroyTagging(tag)">
                 <i class="material-icons align-middle">delete</i>
               </button>
             </li>
@@ -86,35 +86,35 @@
 </template>
 
 <script lang="ts">
+import Search from '@/structure/search.vue'
+import { AxiosError, AxiosResponse } from 'axios'
+import { ImageSource } from 'Interfaces/imageInterfaces'
+import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
+import Ingredient from 'Models/ingredient'
+import Recipe from 'Models/recipe'
+import Step from 'Models/step'
+import Tagging from 'Models/tagging'
+import IngredientsList from 'Views/ingredients/list.vue'
+import StepsList from 'Views/steps/list.vue'
 import { defineComponent, ImgHTMLAttributes } from 'vue'
 import { useStore } from 'vuex'
-import { stateKey, StoreModulePath } from '~/store'
-import router from '~/router'
-import { RootState } from '~/store/interfaces'
-import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import Recipe from 'Models/recipe'
-import { FlashActionTypes } from '~/store/modules/flash'
-import { AxiosError, AxiosResponse } from 'axios'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
-import { HttpStatusCode } from '~/utils/httpUtils'
-import { DurationFilter } from '~/plugins/filters/durationFilter'
-import Step from 'Models/step'
-import Ingredient from 'Models/ingredient'
-import IngredientsList from 'Views/ingredients/list.vue'
-import Category, { RCategory } from 'Models/category'
-import { CategoryActionTypes } from '~/store/modules/categories/actions'
-import Search from '@/structure/search.vue'
-import Searcher from '~/utils/searcher'
-import { ApiPath } from '~/router/path'
-import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
-import RecipeCategory from 'Models/recipeCategory'
-import Logger from '~/utils/logger'
-import Uploader from '~/uploaders/uploader'
-import ImagePlaceholder from '/icons/image_placeholder.svg'
-import { ImageSource } from 'Interfaces/imageInterfaces'
-import loading from '~/mixins/loading'
-import StepsList from 'Views/steps/list.vue'
 import { Command } from '~/enums/command'
+import loading from '~/mixins/loading'
+import Tag, { RTag } from "~/models/tag"
+import { DurationFilter } from '~/plugins/filters/durationFilter'
+import router from '~/router'
+import { ApiPath } from '~/router/path'
+import { stateKey, StoreModulePath } from '~/store'
+import { RootState } from '~/store/interfaces'
+import { FlashActionTypes } from '~/store/modules/flash'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { TagActionTypes } from "~/store/modules/tags/actions"
+import Uploader from '~/uploaders/uploader'
+import { HttpStatusCode } from '~/utils/httpUtils'
+import Logger from '~/utils/logger'
+import Searcher from '~/utils/searcher'
+import ImagePlaceholder from '/icons/image_placeholder.svg'
 
 interface Data {
   recipe: Recipe | null
@@ -166,10 +166,10 @@ export default defineComponent({
       return (this.recipe?.ingredients.filter(s => !s.markedForDestruction) ?? [])
         .sort((a, b) => a.sortOrder - b.sortOrder)
     },
-    unmarkedCategories(): Array<Category> {
-      return this.recipe?.categories.filter(c => {
-        const rc = this.recipe?.recipeCategories.find(rc => rc.categoryId === c.$id)
-        return !rc?.markedForDestruction
+    unmarkedTags(): Array<Tag> {
+      return this.recipe?.tags.filter(tag => {
+        const tagging = this.recipe?.taggings.find(tagging => tagging.tagId === tag.$id)
+        return !tagging?.markedForDestruction
       }) || []
     },
     headerText(): string {
@@ -186,37 +186,34 @@ export default defineComponent({
         return 'Update Recipe'
       }
     },
-    categorySearcher(): Searcher<Category, string> {
-      const options: SearchOptions<Category, string> = {
+    tagSearcher(): Searcher<Tag> {
+      const options: SearchOptions<Tag> = {
         type: 'result',
         label: 'name',
-        value: 'clientId',
         valueString: 'clientId',
-        collection: Category.all(),
-        endpoint: ApiPath.base() + ApiPath.categories(),
+        endpoint: ApiPath.base() + ApiPath.tags(),
       }
       if (this.recipe) {
         options.query = {
           not: {
-            client_id: this.recipe.categories.map(c => c.clientId),
+            client_id: this.recipe.tags.map(c => c.clientId),
           },
         }
       }
       return new Searcher(options)
     },
-    createCategorySearcher(): Searcher<{ command: Command, name: string }, string> {
-      return new Searcher<{ command: Command, name: string }, string>({
+    createTagSearcher(): Searcher<{ command: Command, name: string }> {
+      return new Searcher<{ command: Command, name: string }>({
         type: 'command',
         label: (item, { q }) => `${item.name} ${q}`,
-        value: item => item.name.trim(),
         valueString: (_item, { q }) => {
-          const categoryExists = Category.query().where((category: Category) => {
-            return category.name.toLocaleLowerCase() === q.toLocaleLowerCase().trim()
+          const tagExists = Tag.query().where((tag: Tag) => {
+            return tag.name.toLocaleLowerCase() === q.toLocaleLowerCase().trim()
           }).exists()
           // ? never match : always match
-          return categoryExists ? '' : q
+          return tagExists ? '' : q
         },
-        collection: [{ command: Command.CreateCategory, name: '+ Create category' }],
+        collection: [{ command: Command.CreateTag, name: '+ Create tag' }],
       })
     },
     imageAttrs(): ImgHTMLAttributes {
@@ -253,7 +250,7 @@ export default defineComponent({
   async beforeMount() {
     const store = useStore<RootState>(stateKey)
     if (this.mode === 'create') {
-      this.recipe = new Recipe()
+      this.recipe = new Recipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
     } else {
       const clientId = router.currentRoute.value.params.clientId
       try {
@@ -261,20 +258,20 @@ export default defineComponent({
           StoreModulePath.Recipes + RecipeActionTypes.FIND_OR_FETCH,
           clientId,
         )
-        this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|categories|recipeCategories').first()
+        this.recipe = Recipe.query().whereId(clientId).with('steps|ingredients|tags|taggings').first()
         if (this.recipe) {
           this.cookTime = new DurationFilter().secondsToHash(this.recipe.cookTime, 'hours', 'minutes')
         }
       } catch {
         await this.$router.push({
-          name: this.$routerExtension.names.Home,
+          name: this.$routerExtension.names.Recipes,
         })
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: 'Recipe not found.' },
         })
       }
     }
-    await store.dispatch(StoreModulePath.Categories + CategoryActionTypes.FETCH_ALL)
+    await store.dispatch(StoreModulePath.Tags + TagActionTypes.FETCH_ALL)
   },
   methods: {
     async save() {
@@ -286,8 +283,8 @@ export default defineComponent({
         action = StoreModulePath.Recipes + RecipeActionTypes.UPDATE
       }
       this.loading(async () => {
-        await Promise.all(Category.query().where('id', null).get().map(category => {
-          return this.$store.dispatch(StoreModulePath.Categories + CategoryActionTypes.CREATE, category)
+        await Promise.all(Tag.query().where('id', null).get().map(tag => {
+          return this.$store.dispatch(StoreModulePath.Tags + TagActionTypes.CREATE, tag)
         }))
         await this.$store.dispatch(action, this.recipe)
           .then((response) => this.updateSuccessful(response))
@@ -330,8 +327,11 @@ export default defineComponent({
       const opts: { signOut: boolean | null } = { signOut: null }
       if (this.mode === 'create') {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
+            break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to create this recipe.'
             break
           case (HttpStatusCode.NotFound):
             errorText = errorText ?? 'An unknown error occurred. Please contact the app admin.'
@@ -341,8 +341,11 @@ export default defineComponent({
         }
       } else {
         switch (error.response?.status) {
-          case (HttpStatusCode.Forbidden):
+          case (HttpStatusCode.Unauthorized):
             opts.signOut = true
+            break
+          case (HttpStatusCode.Forbidden):
+            errorText = errorText ?? 'You are not authorized to update this recipe.'
             break
           default:
             opts.signOut = false
@@ -375,53 +378,59 @@ export default defineComponent({
       this.focusId = ingredient.clientId
       this.recipe.ingredients.push(ingredient)
     },
-    async addCategory(item: { data: SearchResult<RCategory, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
+    async addTag(item: { data: SearchResult<RTag, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
       if (!this.recipe) return
-      let cat
+      let tag
       if (item.data.type === 'command') {
-        if (item.data.raw.command)
-        cat = (await Category.insertOrUpdate({ data: { name: item.data.value.trim() } })).categories[0]
+        if (item.data.raw.command) {
+          tag = (await Tag.insertOrUpdate({ data: { name: item.data.value.trim() } })).Tag[0]
+        }
       } else {
-        await Category.insertOrUpdate({ data: item.data.raw })
-        cat = Category.find(item.data.value)
+        await Tag.insertOrUpdate({ data: item.data.raw })
+        tag = Tag.find(item.data.value)
       }
 
-      if (cat) {
-        if (!this.recipe.categories.find(c => c.clientId === cat.clientId)) {
-          this.recipe.categories.push(cat)
+      if (tag) {
+        if (!this.recipe.tags.find(c => c.clientId === tag.clientId)) {
+          this.recipe.tags.push(tag)
         }
 
-        const recCatId = [this.recipe.clientId, cat.clientId]
+        const taggingId = [tag.clientId, this.recipe.clientId]
 
-        await RecipeCategory.insertOrUpdate({
+        await Tagging.insertOrUpdate({
           data: {
-            recipeId: this.recipe.clientId,
-            categoryId: cat.clientId,
+            tagId: tag.clientId,
+            taggableId: this.recipe.clientId,
+            taggableType: this.recipe.selfClass.modelName,
           },
         })
-        const rc = RecipeCategory.find(recCatId)
-        if (rc) {
-          const recCat = this.recipe.recipeCategories.find(x => x.$id === rc.$id)
-          recCat ? recCat.unmarkForDestruction() : this.recipe.recipeCategories.push(rc)
+        const tagging = Tagging.find(taggingId)
+        if (tagging) {
+          const recipeTagging = this.recipe.taggings.find(x => x.$id === tagging.$id)
+          if (recipeTagging) {
+            recipeTagging.unmarkForDestruction()
+          } else {
+            this.recipe.taggings.push(tagging)
+          }
         }
       }
     },
-    destroyRecipeCategory(item: Category) {
+    destroyTagging(item: Tag) {
       if (this.recipe) {
-        const rc = this.recipe.recipeCategories.find(rc => rc.categoryId === item.$id)
-        const category = this.recipe.categories.find(c => c.$id === item.$id)
-        if (category) {
-          const categoryIndex = this.recipe.categories.indexOf(category)
-          this.recipe.categories.splice(categoryIndex, 1)
+        const tagging = this.recipe.taggings.find(tagging => tagging.tagId === item.$id)
+        const tag = this.recipe.tags.find(tag => tag.$id === item.$id)
+        if (tag) {
+          const tagIndex = this.recipe.tags.indexOf(tag)
+          this.recipe.tags.splice(tagIndex, 1)
         }
-        if (rc) {
-          rc.markForDestruction()
+        if (tagging) {
+          tagging.markForDestruction()
         } else {
-          Logger.warn('RecipeCategory not found!')
+          Logger.warn('Tagging not found!')
         }
       }
     },
-    exactCategoryNameMatch(collections: Array<Array<SearchResult<Category>>>, name: string): boolean {
+    exactTagNameMatch(collections: Array<Array<SearchResult<Tag>>>, name: string): boolean {
       return collections.some(items => items.some(item => item.label.toLocaleLowerCase() === name.toLocaleLowerCase()))
     },
     setImage(event: Event) {

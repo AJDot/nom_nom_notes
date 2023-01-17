@@ -26,11 +26,11 @@ export enum LoadingActionTypes {
 }
 
 type LoadingGetters = {
-  [key in LoadingGetterTypes]: Getter<LoadingState, RootState>;
+  [key in LoadingGetterTypes]: Getter<LoadingState, RootState>
 }
 type LoadingMutations = { [key in LoadingMutationTypes]: Mutation<LoadingState> }
 type LoadingActions = {
-  [key in LoadingActionTypes]: Action<LoadingState, RootState>;
+  [key in LoadingActionTypes]: Action<LoadingState, RootState>
 }
 
 const state: () => LoadingState = () => ({

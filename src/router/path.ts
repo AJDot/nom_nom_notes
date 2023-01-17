@@ -1,4 +1,3 @@
-import { RRecord } from 'Interfaces/modelInterfaces'
 import AppConfig from '~/appConfig'
 
 class Path {
@@ -49,12 +48,28 @@ class AppPath extends Path {
     return this.recipes() + '/new'
   }
 
-  recipe(recipeClientId: RRecord['clientId']) {
+  recipe(recipeClientId: string) {
     return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
   }
 
-  editRecipe(recipeClientId: RRecord['clientId']) {
+  editRecipe(recipeClientId: string) {
     return this.recipe(recipeClientId) + '/edit'
+  }
+
+  dynamicRecipes() {
+    return '/dynamic_recipes'
+  }
+
+  newDynamicRecipe() {
+    return this.dynamicRecipes() + '/new'
+  }
+
+  dynamicRecipe(dynamicRecipeClientId: string) {
+    return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
+  }
+
+  editDynamicRecipe(dynamicRecipeClientId: string) {
+    return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
   }
 
   password() {
@@ -95,12 +110,20 @@ class ApiPath extends Path {
     return '/recipes'
   }
 
-  recipe(recipeClientId: RRecord['clientId']) {
+  recipe(recipeClientId: string) {
     return Path.buildPath(this.recipes() + '/:clientId', { clientId: recipeClientId })
   }
 
-  categories() {
-    return '/categories'
+  dynamicRecipes() {
+    return '/dynamic_recipes'
+  }
+
+  dynamicRecipe(dynamicRecipeClientId: string) {
+    return Path.buildPath(this.dynamicRecipes() + '/:clientId', { clientId: dynamicRecipeClientId })
+  }
+
+  tags() {
+    return '/tags'
   }
 
   flipperBase() {
@@ -130,9 +153,22 @@ class ApiPath extends Path {
   changePassword() {
     return this.password() + '/change'
   }
+
+  fileUploads() {
+    return '/file_uploads'
+  }
+
+  fileUpload(fileUploadClientId: string) {
+    return Path.buildPath(this.fileUploads() + '/:clientId', { clientId: fileUploadClientId })
+  }
+
+  currentAbility() {
+    return '/ability'
+  }
 }
 
 const appPath = new AppPath()
 const apiPath = new ApiPath()
 
 export { appPath as AppPath, apiPath as ApiPath }
+

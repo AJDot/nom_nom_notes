@@ -1,0 +1,59 @@
+import { RowBlock } from './../../interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import assertNever from '../assertNever'
+import Guid from '../guid'
+
+export default class SidebarBlockCaptain<FType> implements UBlockCaptain<SidebarBlock, FType> {
+  constructor(public block: SidebarBlock, public director: BlockDirector<FType>) {
+  }
+
+  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+    const block = choice.args[0]
+    block.content.blockId = this.block.id
+  }
+
+  onEnter({ event }: { event: KeyboardEvent }): void {
+    const parent = this.director.find(this.block.parentId)
+    const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
+    if (parent) newBlock.parentId = parent.id
+    this.director.addAfter(newBlock, this.block)
+  }
+
+  onInput({ event }: { event: InputEvent }) {
+    this.block.content.text = (<HTMLElement>event.target)?.innerHTML
+  }
+
+  onMove({ block }: { block: Block }) {
+    const parent = this.director.find(this.block.parentId)
+    switch (block.type) {
+      case 'h1':
+      case 'h2':
+      case 'h3':
+      case 'text':
+      case 'row':
+      case 'image':
+        if (parent?.type === 'row') {
+          const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
+          this.director.addBefore(newColumn, this.block)
+          this.director.moveInside(block, newColumn)
+        } else {
+          this.director.move(block, this.block)
+        }
+        break
+      case 'column':
+        if (parent?.type === 'row') {
+          this.director.move(block, this.block)
+        } else {
+          const newRow: RowBlock = { id: Guid.create(), type: 'row' }
+          this.director.addBefore(newRow, this.block)
+          this.director.moveInside(block, newRow)
+        }
+        break
+      case 'sidebar':
+        this.director.move(block, this.block)
+        break
+      default:
+        assertNever(block)
+    }
+  }
+}

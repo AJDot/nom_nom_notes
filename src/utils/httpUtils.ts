@@ -378,3 +378,11 @@ export enum HttpStatusCode {
    */
   NetworkAuthenticationRequired = 511,
 }
+
+export enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
+}

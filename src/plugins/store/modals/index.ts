@@ -21,18 +21,15 @@ export class ModalStore {
   }
 
   show(id: ModalId): void {
-    this.toggle(id)
+    this.store.dispatch(StoreModulePath.Modal + ModalActionTypes.ADD, { id })
   }
 
   hide(id: ModalId): void {
-    this.toggle(id)
+    this.store.dispatch(StoreModulePath.Modal + ModalActionTypes.REMOVE, { id })
   }
 
   toggle(id: ModalId, state?: boolean): void {
-    this.store.dispatch(StoreModulePath.Modal + ModalActionTypes.TOGGLE, {
-      id: ModalId.DeleteRecipe,
-      state: state,
-    })
+    this.store.dispatch(StoreModulePath.Modal + ModalActionTypes.TOGGLE, { id, state })
   }
 }
 

@@ -1,5 +1,5 @@
-import AModel, { AModelAttributes } from 'Models/aModel'
 import { Attribute } from '@vuex-orm/core'
+import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 import { FeatureState } from '~/enums/features'
 import { store, StoreModulePath } from '~/store'
 import { FeatureActionTypes } from '~/store/modules/features/actions'
@@ -10,23 +10,24 @@ type FeatureGateAttributes = {
   value: unknown
 }
 
-export type FeatureAttributes = {
+export type FeatureAttributes = AModelAttributes & {
   key: string
   state: FeatureState
   gates: FeatureGateAttributes | Array<FeatureGateAttributes>
 }
 
-export interface RFeature extends AModelAttributes, FeatureAttributes {
+export interface RFeature extends FeatureAttributes {
 }
 
-type FeatureFields = {
+type FeatureFields = AModelFields & {
   [key in keyof FeatureAttributes]: Attribute
 }
 
 type FeatureKey = 'signup'
 
 export default class Feature extends AModel implements RFeature {
-  static entity = 'features'
+  static entity = 'Feature'
+  static modelName = 'Feature'
   static primaryKey = 'key'
 
   static fields(): FeatureFields {

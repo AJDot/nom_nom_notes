@@ -13,26 +13,28 @@ describe('Recipes List', () => {
 
     it('shows recipe details', () => {
       // listed in alphabetical order
-      // categories are shown on list item hover
+      // tags are shown on list item hover
       // link to view shows on list item hover
 
       const pastaId = Guid.create()
-      cy.apiRequest('POST', '/testing/api/v1/categories', {
-        categories: [
+      cy.apiRequest('POST', '/testing/api/v1/tags', {
+        tags: [
           { name: 'Italian' },
           { name: 'American' },
           { name: 'Chinese' },
         ],
-      }).its('body').as('categories')
-        .then(function() {
-          const itCat = this.categories.data.find(c => c.attributes.name === 'Italian')
+      }).its('body').as('tags')
+        .then(function () {
+          const tag = this.tags.data.find(c => c.attributes.name === 'Italian')
           cy.apiRequest('POST', '/testing/api/v1/recipes', {
             recipe: {
               clientId: pastaId,
               name: 'Pasta',
-              recipeCategoriesAttributes: [
+              taggingsAttributes: [
                 {
-                  categoryId: itCat.attributes.clientId,
+                  tagId: tag.attributes.clientId,
+                  taggableId: pastaId,
+                  taggableType: 'Recipe',
                 },
               ],
             },
@@ -46,7 +48,7 @@ describe('Recipes List', () => {
             ],
           }).its('body').as('recipes')
         })
-        .then(function() {
+        .then(function () {
           cy.visit('/')
           // recipes are in alphabetical order by name
           cy.getRecipeCard(0).should('contain', 'Noodle')
@@ -54,7 +56,7 @@ describe('Recipes List', () => {
           cy.getRecipeCard(2).should('contain', 'Penne')
 
           cy.getRecipeCard('Pasta').within((response) => {
-            // recipe shows categories
+            // recipe shows tags
             cy.contains('Italian').should('exist')
             // recipe shows link to show page
             cy.contains('View Recipe').should('not.be.visible')
@@ -67,26 +69,26 @@ describe('Recipes List', () => {
         })
     })
 
-    it('can be filtered by recipe category', () => {
-      cy.apiRequest('POST', '/testing/api/v1/categories', {
-        categories: [
+    it('can be filtered by recipe tag', () => {
+      cy.apiRequest('POST', '/testing/api/v1/tags', {
+        tags: [
           { name: 'Italian' },
           { name: 'American' },
           { name: 'Chinese' },
         ],
-      }).its('body').as('categories')
-        .then(function() {
-          const itCat = this.categories.data.find(c => c.attributes.name === 'Italian')
-          const chCat = this.categories.data.find(c => c.attributes.name === 'Chinese')
+      }).its('body').as('tags')
+        .then(function () {
+          const tag = this.tags.data.find(c => c.attributes.name === 'Italian')
+          const chCat = this.tags.data.find(c => c.attributes.name === 'Chinese')
           cy.apiRequest('POST', '/testing/api/v1/recipes', {
             recipe: {
               name: 'Pasta',
-              recipeCategoriesAttributes: [
+              taggingsAttributes: [
                 {
-                  categoryId: itCat.attributes.clientId,
+                  tagId: tag.attributes.clientId,
                 },
                 {
-                  categoryId: chCat.attributes.clientId,
+                  tagId: chCat.attributes.clientId,
                 },
               ],
             },
@@ -96,22 +98,22 @@ describe('Recipes List', () => {
               },
               {
                 name: 'Penne',
-                recipeCategoriesAttributes: [
+                taggingsAttributes: [
                   {
-                    categoryId: chCat.attributes.clientId,
+                    tagId: chCat.attributes.clientId,
                   },
                 ],
               },
             ],
           }).its('body').as('recipes')
         })
-        .then(function() {
+        .then(function () {
           cy.visit('/')
           cy.contains('Noodle').should('exist')
           cy.getTest('filters-toggle').click()
-          const filter = '#filter-category'
+          const filter = '#filter-tag'
           cy.get(filter).type('i')
-          // Italian and Chinese categories show as results
+          // Italian and Chinese tags show as results
           cy.getDropdownItem('Italian').should('exist')
           cy.getDropdownItem('Chinese').click()
 

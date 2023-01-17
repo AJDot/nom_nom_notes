@@ -1,18 +1,19 @@
-import { Attribute, Fields } from '@vuex-orm/core'
+import { Attribute } from '@vuex-orm/core'
 import { BRecipe, Description, Sortable } from 'Interfaces/modelInterfaces'
-import AModel, { AModelAttributes } from 'Models/aModel'
+import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 
-export type IngredientAttributes = Description & Sortable & BRecipe
+export type IngredientAttributes = AModelAttributes & Description & Sortable & BRecipe
 
-export interface RIngredient extends AModelAttributes, IngredientAttributes {
+export interface RIngredient extends IngredientAttributes {
 }
 
-type IngredientFields = Fields & {
+type IngredientFields = AModelFields & {
   [key in keyof IngredientAttributes]: Attribute
 }
 
 export default class Ingredient extends AModel implements RIngredient {
-  static entity = 'ingredients'
+  static entity = 'Ingredient'
+  static modelName = 'Ingredient'
 
   static fields(): IngredientFields {
     return {

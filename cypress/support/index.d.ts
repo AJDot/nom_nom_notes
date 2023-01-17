@@ -14,7 +14,7 @@ declare namespace Cypress {
   }
 
   interface ModelResponse {
-    attributes: Hash
+    data: { attributes: Hash }
   }
 
   interface Chainable<Subject> {
@@ -38,6 +38,12 @@ declare namespace Cypress {
      * @param indexOrName {string, number} index of card or name of recipe
      */
     getRecipeCard(indexOrName: string | number): Chainable<Response>
+
+    /**
+     * Get the dynamic recipe card on the list page
+     * @param indexOrName {string, number} index of card or name of dynamic recipe
+     */
+    getDynamicRecipeCard(indexOrName: string | number): Chainable<Response>
 
     /**
      * Get a list item in a dropdown
@@ -65,6 +71,20 @@ declare namespace Cypress {
      * cy.forceSignIn({email: 'philip.fry@planet-express.com', password: 'ah123456'})
      */
     forceSignIn(user?: { email?: string, password?: string }): Chainable<ModelResponse>
+
+    /**
+     * Sign Out user
+     * @example
+     * cy.forceSignOut()
+     */
+    forceSignOut(): Chainable<ModelResponse>
+
+    /**
+     * Get the DOM element according to being contenteditable, empty, and having a given placeholder attribute
+     * @example
+     * cy.getContentEditable("Type '\' for commands")
+     */
+    getContentEditable(placeholder: string): Chainable<Subject>
 
     /**
      * Get the DOM element in the alert section with text 'Not Valid'
@@ -148,5 +168,14 @@ declare namespace Cypress {
      *
      */
     uploadFile(options: { path: string, type: string }): Chainable<Subject>
+
+    /**
+     * Drag an element to another element
+     *
+     * @example
+     * cy.get('#draggable').drag('#droppable')
+     *
+     */
+    drag(target: string | { target: string, dragOpts?: Record<string, any>, dropOpts?: Record<string, any> }): Chainable<Subject>
   }
 }
