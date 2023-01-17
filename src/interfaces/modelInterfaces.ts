@@ -4,8 +4,11 @@
  */
 import { Uploader } from 'Interfaces/imageInterfaces'
 
-export interface RRecord {
+export interface RRecord extends ClientIdable {
   id: string | undefined
+}
+
+export interface ClientIdable {
   clientId: string | undefined
 }
 
@@ -31,8 +34,13 @@ export interface BRecipe {
   recipeId: string | undefined
 }
 
-export interface BCategory {
-  categoryId: string | undefined
+export interface BTag {
+  tagId: string | undefined
+}
+
+export interface BTaggable {
+  taggableId: string | undefined
+  taggableType: string | undefined
 }
 
 export interface Notable {
@@ -43,12 +51,10 @@ export interface CookTime {
   cookTime: number
 }
 
-export type HasOne<K extends string, T> = {
-  [key in K]: T
-}
+export type HasOne<K extends string, T> = { [key in K]: T } & { [key in `${K}Id`]: string }
 
 export type HasMany<K extends string, T> = {
   [key in K]: T[]
 }
 
-export type HasUploader<K extends string> = HasOne<K, Uploader>
+export type HasUploader<K extends string> = { [key in K]: Uploader }

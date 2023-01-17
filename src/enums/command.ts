@@ -1,3 +1,3 @@
 export enum Command {
-  CreateCategory = 1,
+  CreateTag = 1,
 }

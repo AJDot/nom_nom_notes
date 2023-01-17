@@ -39,11 +39,23 @@ Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
 
+Cypress.Commands.add('getContentEditable', (placeholder: string) => {
+  return cy.get(`[contenteditable="true"][placeholder="${placeholder}"]:empty`).first()
+})
+
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
   if (typeof indexOrName === 'number') {
     return cy.get(`[data-test="card-list"] > [data-test="card-list-item"]:nth-child(${indexOrName + 1})`)
   } else {
     return cy.contains('[data-test="card-list"] > [data-test="card-list-item"]', indexOrName)
+  }
+})
+
+Cypress.Commands.add('getDynamicRecipeCard', (indexOrName: string | number) => {
+  if (typeof indexOrName === 'number') {
+    return cy.get(`[data-test="dynamic-recipe-list-item"]:nth-child(${indexOrName + 1})`)
+  } else {
+    return cy.contains('[data-test="dynamic-recipe-list-item"]', indexOrName)
   }
 })
 
@@ -72,16 +84,20 @@ Cypress.Commands.add('createFry', () => {
   })
 })
 
-Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string, username?: string }) => {
+Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string }) => {
   cy.apiRequest('POST', '/signin', {
     email: user?.email || 'philip.fry@planet-express.com',
     password: user?.password || 'ah123456',
-    username: user?.username || 'orangejoe',
   }).its('body').as('signIn')
     .then((response) => {
       localStorage.setItem('csrf', response.csrf)
       localStorage.setItem('signedIn', 'true')
     })
+})
+
+Cypress.Commands.add('forceSignOut', () => {
+  localStorage.removeItem('csrf')
+  localStorage.removeItem('signedIn')
 })
 
 Cypress.Commands.add('getFlash', (text: string) => {
@@ -107,7 +123,7 @@ Cypress.Commands.add('getByLabel', (text: string | RegExp) => {
     })
 })
 
-Cypress.Commands.add('trim', {prevSubject: true}, (subject) => {
+Cypress.Commands.add('trim', { prevSubject: true }, (subject) => {
   cy.wrap(subject).invoke('text').then(text => text.trim())
 })
 
@@ -152,7 +168,7 @@ Cypress.Commands.add('assertUrl', (path: string, options?: AssertUrlOptionType) 
 Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => {
   // programmatically upload the logo
   cy.fixture(options.path).as(options.path)
-  cy.get('input[type=file]').then(function(el) {
+  cy.get('input[type=file]').then(function (el) {
     // convert the logo base64 string to a blob
     const blob = Cypress.Blob.base64StringToBlob(this[options.path], 'image/jpeg')
 
@@ -167,4 +183,24 @@ Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => 
     el[0].files = myFileList
     el[0].dispatchEvent(new Event('change', { bubbles: true }))
   })
+})
+
+Cypress.Commands.add("drag", { prevSubject: "element" }, (subject: Cypress.JQueryWithSelector<HTMLElement>, target: string | { target: string, dragOpts?: Record<string, any>, dropOpts?: Record<string, any> }, _options?: Partial<Cypress.TypeOptions>) => {
+  const dataTransfer = new DataTransfer()
+  let dragOpts: Record<string, any> = { dataTransfer, force: true }
+  let dropOpts: Record<string, any> = { dataTransfer, force: true }
+  if (typeof target === 'string') {
+    target = target
+  } else {
+    dragOpts = Object.assign(dragOpts, target.dragOpts ?? {})
+    dropOpts = Object.assign(dropOpts, target.dropOpts ?? {})
+    target = target.target
+  }
+  cy.wrap(subject).trigger('dragstart', dragOpts)
+  cy.get(target)
+    .trigger('dragenter', dropOpts)
+    .trigger('dragover', dropOpts)
+    .trigger('drop', dropOpts)
+    .wait(50)
+    .trigger('dragend', dropOpts)
 })

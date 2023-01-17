@@ -13,6 +13,9 @@ module.exports = {
         card: '0 2px 8px 0 rgb(0 0 0 / 30%)',
         input: `0 0 1px 0 ${theme.colors.gray[900]}`,
       }),
+      minHeight: ({ theme }) => ({
+        ...theme('maxHeight')
+      }),
       borderColor: {
         transparent: 'transparent',
       },
@@ -22,6 +25,10 @@ module.exports = {
         drag: 'height, margin, padding',
         background: 'background',
         transform: 'transform',
+        'bg-shadow': 'background shadow',
+      },
+      backgroundColor: {
+        initial: 'initial',
       },
     },
     colors: {
@@ -62,6 +69,7 @@ module.exports = {
         400: 'rgb(var(--color-gray-400) / <alpha-value>)',
         DEFAULT: 'rgb(var(--color-gray-500) / <alpha-value>)',
         500: 'rgb(var(--color-gray-500) / <alpha-value>)',
+        700: 'rgb(var(--color-gray-700) / <alpha-value>)',
         900: 'rgb(var(--color-gray-900) / <alpha-value>)',
       },
       'white': {
@@ -78,7 +86,7 @@ module.exports = {
     }
   },
   plugins: [
-    plugin(function({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
         '.horizontal-tb': {
           'writing-mode': 'horizontal-tb',
@@ -93,6 +101,11 @@ module.exports = {
       addUtilities({
         '.text-orient-upright': {
           'text-orientation': 'upright',
+        },
+      })
+      addUtilities({
+        '.break-anywhere': {
+          'overflow-wrap': 'anywhere',
         },
       })
     })

@@ -14,7 +14,7 @@ describe('Ingredients Panel', () => {
         ],
       },
     }).its('body.data.0').as('recipe')
-      .then(function() {
+      .then(function () {
         const recipeId = this.recipe.attributes.clientId
         cy.visit(`/recipes/${recipeId}`)
         cy.getTest('side-panel').should('not.exist')
@@ -30,6 +30,7 @@ describe('Ingredients Panel', () => {
         // clicking mask closes the side panel
         cy.getTest('ingredients-panel-toggle').click()
         cy.getTest('side-panel').should('exist')
+        cy.viewport(575, 600)
         cy.getTest('side-panel-mask').click()
         cy.getTest('side-panel').should('not.exist')
       })

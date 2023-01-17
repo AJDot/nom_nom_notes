@@ -52,7 +52,7 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
   if (
     error.response &&
     error.response.config &&
-    error.response.status === HttpStatusCode.Forbidden
+    error.response.status === HttpStatusCode.Unauthorized
   ) {
     // If 401 by expired access cookie, we do a refresh request
     return plainAxiosInstance
@@ -75,9 +75,13 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
         store.commit(
           StoreModulePath.Session + SessionMutationTypes.SIGN_OUT,
         )
-        // redirect to signin if refresh fails
-        location.replace(AppPath.base() + AppPath.signin())
-        return Promise.reject(error)
+        if (error.response.config.url.endsWith('refresh')) {
+          return Promise.reject(error)
+        } else {
+          // redirect to signin if refresh fails
+          location.replace(AppPath.base() + AppPath.signin())
+          return
+        }
       })
   } else {
     return Promise.reject(error)

@@ -1,5 +1,7 @@
 import Search from '@/structure/search.vue'
-import Searcher from '~/utils/searcher'
+import Searcher from '../../src/utils/searcher'
+import jQuery from "jquery"
+Object.assign(window, { $: jQuery, jQuery })
 
 
 describe('Search.cy.ts', () => {
@@ -78,17 +80,17 @@ describe('Search.cy.ts', () => {
     const onSelectSpy = cy.spy().as('onSelectSpy')
     cy.mount(Search, {
       props: {
-        searcher: new Searcher({ label: 'name', value: 'name', valueString: 'name', collection }),
+        searcher: new Searcher({ type: 'result', label: 'name', value: 'name', valueString: 'name', collection }),
         onSelect: onSelectSpy
       }
     })
     cy.get('input[placeholder="Search..."]').type('T{downArrow}{enter}')
     cy.get('[role=listbox]').should('not.exist')
-    cy.get('@onSelectSpy').should('have.been.calledWith', { data: { label: 'Thanksgiving', value: 'Thanksgiving', raw: { name: 'Thanksgiving' } } })
+    cy.get('@onSelectSpy').should('have.been.calledWith', { data: { type: 'result', label: 'Thanksgiving', value: 'Thanksgiving', raw: { name: 'Thanksgiving' } } })
   })
 
   describe('with multiple searchers', () => {
-    it.only('display results from all searchers', () => {
+    it('display results from all searchers', () => {
       const nameCollection = [{ name: 'Turkey' }, { name: 'Thanksgiving' }, { name: 'Team' }]
       const titleCollection = [{ title: 'Apple' }, { title: 'Apricot' }, { title: 'Artichoke' }]
       const onSelectSpy = cy.spy().as('onSelectSpy')

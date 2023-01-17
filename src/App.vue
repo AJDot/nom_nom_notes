@@ -1,23 +1,32 @@
 <template>
-  <app-layout id="app" class="min-h-screen" />
+  <app-layout v-if="fetched" id="app" class="min-h-screen" />
 </template>
 
 <script lang="ts">
-import AppLayout from '~/components/app-layout.vue'
 import { defineComponent } from 'vue'
+import AppLayout from '~/components/app-layout.vue'
 import { store, StoreModulePath } from '~/store'
-import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { UserActionTypes } from '~/store/modules/users/actions'
+import currentUserMixin from './mixins/currentUserMixin'
+import { AbilityActionTypes } from './store/modules/ability/actions'
 
 export default defineComponent({
   name: 'App',
   components: {
     AppLayout,
   },
-  setup() {
-    if (store.getters[StoreModulePath.Session + SessionGetterTypes.SIGNED_IN]) {
-      store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
+  mixins: [
+    currentUserMixin,
+  ],
+  data() {
+    return {
+      fetched: false
     }
   },
+  async created() {
+    await store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
+    await store.dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: this.currentUser })
+    this.fetched = true
+  }
 })
 </script>

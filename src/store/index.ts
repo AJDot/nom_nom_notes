@@ -1,17 +1,20 @@
-import { createStore, Store } from 'vuex'
-import { RootState } from '~/store/interfaces'
-import { InjectionKey } from 'vue'
 import VuexORM from '@vuex-orm/core'
+import { InjectionKey } from 'vue'
+import { createStore, Store } from 'vuex'
 import database from '~/store/database'
+import { RootState } from '~/store/interfaces'
+import tags from '~/store/modules/tags'
+import features from '~/store/modules/features'
+import flash from '~/store/modules/flash'
+import interfaces from '~/store/modules/interfaces'
+import loading from '~/store/modules/loading'
+import modal from '~/store/modules/modal'
 import recipes from '~/store/modules/recipes'
 import sessions from '~/store/modules/sessions'
-import flash from '~/store/modules/flash'
-import modal from '~/store/modules/modal'
-import loading from '~/store/modules/loading'
-import categories from '~/store/modules/categories'
-import users from '~/store/modules/users'
 import signups from '~/store/modules/signups'
-import features from '~/store/modules/features'
+import users from '~/store/modules/users'
+import ability from './modules/ability'
+import dynamicRecipes from './modules/dynamicRecipes'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -20,13 +23,18 @@ export enum StoreModulePath {
   Root = '',
   Users = 'users/',
   Recipes = 'recipes/',
-  Categories = 'categories/',
+  DynamicRecipes = 'dynamicRecipes/',
+  Tags = 'tags/',
   Session = 'sessions/',
   Signup = 'signups/',
   Flash = 'flash/',
   Modal = 'modal/',
   Loading = 'loading/',
   Features = 'features/',
+  Interfaces = 'interfaces/',
+  Toggle = 'toggle/',
+  Choice = 'choice/',
+  Ability = 'ability/',
 }
 
 export const store = createStore<RootState>({
@@ -34,13 +42,16 @@ export const store = createStore<RootState>({
   modules: {
     users,
     recipes,
-    categories,
+    dynamicRecipes,
+    tags,
     signups,
     sessions,
     flash,
     modal,
     loading,
     features,
+    interfaces,
+    ability,
   },
   state: {} as RootState,
   mutations: {},

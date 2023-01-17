@@ -6,13 +6,13 @@
       </button>
       <template v-if="showFilters">
         <h2>
-          <label for="filter-category" class="lone">
-            Filter by Category
+          <label for="filter-tag">
+            Filter by Tag
           </label>
         </h2>
         <div class="flex items-center gap-1">
-          <search id="filter-category" class="grow" :searcher="categoryFilterSearcher" @select="filterByCategory" />
-          <button type="button" class="btn-clear flex" @click="clearCategoryFilter">
+          <search id="filter-tag" class="grow" :searcher="tagFilterSearcher" @select="filterByTag" />
+          <button type="button" class="btn-clear flex" @click="clearTagFilter">
             Clear
             <i class="material-icons">close</i>
           </button>
@@ -31,8 +31,8 @@
                   <i class="material-icons my-auto align-middle mr-1">receipt</i><span class="align-middle">View Recipe</span>
                 </router-link>
                 <ul class="flex flex-wrap gap-1">
-                  <li v-for="category in recipe.categories" :key="category.clientId" class="font-thin text-gray-400 text-xs">
-                    {{ category.name }}
+                  <li v-for="tag in recipe.tags" :key="tag.clientId" class="font-thin text-gray-400 text-xs">
+                    {{ tag.name }}
                   </li>
                 </ul>
                 <p class="mt-2 text-sm">{{ recipe.description }}</p>
@@ -46,25 +46,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { useStore } from 'vuex'
-import { stateKey, StoreModulePath } from '~/store'
-import Recipe, { RRecipe } from 'Models/recipe'
-import { ArrayUtils } from '~/utils/arrayUtils'
-import { RecipeActionTypes } from '~/store/modules/recipes/actions'
-import ImagePlaceholder from '/icons/image_placeholder.svg'
-import { ImageSource } from 'Interfaces/imageInterfaces'
-import Searcher from '~/utils/searcher'
-import Category from 'Models/category'
 import Search from '@/structure/search.vue'
 import { SearchResult } from 'Interfaces/searchInterfaces'
-
-interface ImageAttrs {
-  src: ImageSource
-  alt?: string
-  title?: string
-  class?: string
-}
+import Recipe, { RRecipe } from 'Models/recipe'
+import { defineComponent, ImgHTMLAttributes, ref } from 'vue'
+import { useStore } from 'vuex'
+import Tag from "~/models/tag"
+import { stateKey, StoreModulePath } from '~/store'
+import { RecipeActionTypes } from '~/store/modules/recipes/actions'
+import { ArrayUtils } from '~/utils/arrayUtils'
+import Searcher from '~/utils/searcher'
+import ImagePlaceholder from '/icons/image_placeholder.svg'
 
 export default defineComponent({
   name: 'RecipesIndex',
@@ -75,7 +67,7 @@ export default defineComponent({
     const store = useStore(stateKey)
     store.dispatch(StoreModulePath.Recipes + RecipeActionTypes.FETCH_ALL)
     const showFilters = ref(false)
-    const recipeFilters = ref<{ categoryName: string | null }>({ categoryName: null })
+    const recipeFilters = ref<{ tagName: string | null }>({ tagName: null })
     return {
       showFilters,
       recipeFilters,
@@ -83,7 +75,7 @@ export default defineComponent({
   },
   computed: {
     recipes(): Array<Recipe> {
-      return Recipe.query().with('categories').get()
+      return Recipe.query().with('tags').get()
     },
     sortedRecipes(): Array<Recipe> {
       return ArrayUtils.sort(this.recipes, (a: Recipe, b: Recipe) => {
@@ -98,22 +90,24 @@ export default defineComponent({
     },
     recipesForList(): Array<Recipe> {
       return this.sortedRecipes.filter(r => {
-        const categoryName = this.recipeFilters.categoryName
-        return !categoryName || r.categories.some(c => c.name === categoryName)
+        const tagName = this.recipeFilters.tagName
+        return !tagName || r.tags.some(tag => tag.name === tagName)
       })
     },
-    categoryFilterSearcher(): Searcher<Category, string> {
+    tagFilterSearcher(): Searcher<Tag> {
       return new Searcher({
         type: 'result',
         label: 'name',
-        value: 'name',
         valueString: 'name',
-        collection: Category.all(),
+        collection: Tag.all(),
+        matcher(item, q) {
+          return Boolean(item.name.toLocaleLowerCase().match(q.toLocaleLowerCase()))
+        },
       })
     },
   },
   methods: {
-    imageAttrs(recipe: RRecipe): ImageAttrs {
+    imageAttrs(recipe: RRecipe): ImgHTMLAttributes {
       if (recipe.image.url) {
         return {
           src: recipe.image.url,
@@ -131,15 +125,15 @@ export default defineComponent({
     toggleShowFilters(): void {
       this.showFilters = !this.showFilters
     },
-    filterByCategory(result: { data: SearchResult<Category> }): void {
-      this.recipeFilters.categoryName = result.data.value
+    filterByTag(result: { data: SearchResult<Tag> }): void {
+      this.recipeFilters.tagName = result.data.value
     },
-    clearCategoryFilter(): void {
-      this.recipeFilters.categoryName = null
+    clearTagFilter(): void {
+      this.recipeFilters.tagName = null
     },
     pullDetails(event: MouseEvent, hovering: boolean): void {
       const cssClass = '-translate-y-full'
-      const $el = $(event.currentTarget).find('[data-content]')
+      const $el = $(event.currentTarget as HTMLElement).find('[data-content]')
       hovering ? $el.removeClass(cssClass) : $el.addClass(cssClass)
     },
   },
