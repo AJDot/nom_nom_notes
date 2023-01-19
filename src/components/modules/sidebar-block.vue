@@ -5,7 +5,7 @@
     </button>
     <SidePanel :state="sidePanelState" @close="sidePanelState = false" class="flex self-stretch grow">
       <template #control>
-        <button type="button" aria-disabled="true" class="flex grow self-stretch px-1 py-2 border-transparent rounded-md break-anywhere" @click.prevent="onSidebarClick" ref="button">
+        <button type="button" aria-disabled="true" class="flex grow self-stretch py-2 border-transparent rounded-md break-anywhere sm:px-1" @click.prevent="onSidebarClick" ref="button">
           <span data-focus class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]" :placeholder="placeholder" :contenteditable="isEditable" v-html="block.content.text" ref="content" v-on="blockListeners"></span>
         </button>
       </template>
@@ -61,7 +61,7 @@ export default defineComponent({
     },
     rotateStyle() {
       if (this.director.find(this.block.parentId)?.type === 'row') {
-        return 'vertical-rl rotate-180 py-5'
+        return 'sm:vertical-rl sm:rotate-180 sm:py-5'
       } else {
         return ''
       }

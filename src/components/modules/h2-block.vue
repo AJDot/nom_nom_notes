@@ -1,6 +1,6 @@
 <template>
   <draggable :draggable="draggable" :droppable="droppableTest" class="relative basis-full rounded-md" :hover-color="hoverColor" :item="block" @drop="onDrop" data-test-block="h2">
-    <h2 :placeholder="placeholder" class="text-2xl min-h-11 px-2 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }" :contenteditable="isEditable" data-focus ref="content" v-html="block.content.text" v-on="blockListeners"></h2>
+    <h2 :placeholder="placeholder" class="text-2xl min-h-11 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }" :contenteditable="isEditable" data-focus ref="content" v-html="block.content.text" v-on="blockListeners"></h2>
   </draggable>
 </template>
 

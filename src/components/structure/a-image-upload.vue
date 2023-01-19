@@ -2,7 +2,7 @@
   <div>
     <div class="flex group" @mouseenter="showControls" @mouseleave="hideControls">
       <Ellipsis v-if="loading" class="mx-auto mb-4 rounded-2xl max-x-52 max-h-52 object-contain" />
-      <img v-show="!loading" v-bind="imageAttrs" class="mx-auto mb-4 rounded-2xl x-52 h-52 object-cover" @load="onLoad">
+      <img v-show="!loading" v-bind="imageAttrs" class="mx-auto mb-1 sm:mb-4 rounded-2xl x-52 h-52 object-cover" @load="onLoad">
       <button v-if="editable && controlsVisible" type="button" class="absolute -top-2 right-6">
         <label class="cursor-pointer">
           <i class="material-icons my-auto">add_a_photo</i>
