@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex flex-col sm:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
+  <ul class="flex flex-col xs:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
     <li>
       <router-link :to="{ name: $routerExtension.names.Recipe }" class="flex">
         <i class="material-icons my-auto">receipt</i>

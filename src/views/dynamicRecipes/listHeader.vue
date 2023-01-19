@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex gap-5 place-items-center text-2xl mt-4">
+  <ul class="flex flex-col xs:flex-row gap-5 place-items-center text-2xl mt-4">
     <li data-test="new-dynamic-recipe-group" class="flex items-center relative">
       <router-link :to="{ name: $routerExtension.names.NewDynamicRecipe }" class="flex items-center">
         <i class="material-icons">add_circle_outline</i>

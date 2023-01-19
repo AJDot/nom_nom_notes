@@ -1,9 +1,9 @@
 <template>
   <header>
-    <div class="px-4 py-2 flex items-center justify-between">
+    <div class="px-4 py-2 flex flex-col xs:flex-row items-center justify-between">
       <h1>
-        <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home">
-          <img src="/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20 align-top">
+        <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home" class="inline-block align-middle">
+          <img src="/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20">
         </router-link>
         <span class="hidden ml-5 text-2xl align-middle sm:text-4xl xs:inline-block">Nom Nom Notes</span>
       </h1>
