@@ -2,6 +2,11 @@ import Guid from '../../../src/utils/guid'
 
 describe('Recipes List', () => {
   context('Not logged in', () => {
+    it('shows the app name', () => {
+      cy.visit('/')
+      cy.contains('h1', 'Nom Nom Notes').should('exist')
+    })
+
     it('makes recipes collection request successfully', () => {
       cy.intercept('GET', '/api/v1/recipes').as('getRecipes')
       cy.visit('/')

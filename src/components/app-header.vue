@@ -5,6 +5,7 @@
         <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home">
           <img src="/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20 align-top">
         </router-link>
+        <span class="hidden ml-5 text-2xl align-middle sm:text-4xl xs:inline-block">Nom Nom Notes</span>
       </h1>
       <ul class="text-2xl j-slash sm:text-3xl">
         <li v-if="currentUser" class="inline-block">

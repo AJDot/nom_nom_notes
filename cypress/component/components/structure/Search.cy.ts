@@ -1,5 +1,5 @@
 import Search from '@/structure/search.vue'
-import Searcher from '../../src/utils/searcher'
+import Searcher from '../../../../src/utils/searcher'
 import jQuery from "jquery"
 Object.assign(window, { $: jQuery, jQuery })
 
