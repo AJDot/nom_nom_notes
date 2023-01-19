@@ -121,7 +121,6 @@ const checkNotMobile: NavigationGuard = async (to, from) => {
   if (BrowserUtils.isMobile()) {
     await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
       flash: { alert: 'Action not supported on mobile device.' },
-      hold: true,
     })
     return from
   } else {
