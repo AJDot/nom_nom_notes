@@ -14,6 +14,11 @@ describe('Dynamic Recipes List', () => {
   })
 
   context('Not logged in', () => {
+    it('shows the app name', () => {
+      cy.visit('/dynamic_recipes')
+      cy.contains('h1', 'Nom Nom Notes').should('exist')
+    })
+
     it('makes dynamic recipes collection request successfully', () => {
       cy.intercept('GET', '/api/v1/dynamic_recipes').as('getDynamicRecipes')
       cy.visit('/dynamic_recipes')
@@ -68,7 +73,7 @@ describe('Dynamic Recipes List', () => {
         })
     })
 
-    it.only('can be filtered by tag', () => {
+    it('can be filtered by tag', () => {
       cy.apiRequest('POST', '/testing/api/v1/tags', {
         tags: [
           { name: 'Italian' },

@@ -19,12 +19,13 @@ import './commands'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-import { mount } from 'cypress/vue'
 import AInput from '@/structure/a-input.vue'
-import DropdownItemButton from '@/structure/dropdown-item-button.vue';
-import DropdownItemEmpty from '@/structure/dropdown-item-empty.vue';
-import DropdownItem from '@/structure/dropdown-item.vue';
-import Dropdown from '@/structure/dropdown.vue';
+import DropdownItemButton from '@/structure/dropdown-item-button.vue'
+import DropdownItemEmpty from '@/structure/dropdown-item-empty.vue'
+import DropdownItem from '@/structure/dropdown-item.vue'
+import Dropdown from '@/structure/dropdown.vue'
+import { mount } from 'cypress/vue'
+import currentUserMixin from '~/mixins/currentUserMixin'
 
 import 'Styles/index.css'
 
@@ -47,6 +48,7 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   options.global.stubs['transition'] = false
   options.global.components = options.global.components || {}
   options.global.plugins = options.global.plugins || []
+  options.global.mixins = options.global.mixins || []
 
   /* Add any global plugins */
   // options.global.plugins.push({
@@ -61,6 +63,8 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   options.global.components['dropdown-item'] = DropdownItem
   options.global.components['dropdown-item-empty'] = DropdownItemEmpty
   options.global.components['dropdown-item-button'] = DropdownItemButton
+
+  options.global.mixins.push(currentUserMixin)
 
   return mount(component as any, options)
 })
