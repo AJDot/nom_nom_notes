@@ -1,8 +1,12 @@
-import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, UColumnBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 
-export default class ColumnBlockCaptain<FType> implements UBlockCaptain<ColumnBlock, FType> {
+export default class ColumnBlockCaptain<FType> implements UColumnBlockCaptain<FType> {
   constructor(public block: ColumnBlock, public director: BlockDirector<FType>) {
+  }
+
+  get isEmpty(): boolean {
+    return this.director.childrenFor(this.block).length === 0
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -26,6 +30,7 @@ export default class ColumnBlockCaptain<FType> implements UBlockCaptain<ColumnBl
       case 'text':
       case 'row':
       case 'image':
+      case 'ingredient':
         this.director.moveInside(block, this.block)
         break
       case 'column':

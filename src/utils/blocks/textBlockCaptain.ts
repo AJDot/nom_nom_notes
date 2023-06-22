@@ -1,9 +1,16 @@
-import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, TextBlock, UTextBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class TextBlockCaptain<FType> implements UBlockCaptain<TextBlock, FType> {
+export default class TextBlockCaptain<FType> implements UTextBlockCaptain<FType> {
   constructor(public block: TextBlock, public director: BlockDirector<FType>) {}
+
+  get isEmpty(): boolean {
+    if (ObjectUtils.dig(this.block, 'content', 'text')) return false
+
+    return true
+  }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
@@ -33,6 +40,7 @@ export default class TextBlockCaptain<FType> implements UBlockCaptain<TextBlock,
       case 'row':
       case 'sidebar':
       case 'image':
+      case 'ingredient':
         this.director.move(block, this.block)
         break
       case 'column':

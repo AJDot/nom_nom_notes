@@ -1,10 +1,17 @@
-import { RowBlock } from './../../interfaces/blockInterfacesGeneral'
-import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, SidebarBlock, TextBlock, USidebarBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
+import { ObjectUtils } from '../objectUtils'
+import { RowBlock } from './../../interfaces/blockInterfacesGeneral'
 
-export default class SidebarBlockCaptain<FType> implements UBlockCaptain<SidebarBlock, FType> {
+export default class SidebarBlockCaptain<FType> implements USidebarBlockCaptain<FType> {
   constructor(public block: SidebarBlock, public director: BlockDirector<FType>) {
+  }
+
+  get isEmpty(): boolean {
+    if (ObjectUtils.dig(this.block, 'content', 'text')) return false
+
+    return true
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -32,6 +39,7 @@ export default class SidebarBlockCaptain<FType> implements UBlockCaptain<Sidebar
       case 'text':
       case 'row':
       case 'image':
+      case 'ingredient':
         if (parent?.type === 'row') {
           const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
           this.director.addBefore(newColumn, this.block)

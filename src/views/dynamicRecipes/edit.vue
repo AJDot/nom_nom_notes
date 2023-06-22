@@ -58,12 +58,12 @@ import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
 import { Command } from '~/enums/command'
 import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { AllBlock, Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
 import { FileUpload as IFileUpload } from '~/interfaces/fileUploadInterfaces'
 import { Uploader as IUploader } from '~/interfaces/imageInterfaces'
 import { SearchOptions, SearchResult, USearcher } from '~/interfaces/searchInterfaces'
 import { USelector } from '~/interfaces/selectInterfaces'
-import { default as DynamicRecipe, default as dynamicRecipe } from '~/models/dynamicRecipe'
+import DynamicRecipe from '~/models/dynamicRecipe'
 import FileUpload, { FileUploadAttributes } from '~/models/fileUpload'
 import Tag, { RTag } from '~/models/tag'
 import Tagging from '~/models/tagging'
@@ -77,7 +77,7 @@ import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { TagActionTypes } from '~/store/modules/tags/actions'
 import Uploader from '~/uploaders/uploader'
-import { default as blockDirector, default as BlockDirector } from '~/utils/blocks/blockDirector'
+import BlockDirector from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import Logger from '~/utils/logger'
@@ -239,15 +239,7 @@ export default defineComponent({
       this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
       return this.dynamicRecipe
     },
-    onClick({ block, event, call }: { block: Block, event: PointerEvent, call: Function }) {
-      if (this.currentChoice) {
-        this.blockDirector.onChoose({ block, event, choice: this.currentChoice })
-        this.unsetCurrentChoice()
-      }
-      call()
-      this.save()
-    },
-    async onImageUpload({ block, image, call }: { block: ContentAttachmentIdBlock, image: IUploader, call: Function }) {
+    async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock, image: IUploader }) {
       if (this.dynamicRecipe && image.raw) {
         const uploader = new Uploader(ApiPath.base() + ApiPath.fileUploads())
         const imageResponse = await uploader.post<FileUploadAttributes>({
@@ -270,7 +262,6 @@ export default defineComponent({
           ({ attachment: oldAttachment } = this.findAttachment({ id: oldAttachmentId }))
           oldAttachment?.markForDestruction()
         }
-        call()
         await this.save()
         if (oldAttachment) {
           const index = this.dynamicRecipe.attachments.indexOf(oldAttachment)
@@ -288,12 +279,12 @@ export default defineComponent({
         return { attachment: null, url: null, alt: null }
       }
     },
-    async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
+    async onInput({ block, event, call }: { block: Block, event: InputEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
 
       const data = event.data
       if (!this.dropdownState && data === '/') {
-        this.openSearch({ block, data })
+        this.openSearch({ block, data, call })
         return
       }
       if (this.dropdownState) {
@@ -327,8 +318,6 @@ export default defineComponent({
       }
 
       call()
-      this.save()
-      this.focus(block)
     },
     onEnter({ block, event, call }: { block: Block, event: KeyboardEvent, call: Function }) {
       if (!this.dynamicRecipe) return
@@ -343,8 +332,6 @@ export default defineComponent({
       }
 
       call()
-      this.focusAfter(block)
-      this.save()
     },
     onArrowDown({ block, event }) {
       if (!this.dynamicRecipe) return
@@ -370,41 +357,12 @@ export default defineComponent({
     },
     onBackspace({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
       if (!this.dynamicRecipe) return
-
-      const data = event.data
       if (this.dropdownState) return
 
-      if (!this.blockDirector.isEmpty(block)) return
-
-      const beforeBlock = this.blockDirector.blockBefore(block)
-      if (beforeBlock) {
-        this.focusBefore(block)
-        call()
-      }
-      this.save()
-    },
-    onDelete({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
-      if (!this.dynamicRecipe) return
-      if (!this.blockDirector.isEmpty(block)) return
-
-      const blockAfter = this.blockDirector.blockAfter(block)
-      if (blockAfter) {
-        this.focusAfter(block)
-        call()
-      }
-      this.save()
-    },
-    onMove({ move, to, call }: { move: Block, to: Block, call: Function }) {
       call()
-      this.save()
     },
-    onCreate({ block, inside, call }: { block: Block, inside?: Block, call: Function }) {
-      call()
-      this.save()
-    },
-    async onDestroy({ block, call }: { block: Block, call: Function }) {
-      call()
-      const b: AllBlock = block as AllBlock
+    async onDestroyAttachments(block) {
+      const b: ContentAttachmentIdBlock = block as ContentAttachmentIdBlock
       const attachmentId = ObjectUtils.dig(b, 'content', 'attachmentId')
       let attachment: FileUpload | null = null
       if (attachmentId) b.content.attachmentId = null
@@ -421,6 +379,7 @@ export default defineComponent({
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
       this.focus(block)
+      this.save()
     },
     async executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
       if (block === null) return
@@ -458,15 +417,22 @@ export default defineComponent({
       let index = $focusables.index($(`[data-id="${block.id}"]`)) + step
       index %= $focusables.length
       const $focusableRoot = $focusables.eq(index)
-      return $focusableRoot.is('[data-focus]') ? $focusableRoot : $focusableRoot.find('[data-focus]')
+      return $focusableRoot.is('[data-focus]') ? $focusableRoot : step > 0 ? $focusableRoot.find('[data-focus]').first() : $focusableRoot.find('[data-focus]').last()
     },
-    openSearch({ block, data }) {
+    openSearch({ block, data, call }) {
       this.currentBlock = block
       this.dropdownState = true
       this.q = ''
       this.commandSearch.search(this.q)
       this.commandSelector.collections = [this.commandSearch.results]
       this.commandSelector.set(0)
+      $(':focus').on('keydown.search', (event) => {
+        if (event.key === 'Tab' || event.key === 'Escape') {
+          $(event.target).off('keydown.search')
+          this.closeSearch()
+          call()
+        }
+      })
     },
     closeSearch() {
       this.dropdownState = false
@@ -539,6 +505,9 @@ export default defineComponent({
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
     }, 500),
+    async onSave() {
+      await this.save()
+    },
     async addTag(item: { data: SearchResult<RTag, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
       if (!this.dynamicRecipe) return
       let tag
@@ -621,17 +590,16 @@ export default defineComponent({
     this.blockDirector = new BlockDirector<IFileUpload>({
       blocks: this.dynamicRecipe.blocks,
       findAttachment: this.findAttachment.bind(this),
+      focusAfter: this.focusAfter.bind(this),
+      focusBefore: this.focusBefore.bind(this),
       onArrowDown: this.onArrowDown.bind(this),
       onArrowUp: this.onArrowUp.bind(this),
       onBackspace: this.onBackspace.bind(this),
-      onClick: this.onClick.bind(this),
-      onCreate: this.onCreate.bind(this),
-      onDelete: this.onDelete.bind(this),
-      onDestroy: this.onDestroy.bind(this),
+      onDestroyAttachments: this.onDestroyAttachments.bind(this),
       onEnter: this.onEnter.bind(this),
       onImageUpload: this.onImageUpload.bind(this),
       onInput: this.onInput.bind(this),
-      onMove: this.onMove.bind(this),
+      onSave: this.onSave?.bind(this),
     })
 
     this.commandSearch = new Searcher({
@@ -639,7 +607,7 @@ export default defineComponent({
       valueString: 'label',
       type: 'command',
       collection: () => {
-        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image']
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image', 'ingredient']
         if (
           this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
           this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row'

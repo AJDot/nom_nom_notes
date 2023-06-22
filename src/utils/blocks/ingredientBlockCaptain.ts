@@ -1,14 +1,13 @@
-import { Block, BlockDirector, ContentBlockIdBlock, H1Block, RowBlock, TextBlock, UH1BlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, IngredientBlock, RowBlock, TextBlock, UIngredientBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 import { ObjectUtils } from '../objectUtils'
 
-export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
-  constructor(public block: H1Block, public director: BlockDirector<FType>) {
-  }
+export default class IngredientBlockCaptain<FType> implements UIngredientBlockCaptain<FType> {
+  constructor(public block: IngredientBlock, public director: BlockDirector<FType>) {}
 
   get isEmpty(): boolean {
-    if (ObjectUtils.dig(this.block, 'content', 'text')) return false
+    if (ObjectUtils.dig(this.block, 'content', 'amount') || ObjectUtils.dig(this.block, 'content', 'text')) return false
 
     return true
   }
@@ -25,8 +24,11 @@ export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
     this.director.addAfter(newBlock, this.block)
   }
 
-  onInput({ event }: { event: InputEvent }) {
-    this.block.content.text = (<HTMLElement>event.target)?.innerText
+  onInput({ event, contentType }: { event: InputEvent, contentType: 'amount' | 'text' }) {
+    this.block.content[contentType] = (<HTMLElement>event.target)?.innerHTML
+    if (!this.director.find(this.block.id)) {
+      this.director.add(this.block)
+    }
   }
 
   onMove({ block }: { block: Block }) {

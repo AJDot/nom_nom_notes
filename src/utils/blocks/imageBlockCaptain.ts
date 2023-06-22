@@ -1,9 +1,16 @@
-import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UImageBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
+import { ObjectUtils } from '../objectUtils'
 
-export default class ImageBlockCaptain<FType> implements UBlockCaptain<ImageBlock, FType> {
+export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FType> {
   constructor(public block: ImageBlock, public director: BlockDirector<FType>) {
+  }
+
+  get isEmpty(): boolean {
+    if (ObjectUtils.dig(this.block, 'content', 'attachmentId')) return false
+
+    return true
   }
 
   onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
@@ -28,6 +35,7 @@ export default class ImageBlockCaptain<FType> implements UBlockCaptain<ImageBloc
       case 'row':
       case 'sidebar':
       case 'image':
+      case 'ingredient':
         this.director.move(block, this.block)
         break
       case 'column':

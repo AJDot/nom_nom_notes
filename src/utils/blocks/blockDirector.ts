@@ -1,18 +1,20 @@
-import { AllBlock, Block, BlockCommandDict, BlockDirector as GBLockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
-import { Uploader } from '~/interfaces/imageInterfaces'
+import { Block, BlockCommandDict, BlockDirector as GBlockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, IngredientBlock, RowBlock, TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import Uploader from '~/uploaders/uploader'
 import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
 import Guid from '../guid'
+import { TBlockCaptain } from './../../interfaces/blockInterfacesGeneral'
 import ColumnBlockCaptain from './columnBlockCaptain'
 import H1BlockCaptain from './h1BlockCaptain'
 import H2BlockCaptain from './h2BlockCaptain'
 import H3BlockCaptain from './h3BlockCaptain'
 import ImageBlockCaptain from './imageBlockCaptain'
+import IngredientBlockCaptain from './ingredientBlockCaptain'
 import RowBlockCaptain from './rowBlockCaptain'
 import SidebarBlockCaptain from './sidebarBlockCaptain'
 import TextBlockCaptain from './textBlockCaptain'
 
-export default class BlockDirector<FType> implements GBLockDirector<FType> {
+export default class BlockDirector<FType> implements GBlockDirector<FType> {
   readonly COMMANDS: BlockCommandDict = {
     h1: {
       label: 'H1',
@@ -73,6 +75,15 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
       call: block => {
         const newImage: ImageBlock = { id: Guid.create(), type: 'image', content: { attachmentId: null } }
         this.addAfter(newImage, block)
+      }
+    },
+    ingredient: {
+      label: 'Ingredient',
+      description: 'Add an ingredient amount and description',
+      call: block => {
+        block.type = 'ingredient'
+        const ingredientBlock: IngredientBlock = block as IngredientBlock
+        ingredientBlock.content = { amount: '', text: ingredientBlock.content.text }
       }
     }
   }
@@ -184,11 +195,7 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
   }
 
   findAttachment({ id }: { id: string }): FindAttachmentReturn<FType> {
-    if (this.options.findAttachment) {
-      return this.options.findAttachment({ id })
-    } else {
-      return this.findAttachmentDefault({ id })
-    }
+    return this.options.findAttachment({ id })
   }
 
   findNearest<T extends Block['type']>(block: Block, type: T): Extract<Block, { type: T }> | null {
@@ -216,19 +223,25 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
     }) as ((block) => block is Extract<Block, T>))
   }
 
+  async focusAfter(block: Block) {
+    await this.options.focusAfter(block)
+  }
+
+  async focusBefore(block: Block) {
+    await this.options.focusBefore(block)
+  }
+
   indexOf(block: Block): number | null {
     const index = this.blocks.indexOf(block)
     return index >= 0 ? index : null
   }
 
-  isEmpty(block: AllBlock): boolean {
-    if (ObjectUtils.dig(block, 'content', 'text')) return false
-
-    return this.childrenFor(block).length === 0
+  isEmpty(block: Block): boolean {
+    return this.captainFor(block).isEmpty
   }
 
   move(block: Block, to: Block) {
-    let moveIndex: number | null = this.indexOf(block)
+    const moveIndex: number | null = this.indexOf(block)
     if (moveIndex === null) return
     const moved = this.blocks.splice(moveIndex, 1)[0]
     let toIndex: number | null = this.indexOf(to)
@@ -239,7 +252,7 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
   }
 
   moveInside(block: Block, to: Block) {
-    let moveIndex: number | null = this.indexOf(block)
+    const moveIndex: number | null = this.indexOf(block)
     const children = this.childrenFor(to)
     let toIndex: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
     if (moveIndex === null || toIndex === null) return
@@ -248,108 +261,57 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
     block.parentId = to.id
   }
 
-  async onDrop({ moveBlockId, toBlockId, }: { moveBlockId: string, toBlockId: string }) {
-    if (this.options.onDrop) {
-      this.options.onDrop({ moveBlockId, toBlockId, call: () => this.onDropDefault({ moveBlockId, toBlockId }) })
-    } else {
-      this.onDropDefault({ moveBlockId, toBlockId })
-    }
-  }
-
   onArrowDown({ block, event }: { block: Block; event: KeyboardEvent }): void {
-    if (this.options.onArrowDown) {
-      this.options.onArrowDown({ block, event, call: () => this.onArrowDownDefault({ block, event }) })
-    } else {
-      this.onArrowDownDefault({ block, event })
-    }
+    this.options.onArrowDown({ block, event })
   }
 
   onArrowUp({ block, event }: { block: Block; event: KeyboardEvent }): void {
-    if (this.options.onArrowUp) {
-      this.options.onArrowUp({ block, event, call: () => this.onArrowUpDefault({ block, event }) })
-    } else {
-      this.onArrowUpDefault({ block, event })
-    }
+    this.options.onArrowUp({ block, event })
   }
 
-  onBackspace({ block, event }: { block: Block; event: InputEvent }) {
-    if (this.options.onBackspace) {
-      this.options.onBackspace({ block, event, call: () => this.onBackspaceDefault({ block, event }) })
-    } else {
-      this.onBackspaceDefault({ block, event })
-    }
+  onBackspace({ block, event, call }: { block: Block; event: InputEvent, call: () => void }) {
+    this.options.onBackspace({ block, event, call })
   }
 
   onCreate({ block, inside }: { block: Block, inside?: Block }) {
-    if (this.options.onCreate) {
-      this.options.onCreate({ block, inside, call: () => this.onCreateDefault({ block, inside }) })
+    if (inside) {
+      this.addAfter(block, inside)
+      this.moveInside(block, inside)
     } else {
-      this.onCreateDefault({ block, inside })
+      this.add(block)
     }
   }
 
-  onDelete({ block, event }: { block: Block, event: InputEvent }) {
-    if (this.options.onDelete) {
-      this.options.onDelete({ block, event, call: () => this.onDeleteDefault({ block, event }) })
-    } else {
-      this.onDeleteDefault({ block, event })
-    }
+  async onDestroyAttachments({ block }: { block: Block }) {
+    return this.options.onDestroyAttachments({ block })
   }
 
-  onDestroy({ block }: { block: Block }) {
-    if (this.options.onDestroy) {
-      this.options.onDestroy({ block, call: () => this.onDestroyDefault({ block }) })
-    } else {
-      this.onDestroyDefault({ block })
-    }
-  }
-
-  onEnter({ block, event }: { block: Block, event: KeyboardEvent }): void {
-    if (this.options.onEnter) {
-      this.options.onEnter({ block, event, call: () => this.onEnterDefault({ block, event }) })
-    } else {
-      this.onEnterDefault({ block, event })
-    }
+  onEnter({ block, event, call }: { block: Block, event: KeyboardEvent, call: () => void }): void {
+    this.options.onEnter({ block, event, call })
   }
 
   onChoose({ block, event, choice }: { block: Block, event: PointerEvent, choice: { type: string, args: [Block] } }) {
-    if (this.options.onChoose) {
-      this.options.onChoose({ block, event, choice, call: () => this.onChooseDefault({ block, event, choice }) })
-    } else {
-      this.onChooseDefault({ block, event, choice })
-    }
-  }
-
-  onClick({ block, event }: { block: Block; event: PointerEvent }) {
-    if (this.options.onClick) {
-      this.options.onClick({ block, event, call: () => this.onClickDefault({ block, event }) })
-    } else {
-      this.onClickDefault({ block, event })
-    }
+    this.captainFor(block).onChoose({ event, choice })
   }
 
   async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock; image: Uploader }) {
-    if (this.options.onImageUpload) {
-      this.options.onImageUpload({ block, image, call: () => this.onImageUploadDefault({ block, image }) })
-    } else {
-      this.onImageUploadDefault({ block, image })
+    this.options.onImageUpload({ block, image })
+  }
+
+  async onInput({ block, event, call }: { block: Block; event: InputEvent, call: () => void }) {
+    this.options.onInput({ block, event, call })
+  }
+
+  onMove(data: ({ move: Block } | { moveId: string }) & ({ to: Block } | { toId: string })) {
+    const move: Block | null = 'moveId' in data ? this.find(data.moveId) : data.move
+    const to: Block | null = 'toId' in data ? this.find(data.toId) : data.to
+    if (move && to) {
+      this.captainFor(to).onMove({ block: move })
     }
   }
 
-  async onInput({ block, event }: { block: Block; event: InputEvent }) {
-    if (this.options.onInput) {
-      this.options.onInput({ block, event, call: () => this.onInputDefault({ block, event }) })
-    } else {
-      this.onInputDefault({ block, event })
-    }
-  }
-
-  onMove({ move, to }: { move: Block, to: Block }) {
-    if (this.options.onMove) {
-      this.options.onMove({ move, to, call: () => this.onMoveDefault({ move, to }), })
-    } else {
-      this.onMoveDefault({ move, to })
-    }
+  onSave() {
+    this.options.onSave()
   }
 
   order(order: 'display', blocks: Block[] = this.blocks.filter(b => !b.parentId)): Block[] {
@@ -367,86 +329,28 @@ export default class BlockDirector<FType> implements GBLockDirector<FType> {
     this.options.blocks = blocks
   }
 
-  captainFor(block: Block): UBlockCaptain<Block, FType> {
+  captainFor<B extends Block>(block: B): TBlockCaptain<B, FType> {
     switch (block.type) {
       case 'h1':
-        return new H1BlockCaptain<FType>(block, this)
+        return new H1BlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'h2':
-        return new H2BlockCaptain<FType>(block, this)
+        return new H2BlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'h3':
-        return new H3BlockCaptain<FType>(block, this)
+        return new H3BlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'text':
-        return new TextBlockCaptain<FType>(block, this)
+        return new TextBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'row':
-        return new RowBlockCaptain<FType>(block, this)
+        return new RowBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'column':
-        return new ColumnBlockCaptain<FType>(block, this)
+        return new ColumnBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'sidebar':
-        return new SidebarBlockCaptain<FType>(block, this)
+        return new SidebarBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'image':
-        return new ImageBlockCaptain<FType>(block, this)
+        return new ImageBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
+      case 'ingredient':
+        return new IngredientBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       default:
         assertNever(block)
-    }
-  }
-
-  private findAttachmentDefault({ id }: { id: string | null | undefined }): FindAttachmentReturn<FType> {
-    return { attachment: null, url: null }
-  }
-
-  private onArrowDownDefault({ block, event }: { block: Block, event: KeyboardEvent }) {
-  }
-
-  private onArrowUpDefault({ block, event }: { block: Block, event: KeyboardEvent }) {
-  }
-
-  private onBackspaceDefault({ block, event }: { block: Block, event: InputEvent }) {
-    return this.destroy(block)
-  }
-
-  private onChooseDefault({ block, event, choice }: { block: Block, event: PointerEvent, choice: { type: string, args: [Block] } }) {
-    this.captainFor(block).onChoose({ event, choice })
-  }
-
-  private onClickDefault({ block, event }: { block: Block; event: PointerEvent }) {
-  }
-
-  private onDeleteDefault({ block, event }: { block: Block; event: InputEvent }) {
-    return this.destroy(block)
-  }
-
-  private onDestroyDefault({ block }: { block: Block }) {
-    return this.destroy(block, 'down')
-  }
-
-  private onEnterDefault({ block, event }: { block: Block; event: KeyboardEvent }) {
-    this.captainFor(block).onEnter({ event })
-  }
-
-  private onImageUploadDefault({ block, image }: { block: Block; image: Uploader }) {
-  }
-
-  private onInputDefault({ block, event }: { block: Block; event: InputEvent }) {
-    this.captainFor(block).onInput({ event })
-  }
-
-  private onMoveDefault({ move, to }: { move: Block, to: Block }): void {
-    this.captainFor(to).onMove({ block: move })
-  }
-
-  private onDropDefault({ moveBlockId, toBlockId, }: { moveBlockId: string, toBlockId: string }) {
-    const moveBlock = this.find(moveBlockId)
-    const toBlock = this.find(toBlockId)
-    if (moveBlock && toBlock)
-      this.onMove({ move: moveBlock, to: toBlock })
-  }
-
-  private onCreateDefault({ block, inside }: { block: Block, inside?: Block }) {
-    if (inside) {
-      this.addAfter(block, inside)
-      this.moveInside(block, inside)
-    } else {
-      this.add(block)
     }
   }
 }

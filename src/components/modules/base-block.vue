@@ -12,6 +12,7 @@ import H1Block from './h1-block.vue'
 import H2Block from './h2-block.vue'
 import H3Block from './h3-block.vue'
 import ImageBlock from './image-block.vue'
+import IngredientBlock from './ingredient-block.vue'
 import RowBlock from './row-block.vue'
 import SidebarBlock from './sidebar-block.vue'
 import TextBlock from './text-block.vue'
@@ -31,6 +32,7 @@ export default defineComponent({
     ColumnBlock,
     SidebarBlock,
     ImageBlock,
+    IngredientBlock,
   },
   mixins: [
     draggableMixin,
@@ -65,6 +67,7 @@ export default defineComponent({
         column: 'column-block',
         sidebar: 'sidebar-block',
         image: 'image-block',
+        ingredient: 'ingredient-block',
       },
     }
   },

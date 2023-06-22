@@ -6,7 +6,7 @@
     <SidePanel :state="sidePanelState" @close="sidePanelState = false" class="flex self-stretch grow">
       <template #control>
         <button type="button" aria-disabled="true" class="flex grow self-stretch py-2 border-transparent rounded-md break-anywhere sm:px-1" @click.prevent="onSidebarClick" ref="button">
-          <span data-focus class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]" :placeholder="placeholder" :contenteditable="isEditable" v-html="block.content.text" ref="content" v-on="blockListeners"></span>
+          <span data-focus class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]" :placeholder="placeholder" :contenteditable="isEditable" v-html="block.content.text" ref="text" @input="onInput" @keydown="onKeydown" @click="onClick"></span>
         </button>
       </template>
       <base-block v-if="contentBlock" :block="contentBlock" :director="director" mode="show" />
@@ -30,10 +30,11 @@
 <script lang="ts">
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { Block, SidebarBlock } from '~/interfaces/blockInterfacesGeneral'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
+import { StoreModulePath } from '~/store'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import SidePanel from '../structure/side-panel.vue'
 
@@ -45,7 +46,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<SidebarBlock>(),
-    preserveCaretMixin,
+    preserveCaretMixin('text'),
   ],
   data() {
     return {
@@ -56,6 +57,7 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     placeholder(): string {
       return "Sidebar"
     },
@@ -73,15 +75,106 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions('interfaces/choice', { setChoiceState: ChoiceActionTypes.SET }),
+    ...mapActions('interfaces/choice', { setChoiceState: ChoiceActionTypes.SET, unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     onDrop(payload) {
-      const { dragItemId: moveBlockId, dropItemId: toBlockId } = payload
-      this.director.onDrop({ moveBlockId, toBlockId })
+      const { dragItemId: moveId, dropItemId: toId } = payload
+      this.director.onMove({ moveId, toId })
+    },
+    onClick(event) {
+      if (!this.isEditable && !this.isChooseMode) return
+
+      if (this.currentChoice) {
+        const captain = this.director.captainFor(this.block)
+        captain.onChoose({ event, choice: this.currentChoice })
+        this.unsetCurrentChoice()
+      }
     },
     onSidebarClick() {
       if (this.isShowMode) {
         this.sidePanelState = !this.sidePanelState
       }
+    },
+    onInput(event) {
+      if (!this.isEditable) return
+      const captain = this.director.captainFor(this.block)
+      this.director.onInput({
+        block: this.block, event, call: () => {
+          captain.onInput({ event })
+          this.save()
+        }
+      })
+    },
+    onKeydown(event) {
+      if (!this.isEditable) return
+
+      switch (event.key) {
+        case 'ArrowDown':
+          this.onArrowDown(event)
+          break
+        case 'ArrowUp':
+          this.onArrowUp(event)
+          break
+        case 'Enter':
+          this.onEnter(event)
+          break
+        case 'Backspace':
+          this.onBackspace(event)
+          break
+        case 'Delete':
+          this.onDelete(event)
+          break
+      }
+    },
+    onArrowDown(event) {
+      if (!this.isEditable) return
+
+      this.director.onArrowDown({ block: this.block, event })
+    },
+    onArrowUp(event) {
+      if (!this.isEditable) return
+
+      this.director.onArrowUp({ block: this.block, event })
+    },
+    onEnter(event: KeyboardEvent) {
+      if (!this.isEditable) return
+
+      if (event.shiftKey) {
+      } else {
+        const captain = this.director.captainFor(this.block)
+        this.director.onEnter({
+          block: this.block, event, call: () => {
+            captain.onEnter({ event })
+            this.save()
+            this.director.focusAfter(this.block)
+          }
+        })
+        event.preventDefault()
+      }
+    },
+    onBackspace(event) {
+      if (!this.isEditable) return
+      const captain = this.director.captainFor(this.block)
+      if (captain.isEmpty) {
+        this.director.onBackspace({
+          block: this.block, event, call: () => {
+            this.director.focusBefore(this.block)
+            this.director.destroy(this.block, 'down')
+            this.save()
+          }
+        })
+      }
+    },
+    async onDelete(event) {
+      if (!this.isEditable) return
+      const captain = this.director.captainFor(this.block)
+      if (captain.isEmpty) {
+        this.director.destroy(this.block, 'down')
+        setTimeout(() => this.director.focusAfter(this.block), 50)
+        this.save()
+      }
+    },
+    save() {
+      this.director.onSave()
     },
     async openDropdown(event) {
       this.editDropdownState = !this.editDropdownState

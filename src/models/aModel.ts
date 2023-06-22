@@ -64,7 +64,7 @@ export default abstract class AModel extends Model implements AModelAttributes, 
     return this.selfClass.getIdFromRecord(this) as never
   }
 
-  get selfClass(): typeof Model {
+  get selfClass(): typeof AModel {
     return this.$self()
   }
 }

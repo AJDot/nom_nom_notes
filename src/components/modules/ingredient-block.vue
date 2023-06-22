@@ -1,6 +1,7 @@
 <template>
-  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative basis-full rounded-md" :hover-color="hoverColor" :item="block" @drop="onDrop" data-test-block="text">
-    <div :key="block.id" :placeholder="placeholder" data-focus class="text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.text" ref="text" v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null" @input="onInput" @keydown="onKeydown" @click="onClick"></div>
+  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" @drop="onDrop" class="flex flex-row basis-full p-1 rounded-md" :hover-color="hoverColor" :class="{ 'cursor-pointer': isChooseMode }" @click.self.stop="onClick" data-test-block="ingredient">
+    <div :key="block.id + '-amount'" :data-toggle-key="block.id" :placeholder="placeholder" data-focus class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.amount" @input="onInputAmount" @keydown="onKeydownAmount" ref="amount" v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"></div>
+    <div :key="block.id + '-text'" :data-toggle-key="block.id" :placeholder="placeholder" data-focus class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.text" @input="onInputText" @keydown="onKeydownText" ref="text" v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"></div>
   </draggable>
 </template>
 
@@ -8,7 +9,7 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import { IngredientBlock } from '~/interfaces/blockInterfacesGeneral'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 import { StoreModulePath } from '~/store'
@@ -16,13 +17,13 @@ import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { ToggleActionTypes } from '~/store/modules/interfaces/modules/toggle'
 
 export default defineComponent({
-  name: "TextBlock",
+  name: "IngredientBlock",
   components: {
     Draggable
   },
   mixins: [
-    blockMixin<TextBlock>(),
-    preserveCaretMixin('text'),
+    blockMixin<IngredientBlock>(),
+    preserveCaretMixin('amount', 'text'),
   ],
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),
@@ -47,17 +48,51 @@ export default defineComponent({
         this.unsetCurrentChoice()
       }
     },
-    onInput(event) {
+    onInputAmount(event) {
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       this.director.onInput({
         block: this.block, event, call: () => {
-          captain.onInput({ event })
+          captain.onInput({ event, contentType: 'amount' })
           this.save()
         }
       })
     },
-    onKeydown(event) {
+    onInputText(event) {
+      if (!this.isEditable) return
+      const captain = this.director.captainFor(this.block)
+      this.director.onInput({
+        block: this.block, event, call: () => {
+          captain.onInput({ event, contentType: 'text' })
+          this.save()
+        }
+      })
+    },
+    onKeydownAmount(event) {
+      if (!this.isEditable) return
+
+      switch (event.key) {
+        case 'ArrowDown':
+          $(this.$refs.text as HTMLElement).trigger('focus')
+          break
+        case 'ArrowUp':
+          this.onArrowUp(event)
+          break
+        case 'Enter':
+          this.onEnter(event)
+          break
+        case 'Backspace':
+          this.onBackspace(event)
+          break
+        case 'Delete':
+          const captain = this.director.captainFor(this.block)
+          if (captain.isEmpty) {
+            this.onDelete(event)
+          }
+          break
+      }
+    },
+    onKeydownText(event) {
       if (!this.isEditable) return
 
       switch (event.key) {
@@ -65,7 +100,7 @@ export default defineComponent({
           this.onArrowDown(event)
           break
         case 'ArrowUp':
-          this.onArrowUp(event)
+          $(this.$refs.amount as HTMLElement).trigger('focus')
           break
         case 'Enter':
           this.onEnter(event)
@@ -104,8 +139,13 @@ export default defineComponent({
         event.preventDefault()
       }
     },
+    /**
+     * +onInput+ doesn't fire when backspace is pressed when input field is already empty but +onBackspace+ does
+     * but +onBackspace+ also fires when input field is not empty, so filter that out
+     */
     onBackspace(event) {
       if (!this.isEditable) return
+
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
         this.director.onBackspace({
@@ -117,14 +157,16 @@ export default defineComponent({
         })
       }
     },
-    async onDelete(event) {
+    onDelete(event) {
       if (!this.isEditable) return
+
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
         this.director.destroy(this.block, 'down')
         setTimeout(() => this.director.focusAfter(this.block), 50)
         this.save()
       }
+
     },
     save() {
       this.director.onSave()
