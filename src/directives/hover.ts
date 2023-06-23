@@ -1,4 +1,4 @@
-import { DirectiveBinding, VNode } from '@vue/runtime-core'
+import { DirectiveBinding, VNode } from 'vue'
 
 export const Hover = {
   beforeMount(el: HTMLElement, binding: DirectiveBinding, _vNode: VNode, _prevVNode: VNode | null): void {

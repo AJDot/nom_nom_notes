@@ -31,11 +31,13 @@ describe('Create Tags', function () {
     cy.getByLabel('Tags').type('{enter}')
 
     // Add new tag
-    cy.getByLabel('Tags').clear().type('Chinese')
+    cy.getByLabel('Tags').clear()
+    cy.getByLabel('Tags').type('Chinese')
     cy.getDropdownItem('+ Create tag Chinese').click()
 
     // Can't add tag if already exists
-    cy.getByLabel('Tags').clear().type('Chinese')
+    cy.getByLabel('Tags').clear()
+    cy.getByLabel('Tags').type('Chinese')
     cy.getTest('dropdown-item')
       .should('have.length', 1)
       .trim()

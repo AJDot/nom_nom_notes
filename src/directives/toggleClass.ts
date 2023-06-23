@@ -1,4 +1,4 @@
-import { DirectiveBinding, VNode } from '@vue/runtime-core'
+import { DirectiveBinding, VNode } from 'vue'
 
 function toggleClassFactory(cssClass: string) {
   return (ev) => {

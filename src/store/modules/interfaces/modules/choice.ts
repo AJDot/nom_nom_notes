@@ -1,29 +1,20 @@
-import {
-  Action,
-  ActionTree,
-  Commit,
-  Getter,
-  GetterTree,
-  Module,
-  Mutation,
-  MutationTree,
-} from 'vuex'
+import { Action, ActionTree, Commit, Getter, GetterTree, Module, Mutation, MutationTree } from 'vuex'
 import { RootState } from '~/store/interfaces'
 
 export interface ChoiceState {
-  current: { type: string, args: any[] } | null
+  current: { type: string, args: unknown[] } | null
 }
 
 export enum ChoiceGetterTypes {}
 
 export enum ChoiceMutationTypes {
   SET = 'SET',
-  UNSET = 'UNSET'
+  UNSET = 'UNSET',
 }
 
 export enum ChoiceActionTypes {
   SET = 'SET',
-  UNSET = 'UNSET'
+  UNSET = 'UNSET',
 }
 
 type ChoiceGetters = {
@@ -41,7 +32,7 @@ const state: () => ChoiceState = () => ({
 const getters: GetterTree<ChoiceState, RootState> & ChoiceGetters = {}
 
 const mutations: MutationTree<ChoiceState> & ChoiceMutations = {
-  [ChoiceMutationTypes.SET](state, payload: { type: string, args: any[] } | null) {
+  [ChoiceMutationTypes.SET](state, payload: { type: string, args: unknown[] } | null) {
     state.current = payload
   },
   [ChoiceMutationTypes.UNSET](state) {
@@ -50,7 +41,7 @@ const mutations: MutationTree<ChoiceState> & ChoiceMutations = {
 }
 
 const actions: ActionTree<ChoiceState, RootState> & ChoiceActions = {
-  [ChoiceActionTypes.SET]({ commit }: { commit: Commit }, payload: { type: string, args: any[] } | null) {
+  [ChoiceActionTypes.SET]({ commit }: { commit: Commit }, payload: { type: string, args: unknown[] } | null) {
     commit(ChoiceMutationTypes.SET, payload)
   },
   [ChoiceActionTypes.UNSET]({ commit }: { commit: Commit }) {

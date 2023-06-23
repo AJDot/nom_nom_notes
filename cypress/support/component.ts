@@ -25,7 +25,7 @@ import DropdownItemEmpty from '@/structure/dropdown-item-empty.vue'
 import DropdownItem from '@/structure/dropdown-item.vue'
 import Dropdown from '@/structure/dropdown.vue'
 import { mount } from 'cypress/vue'
-import currentUserMixin from '~/mixins/currentUserMixin'
+import currentUserMixin from '../../src/mixins/currentUserMixin'
 
 import 'Styles/index.css'
 
@@ -34,6 +34,7 @@ import 'Styles/index.css'
 // Alternatively, can be defined in cypress/support/component.d.ts
 // with a <reference path="./component" /> at the top of your spec.
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       mount: typeof mount
@@ -45,7 +46,7 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   // Setup options object
   options.global = options.global || {}
   options.global.stubs = options.global.stubs || {}
-  options.global.stubs['transition'] = false
+  options.global.stubs.transition = false
   options.global.components = options.global.components || {}
   options.global.plugins = options.global.plugins || []
   options.global.mixins = options.global.mixins || []
@@ -58,13 +59,13 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   // });
 
   /* Add any global components */
-  options.global.components['AInput'] = AInput
-  options.global.components['dropdown'] = Dropdown
+  options.global.components.AInput = AInput
+  options.global.components.dropdown = Dropdown
   options.global.components['dropdown-item'] = DropdownItem
   options.global.components['dropdown-item-empty'] = DropdownItemEmpty
   options.global.components['dropdown-item-button'] = DropdownItemButton
 
   options.global.mixins.push(currentUserMixin)
 
-  return mount(component as any, options)
+  return mount(component as never, options)
 })

@@ -9,12 +9,12 @@ import Tagging from 'Models/tagging'
 import User from 'Models/user'
 
 export type RecipeAttributes = AModelAttributes & Nameable & Description & CookTime & Notable &
-  HasMany<'steps', Step> &
-  HasMany<'ingredients', Ingredient> &
-  HasMany<'taggings', Tagging> &
-  HasMany<'tags', Tag> &
-  HasUploader<'image'> &
-  HasOne<'owner', User>
+HasMany<'steps', Step> &
+HasMany<'ingredients', Ingredient> &
+HasMany<'taggings', Tagging> &
+HasMany<'tags', Tag> &
+HasUploader<'image'> &
+HasOne<'owner', User>
 
 export interface RRecipe extends RecipeAttributes {
 }
@@ -40,7 +40,7 @@ export default class Recipe extends AModel implements RRecipe {
       tags: this.belongsToMany(Tag, Tagging, 'taggableId', 'tagId'),
       image: this.attr({}),
       ownerId: this.string(''),
-      owner: this.belongsTo(User, 'ownerId', 'clientId')
+      owner: this.belongsTo(User, 'ownerId', 'clientId'),
     }
   }
 

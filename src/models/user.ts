@@ -8,8 +8,8 @@ export type UserAttributes = AModelAttributes & {
   email: string
   username: string
 } &
-  HasMany<'recipes', Recipe> &
-  HasMany<'dynamicRecipes', DynamicRecipe>
+HasMany<'recipes', Recipe> &
+HasMany<'dynamicRecipes', DynamicRecipe>
 
 export interface RUser extends UserAttributes {
 }

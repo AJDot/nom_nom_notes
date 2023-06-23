@@ -74,7 +74,7 @@ export interface BlockDirectorOptions<FType> {
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent, call: () => void }): void
-  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: any[] }, call: () => void }): void
+  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: unknown[] }, call: () => void }): void
   onDestroyAttachments(args: { block: Block }): Promise<void>
   onEnter(args: { block: Block, event: KeyboardEvent, call: () => void }): void
   onImageUpload(args: { block: ContentAttachmentIdBlock, image: Uploader }): void
@@ -92,6 +92,7 @@ export interface BlockDirector<FType> {
   ancestors(block: Block): Block[]
   blockAfter(block: Block): Block | null
   blockBefore(block: Block): Block | null
+  // eslint-disable-next-line no-use-before-define
   captainFor<B extends Block>(block: B): TBlockCaptain<B, FType>
   childrenFor(block: Block | null): Array<Block>
   destroy(block: Block, direction: 'down' | 'up' | 'both'): boolean
@@ -99,7 +100,7 @@ export interface BlockDirector<FType> {
   find(id: string | null | undefined): Block | null
   findAttachment(args: { id: string | null | undefined }): FindAttachmentReturn<FType>
   findNearest(block: Block, type: Block['type']): Block | null
-  findWhere<T extends Record<string, any>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[]
+  findWhere<T extends Record<string, unknown>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[]
   focusAfter(block: Block): Promise<void>
   focusBefore(block: Block): Promise<void>
   indexOf(block: Block): number | null
@@ -109,7 +110,7 @@ export interface BlockDirector<FType> {
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent, call: () => void }): void
-  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: any[] } }): void
+  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: unknown[] } }): void
   onCreate(args: { block: Block, inside?: Block }): void
   onDestroyAttachments(args: { block: Block }): Promise<void>
   onEnter(args: { block: Block, event: KeyboardEvent, call: () => void }): void

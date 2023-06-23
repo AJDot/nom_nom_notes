@@ -40,6 +40,7 @@ describe('Sign Up', () => {
       cy.get('form').within(() => {
         cy.contains('input', 'Sign Up').click()
       })
+      cy.get('form')
         .then(() => {
           cy.contains('Username can\'t be blank').should('exist')
           cy.contains('Password can\'t be blank').should('exist')

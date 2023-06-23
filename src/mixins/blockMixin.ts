@@ -18,7 +18,7 @@ export default function <B extends Block>() {
       mode: {
         type: String,
         default: 'show',
-        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop),
       },
       editable: {
         type: Boolean,

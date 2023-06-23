@@ -26,7 +26,7 @@ export default function (...keys: string[]) {
             SelectionUtils.moveCaret(element, position)
           }
         }
-      }
-    }
+      },
+    },
   })
 }

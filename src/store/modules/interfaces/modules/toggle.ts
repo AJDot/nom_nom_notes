@@ -41,7 +41,7 @@ const state: () => ToggleState = () => ({
 const getters: GetterTree<ToggleState, RootState> & ToggleGetters = {}
 
 const mutations: MutationTree<ToggleState> & ToggleMutations = {
-  [ToggleMutationTypes.SET]( state, { key, value }: { key: string, value: boolean }) {
+  [ToggleMutationTypes.SET](state, { key, value }: { key: string, value: boolean }) {
     state.state[key] = value
   },
   [ToggleMutationTypes.TOGGLE](state, key: string) {
@@ -53,7 +53,7 @@ const actions: ActionTree<ToggleState, RootState> & ToggleActions = {
   [ToggleActionTypes.SET]({ commit }: { commit: Commit }, payload: { key: boolean, value: boolean }) {
     commit(ToggleMutationTypes.SET, payload)
   },
-  [ToggleActionTypes.TOGGLE]( { commit }: { commit: Commit }, key: boolean) {
+  [ToggleActionTypes.TOGGLE]({ commit }: { commit: Commit }, key: boolean) {
     commit(ToggleMutationTypes.TOGGLE, key)
   },
 }

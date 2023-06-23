@@ -1,5 +1,5 @@
-import { Block } from "../../../src/interfaces/blockInterfacesGeneral"
-import Guid from "../../../src/utils/guid"
+import { Block } from '../../../src/interfaces/blockInterfacesGeneral'
+import Guid from '../../../src/utils/guid'
 
 describe('Show Dynamic Recipe', () => {
   context('Not logged in', () => {
@@ -28,7 +28,6 @@ describe('Show Dynamic Recipe', () => {
           cy.contains('a', 'Pasta').click()
         })
         .then(() => {
-
           const data = [
             { id: h1Id, text: 'Description' },
             { id: rowId, text: 'Ingredient 1Ingredient 2' },

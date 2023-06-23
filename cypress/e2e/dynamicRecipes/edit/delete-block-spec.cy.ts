@@ -1,5 +1,5 @@
-import { Block } from "../../../../src/interfaces/blockInterfacesGeneral"
-import Guid from "../../../../src/utils/guid"
+import { Block } from '../../../../src/interfaces/blockInterfacesGeneral'
+import Guid from '../../../../src/utils/guid'
 
 describe('Delete Dynamic Recipe Block', () => {
   function assertBlocks(expected: { id?: string, text: string }[]) {
@@ -50,7 +50,6 @@ describe('Delete Dynamic Recipe Block', () => {
         dynamic_recipe: { name: 'Pasta', ownerId: this.fry.attributes.clientId, blocks },
       }).its('body.data.0').as('dynamicRecipe')
         .then(function () {
-
           cy.visit(`/dynamic_recipes/${this.dynamicRecipe.attributes.clientId}/edit`)
 
           assertBlocks([
@@ -69,8 +68,10 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 2 text block
-          cy.contains('Ingredient 2').clear().should('exist')
-            .type('{backspace}').should('not.exist')
+          cy.contains('Ingredient 2').clear()
+          cy.contains('Ingredient 2').should('exist')
+          cy.contains('Ingredient 2').type('{backspace}')
+          cy.contains('Ingredient 2').should('not.exist')
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: h2Id, text: 'Heading 2' },
@@ -86,7 +87,7 @@ describe('Delete Dynamic Recipe Block', () => {
 
           // delete image
           cy.get('[data-test-block="image"]').trigger('mouseenter')
-            .contains('delete').click()
+          cy.get('[data-test-block="image"]').contains('delete').click()
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: h2Id, text: 'Heading 2' },
@@ -100,8 +101,10 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 3 and Sidebar
-          cy.contains('Ingredient 3').clear().should('exist')
-            .type('{del}{del}{del}{del}{del}{del}{del}{del}{backspace}').should('not.exist')
+          cy.contains('Ingredient 3').clear()
+          cy.contains('Ingredient 3').should('exist')
+          cy.contains('Ingredient 3').type('{del}{del}{del}{del}{del}{del}{del}{del}{backspace}')
+          cy.contains('Ingredient 3').should('not.exist')
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: h2Id, text: 'Heading 2' },
@@ -113,8 +116,10 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Heading 2 and 3
-          cy.contains('Heading 2').clear().should('exist')
-            .type('{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}').should('not.exist')
+          cy.contains('Heading 2').clear()
+          cy.contains('Heading 2').should('exist')
+          cy.contains('Heading 2').type('{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}')
+          cy.contains('Heading 2').should('not.exist')
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: rowId, text: 'Ingredient 1' },
@@ -124,8 +129,10 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 1
-          cy.contains('Ingredient 1').clear().should('exist')
-            .type('{backspace}').should('not.exist')
+          cy.contains('Ingredient 1').clear()
+          cy.contains('Ingredient 1').should('exist')
+          cy.contains('Ingredient 1').type('{backspace}')
+          cy.contains('Ingredient 1').should('not.exist')
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { text: '' }, // the "type anything... placeholder block"

@@ -1,7 +1,7 @@
 import AppConfig from '~/appConfig'
 
 class Path {
-  protected static buildPath(path: string, wildcards: Record<string, any>) {
+  protected static buildPath(path: string, wildcards: Record<string, string | undefined | Record<string, unknown>>) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {
       let val
@@ -170,5 +170,4 @@ class ApiPath extends Path {
 const appPath = new AppPath()
 const apiPath = new ApiPath()
 
-export { appPath as AppPath, apiPath as ApiPath }
-
+export { apiPath as ApiPath, appPath as AppPath }

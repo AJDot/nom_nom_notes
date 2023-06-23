@@ -2,6 +2,7 @@ import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, URowBlockCaptain }
 import assertNever from '../assertNever'
 
 export default class RowBlockCaptain<FType> implements URowBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: RowBlock, public director: BlockDirector<FType>) {
   }
 
@@ -9,16 +10,16 @@ export default class RowBlockCaptain<FType> implements URowBlockCaptain<FType> {
     return this.director.childrenFor(this.block).length === 0
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     throw new Error('Method not implemented.')
   }
 
-  onInput({ event }: { event: InputEvent }) {
+  onInput(_args: { event: InputEvent }) {
     throw new Error('Method not implemented.')
   }
 

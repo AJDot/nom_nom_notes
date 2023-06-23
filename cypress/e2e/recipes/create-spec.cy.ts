@@ -86,7 +86,8 @@ describe('Create Recipe', () => {
       // Add tags
       cy.contains('label', 'Tags').type('It')
       cy.getDropdownItem('Italian').click()
-      cy.getByLabel('Tags').clear().type('Ch')
+      cy.getByLabel('Tags').clear()
+      cy.getByLabel('Tags').type('Ch')
       cy.getDropdownItem('Chinese').click()
 
       // Create steps

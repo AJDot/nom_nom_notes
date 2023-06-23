@@ -11,9 +11,9 @@ export type DynamicRecipeAttributes = AModelAttributes & Nameable & {
   blocks: Array<Block>
   attachments: Array<FileUpload>
 } &
-  HasOne<'owner', User> &
-  HasMany<'taggings', Tagging> &
-  HasMany<'tags', Tag>
+HasOne<'owner', User> &
+HasMany<'taggings', Tagging> &
+HasMany<'tags', Tag>
 
 export interface RDynamicRecipe extends DynamicRecipeAttributes {
 }

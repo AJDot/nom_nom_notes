@@ -4,6 +4,7 @@ import Guid from '../guid'
 import { ObjectUtils } from '../objectUtils'
 
 export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: ImageBlock, public director: BlockDirector<FType>) {
   }
 
@@ -13,16 +14,16 @@ export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FTyp
     return true
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     throw new Error('Method not implemented.')
   }
 
-  onInput({ event }: { event: InputEvent }) {
+  onInput(_args: { event: InputEvent }) {
     throw new Error('Method not implemented.')
   }
 
@@ -38,11 +39,12 @@ export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FTyp
       case 'ingredient':
         this.director.move(block, this.block)
         break
-      case 'column':
+      case 'column': {
         const row: RowBlock = { id: Guid.create(), type: 'row' }
         this.director.addBefore(row, this.block)
         this.director.moveInside(block, row)
         break
+      }
       default:
         assertNever(block)
     }

@@ -1,5 +1,5 @@
-import { Block } from "../../../../src/interfaces/blockInterfacesGeneral"
-import Guid from "../../../../src/utils/guid"
+import { Block } from '../../../../src/interfaces/blockInterfacesGeneral'
+import Guid from '../../../../src/utils/guid'
 
 describe('Drag n Drop Dynamic Recipe Blocks', function () {
   function assertDrag(blocks: Block[], before: { id?: string, text: string }[], dragId: string, dropId: string, after: { id?: string, text: string }[], opts: { dragOpts?, dropOpts?} = {}) {
@@ -10,7 +10,6 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
       dynamic_recipe: { name: 'Pasta', ownerId: this.fry.attributes.clientId, blocks },
     }).its('body.data.0').as('dynamicRecipe')
       .then(function () {
-
         cy.visit(`/dynamic_recipes/${this.dynamicRecipe.attributes.clientId}/edit`)
 
         // BEFORE DRAG

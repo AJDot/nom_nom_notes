@@ -15,13 +15,14 @@ describe('Strike through recipe ingredients and steps', () => {
     }).its('body.data.0').as('recipe')
   })
 
-  it('allows user to cross off ingredients and steps', function() {
+  it('allows user to cross off ingredients and steps', function () {
     cy.visit(`/recipes/${this.recipe.attributes.clientId}`)
 
     function testStrikeThrough(text: string) {
-      cy.contains(text)
-        .click().should('have.css', 'text-decoration-line', 'line-through')
-        .click().should('have.css', 'text-decoration-line', 'none')
+      cy.contains(text).click()
+      cy.contains(text).should('have.css', 'text-decoration-line', 'line-through')
+      cy.contains(text).click()
+      cy.contains(text).should('have.css', 'text-decoration-line', 'none')
     }
 
     [
@@ -32,21 +33,19 @@ describe('Strike through recipe ingredients and steps', () => {
     ].forEach(testStrikeThrough)
   })
 
-  it('ingredients strike through is synced between main recipe ingredients and those shown in side panel', function() {
+  it('ingredients strike through is synced between main recipe ingredients and those shown in side panel', function () {
     cy.visit(`/recipes/${this.recipe.attributes.clientId}`)
     cy.getTest('side-panel').should('not.exist')
-    cy.contains('1 cup applesauce')
-      .should('have.css', 'text-decoration-line', 'none')
-      .click()
-      .should('have.css', 'text-decoration-line', 'line-through')
+    cy.contains('1 cup applesauce').should('have.css', 'text-decoration-line', 'none')
+    cy.contains('1 cup applesauce').click()
+    cy.contains('1 cup applesauce').should('have.css', 'text-decoration-line', 'line-through')
 
     // open ingredients side panel
     cy.getTest('ingredients-panel-toggle').click()
     // line-through is present on ingredient in panel
-    cy.getTest('side-panel').contains('1 cup applesauce')
-      .should('have.css', 'text-decoration-line', 'line-through')
-      .click()
-      .should('have.css', 'text-decoration-line', 'none')
+    cy.getTest('side-panel').contains('1 cup applesauce').should('have.css', 'text-decoration-line', 'line-through')
+    cy.getTest('side-panel').contains('1 cup applesauce').click()
+    cy.getTest('side-panel').contains('1 cup applesauce').should('have.css', 'text-decoration-line', 'none')
     // close ingredients side panel
     cy.getTest('side-panel').findTest('close').click()
     // line-through was removed on ingredient in main recipe

@@ -1,34 +1,35 @@
 import Search from '@/structure/search.vue'
+import * as jQuery from 'jquery'
 import Searcher from '../../../../src/utils/searcher'
-import jQuery from "jquery"
 Object.assign(window, { $: jQuery, jQuery })
-
 
 describe('Search.cy.ts', () => {
   it('searches for matching string', () => {
     const collection = [{ name: 'Turkey' }, { name: 'Thanksgiving' }, { name: 'Team' }]
     cy.mount(Search, {
       props: {
-        searcher: new Searcher({ label: 'name', value: 'name', valueString: 'name', collection })
-      }
+        searcher: new Searcher({ label: 'name', value: 'name', valueString: 'name', collection }),
+      },
     })
     cy.get('[data-test="dropdown-item"]').should('have.length', 0)
     cy.get('input[placeholder="Search..."]').type('Turkey')
     cy.get('[data-test="dropdown-item"]')
       .should('have.length', 1)
       .should('have.text', 'Turkey')
-    cy.get('input[placeholder="Search..."]').clear().type('T')
-    let tExpected = ['Turkey', 'Thanksgiving', 'Team']
+    cy.get('input[placeholder="Search..."]').clear()
+    cy.get('input[placeholder="Search..."]').type('T')
+    const tExpected = ['Turkey', 'Thanksgiving', 'Team']
     cy.get('[data-test="dropdown-item"]')
       .should('have.length', 3)
-      .each(($el, index, $list) => {
+      .each(($el, index, _$list) => {
         cy.wrap($el).should('have.text', tExpected[index])
       })
-    cy.get('input[placeholder="Search..."]').clear().type('e')
-    let tExpected2 = ['Turkey', 'Team']
+    cy.get('input[placeholder="Search..."]').clear()
+    cy.get('input[placeholder="Search..."]').type('e')
+    const tExpected2 = ['Turkey', 'Team']
     cy.get('[data-test="dropdown-item"]')
       .should('have.length', 2)
-      .each(($el, index, $list) => {
+      .each(($el, index, _$list) => {
         cy.wrap($el).should('have.text', tExpected2[index])
       })
   })
@@ -37,8 +38,8 @@ describe('Search.cy.ts', () => {
     const collection = [{ name: 'Turkey' }, { name: 'Thanksgiving' }, { name: 'Team' }]
     cy.mount(Search, {
       props: {
-        searcher: new Searcher({ label: 'name', value: 'name', valueString: 'name', collection })
-      }
+        searcher: new Searcher({ label: 'name', value: 'name', valueString: 'name', collection }),
+      },
     })
     cy.get('input[placeholder="Search..."]').type('T')
     cy.get('[data-test="dropdown-item"]')
@@ -81,8 +82,8 @@ describe('Search.cy.ts', () => {
     cy.mount(Search, {
       props: {
         searcher: new Searcher({ type: 'result', label: 'name', value: 'name', valueString: 'name', collection }),
-        onSelect: onSelectSpy
-      }
+        onSelect: onSelectSpy,
+      },
     })
     cy.get('input[placeholder="Search..."]').type('T{downArrow}{enter}')
     cy.get('[role=listbox]').should('not.exist')
@@ -100,23 +101,23 @@ describe('Search.cy.ts', () => {
             new Searcher({ label: 'name', value: 'name', valueString: 'name', collection: nameCollection }),
             new Searcher({ label: 'title', value: 'title', valueString: 'title', collection: titleCollection }),
           ],
-          onSelect: onSelectSpy
-        }
+          onSelect: onSelectSpy,
+        },
       })
 
       cy.get('input[placeholder="Search..."]').type('k')
-      let tExpected = ['Turkey', 'Thanksgiving', 'Artichoke']
+      const tExpected = ['Turkey', 'Thanksgiving', 'Artichoke']
       cy.getTest('dropdown-item')
         .should('have.length', 3)
-        .each(($el, index, $list) => {
+        .each(($el, index, _$list) => {
           cy.wrap($el).should('have.text', tExpected[index])
         })
 
       cy.get('input[placeholder="Search..."]').type('e') // now "ke"
-      let tExpected2 = ['Turkey', 'Artichoke']
+      const tExpected2 = ['Turkey', 'Artichoke']
       cy.getTest('dropdown-item')
         .should('have.length', 2)
-        .each(($el, index, $list) => {
+        .each(($el, index, _$list) => {
           cy.wrap($el).should('have.text', tExpected2[index])
         })
     })

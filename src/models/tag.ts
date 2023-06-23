@@ -5,9 +5,9 @@ import Recipe from 'Models/recipe'
 import Tagging from 'Models/tagging'
 
 export type TagAttributes = AModelAttributes &
-  Nameable &
-  HasMany<'taggings', Tagging> &
-  HasMany<'taggables', Recipe>
+Nameable &
+HasMany<'taggings', Tagging> &
+HasMany<'taggables', Recipe>
 
 export interface RTag extends TagAttributes {
 }

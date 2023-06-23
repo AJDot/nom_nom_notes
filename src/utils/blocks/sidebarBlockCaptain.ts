@@ -5,6 +5,7 @@ import { ObjectUtils } from '../objectUtils'
 import { RowBlock } from './../../interfaces/blockInterfacesGeneral'
 
 export default class SidebarBlockCaptain<FType> implements USidebarBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: SidebarBlock, public director: BlockDirector<FType>) {
   }
 
@@ -14,12 +15,12 @@ export default class SidebarBlockCaptain<FType> implements USidebarBlockCaptain<
     return true
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     const parent = this.director.find(this.block.parentId)
     const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
     if (parent) newBlock.parentId = parent.id

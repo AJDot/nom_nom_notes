@@ -19,22 +19,30 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
     h1: {
       label: 'H1',
       description: 'Turn into large heading',
-      call: block => block.type = 'h1'
+      call: block => {
+        block.type = 'h1'
+      },
     },
     h2: {
       label: 'H2',
       description: 'Turn into medium heading',
-      call: block => block.type = 'h2'
+      call: block => {
+        block.type = 'h2'
+      },
     },
     h3: {
       label: 'H3',
       description: 'Turn into small heading',
-      call: block => block.type = 'h3'
+      call: block => {
+        block.type = 'h3'
+      },
     },
     text: {
       label: 'Text',
       description: 'Turn into plain text',
-      call: block => block.type = 'text'
+      call: block => {
+        block.type = 'text'
+      },
     },
     columns: {
       label: 'Columns',
@@ -62,12 +70,14 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
         this.moveInside(newColumn, row)
         this.add(newText)
         this.moveInside(newText, newColumn)
-      }
+      },
     },
     sidebar: {
       label: 'Sidebar',
       description: 'Link a block to reveal in a side panel. Place beside a column to display with full column height',
-      call: block => block.type = 'sidebar'
+      call: block => {
+        block.type = 'sidebar'
+      },
     },
     image: {
       label: 'Image',
@@ -75,7 +85,7 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
       call: block => {
         const newImage: ImageBlock = { id: Guid.create(), type: 'image', content: { attachmentId: null } }
         this.addAfter(newImage, block)
-      }
+      },
     },
     ingredient: {
       label: 'Ingredient',
@@ -84,10 +94,11 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
         block.type = 'ingredient'
         const ingredientBlock: IngredientBlock = block as IngredientBlock
         ingredientBlock.content = { amount: '', text: ingredientBlock.content.text }
-      }
-    }
+      },
+    },
   }
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(private readonly options: BlockDirectorOptions<FType>) {
   }
 
@@ -113,7 +124,7 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
 
   addInside(newBlock: Block, block: Block): void {
     const children = this.childrenFor(block)
-    let index: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
+    const index: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
     this.blocks.splice(index, 0, newBlock)
     newBlock.parentId = block.id
   }
@@ -208,7 +219,7 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
     return null
   }
 
-  findWhere<T extends Record<string, any>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[] {
+  findWhere<T extends Record<string, unknown>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[] {
     opts = opts ?? {}
     opts.order = opts.order ?? 'display'
 
@@ -254,22 +265,22 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
   moveInside(block: Block, to: Block) {
     const moveIndex: number | null = this.indexOf(block)
     const children = this.childrenFor(to)
-    let toIndex: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
+    const toIndex: number | null = children.length ? this.indexOf(children[children.length - 1])! + 1 : this.blocks.length
     if (moveIndex === null || toIndex === null) return
 
     this.blocks.splice(toIndex, 0, this.blocks.splice(moveIndex, 1)[0])
     block.parentId = to.id
   }
 
-  onArrowDown({ block, event }: { block: Block; event: KeyboardEvent }): void {
+  onArrowDown({ block, event }: { block: Block, event: KeyboardEvent }): void {
     this.options.onArrowDown({ block, event })
   }
 
-  onArrowUp({ block, event }: { block: Block; event: KeyboardEvent }): void {
+  onArrowUp({ block, event }: { block: Block, event: KeyboardEvent }): void {
     this.options.onArrowUp({ block, event })
   }
 
-  onBackspace({ block, event, call }: { block: Block; event: InputEvent, call: () => void }) {
+  onBackspace({ block, event, call }: { block: Block, event: InputEvent, call: () => void }) {
     this.options.onBackspace({ block, event, call })
   }
 
@@ -294,11 +305,11 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
     this.captainFor(block).onChoose({ event, choice })
   }
 
-  async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock; image: Uploader }) {
+  async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock, image: Uploader }) {
     this.options.onImageUpload({ block, image })
   }
 
-  async onInput({ block, event, call }: { block: Block; event: InputEvent, call: () => void }) {
+  async onInput({ block, event, call }: { block: Block, event: InputEvent, call: () => void }) {
     this.options.onInput({ block, event, call })
   }
 

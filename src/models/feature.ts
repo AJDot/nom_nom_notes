@@ -64,6 +64,6 @@ export default class Feature extends AModel implements RFeature {
   }
 
   static async fetch(key: FeatureKey): Promise<void> {
-    await store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { key: key })
+    await store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { key })
   }
 }

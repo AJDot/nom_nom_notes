@@ -5,7 +5,7 @@ import {
   GetterTree,
   Module,
   Mutation,
-  MutationTree
+  MutationTree,
 } from 'vuex'
 import { RootState } from '~/store/interfaces'
 import choice from './modules/choice'

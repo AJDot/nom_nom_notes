@@ -23,20 +23,16 @@ type RecipeActions = {
 
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
-    try {
-      const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipe(id))
-      if (!response.data) throw new Error('Recipe not found')
+    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipe(id))
+    if (!response.data) throw new Error('Recipe not found')
 
-      commit(RecipeMutationTypes.ADD, {
-        id: response.data.data.id,
-        ...response.data.data.attributes,
-      })
-      const recipe = Recipe.find(response.data.data.attributes.clientId!)!
-      await StoreUtils.processIncluded(recipe, response.data.included, response.data.data.relationships)
-      return response
-    } catch (err) {
-      throw err
-    }
+    commit(RecipeMutationTypes.ADD, {
+      id: response.data.data.id,
+      ...response.data.data.attributes,
+    })
+    const recipe = Recipe.find(response.data.data.attributes.clientId!)!
+    await StoreUtils.processIncluded(recipe, response.data.included, response.data.data.relationships)
+    return response
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
     const response: AxiosResponse<ServerRecordResponse<RecipeAttributes, Array<ServerRecordData<RecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipes())

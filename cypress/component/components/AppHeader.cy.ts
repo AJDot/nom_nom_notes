@@ -12,24 +12,24 @@ describe('<AppHeader />', () => {
           getters: {
             [SessionGetterTypes.SIGNED_IN]() {
               return false
-            }
-          }
+            },
+          },
         },
         features: {
           namespaced: true,
           actions: {
             [FeatureActionTypes.FETCH]() {
               return {}
-            }
-          }
+            },
+          },
         },
         users: {
           namespaced: true,
           state: {
             current: null,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     const $route = {
@@ -37,16 +37,16 @@ describe('<AppHeader />', () => {
     }
 
     const $router = {
-      currentRoute: { value: { path: '/' } }
+      currentRoute: { value: { path: '/' } },
     }
 
     const $routerExtension = {
       names: {},
-      currentRouteIs() { return false }
+      currentRouteIs() { return false },
     }
 
     const $flipper = {
-      isEnabled() { return false }
+      isEnabled() { return false },
     }
 
     cy.mount(AppHeader, {
@@ -62,7 +62,7 @@ describe('<AppHeader />', () => {
         stubs: {
           RouterLink: true,
           RouterView: true,
-        }
+        },
       },
     })
     cy.contains('h1', 'Nom Nom Notes').should('exist')

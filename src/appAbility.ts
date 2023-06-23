@@ -6,6 +6,6 @@ type Subjects = 'Recipe' | 'DynamicRecipe'
 
 export type AppAbilityTuple = AbilityTuple<Actions, Subjects | Subject>
 
-export type AppAbility = Ability<AppAbilityTuple>
+export type TAppAbility = Ability<AppAbilityTuple>
 export type AbilityRules = RawRuleFrom<AppAbilityTuple, MongoQuery<AnyObject>>[]
-export const AppAbility = Ability as AbilityClass<AppAbility>
+export const AppAbility = Ability as AbilityClass<TAppAbility>

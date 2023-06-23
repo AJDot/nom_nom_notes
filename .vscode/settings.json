@@ -1,3 +1,5 @@
 {
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  "eslint.lintTask.enable": true,
+  "standard.enable": false
 }

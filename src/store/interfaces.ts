@@ -1,5 +1,5 @@
 import User from 'Models/user'
-import { AppAbility } from '~/appAbility'
+import { TAppAbility } from '~/appAbility'
 import { FlashState } from '~/store/modules/flash'
 import { LoadingState } from '~/store/modules/loading'
 import { ModalState } from '~/store/modules/modal'
@@ -29,7 +29,7 @@ export interface FeaturesState {
 }
 
 export interface AbilityState {
-  ability: AppAbility
+  ability: TAppAbility
 }
 
 export enum StoreModuleType {

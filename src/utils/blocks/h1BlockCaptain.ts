@@ -4,6 +4,7 @@ import Guid from '../guid'
 import { ObjectUtils } from '../objectUtils'
 
 export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: H1Block, public director: BlockDirector<FType>) {
   }
 
@@ -13,12 +14,12 @@ export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
     return true
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     const parent = this.director.find(this.block.parentId)
     const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
     if (parent) newBlock.parentId = parent.id
@@ -41,11 +42,12 @@ export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
       case 'ingredient':
         this.director.move(block, this.block)
         break
-      case 'column':
+      case 'column': {
         const row: RowBlock = { id: Guid.create(), type: 'row' }
         this.director.addBefore(row, this.block)
         this.director.moveInside(block, row)
         break
+      }
       default:
         assertNever(block)
     }

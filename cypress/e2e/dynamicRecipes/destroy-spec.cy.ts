@@ -5,24 +5,22 @@ describe('Delete Dynamic Recipe Block', function () {
         cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
           dynamic_recipe: {
             name: 'Space Soup',
-            ownerId: this.fry.attributes.clientId
+            ownerId: this.fry.attributes.clientId,
           },
         }).its('body.data.0').as('dynamicRecipe')
       })
     cy.forceSignIn()
   })
 
-
   it('allows me to destroy a dynamic recipe', function () {
     // catch recipe not found error when going to edit page after destruction
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', (err, _runnable) => {
       expect(err.message).to.include('Dynamic Recipe not found')
 
       // return false to prevent the error from
       // failing this test
       return false
     })
-
 
     const dynamicRecipeId = this.dynamicRecipe.attributes.clientId
     cy.visit(`/dynamic_recipes/${dynamicRecipeId}/edit`)

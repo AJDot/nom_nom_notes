@@ -1,8 +1,9 @@
 import { USelector } from './../interfaces/selectInterfaces'
 
-export default class Selector<Collections extends any[][]> implements USelector<Collections> {
+export default class Selector<Collections extends unknown[][]> implements USelector<Collections> {
   current: Collections[number][number] | null = null
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(private _collections: Collections = [] as unknown as Collections) {
   }
 

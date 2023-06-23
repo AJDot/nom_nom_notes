@@ -6,7 +6,7 @@ describe('Edit Dynamic Recipe Tags', () => {
           tags: [
             { name: 'American' },
             { name: 'Italian' },
-          ]
+          ],
         }).its('body.data').as('tags')
           .then(function (tags) {
             cy.apiRequest('POST', '/testing/api/v1/dynamic_recipes', {
@@ -28,7 +28,7 @@ describe('Edit Dynamic Recipe Tags', () => {
     })
 
     it('allows me to create create, add, remove tags from dynamic recipe', function () {
-      cy.intercept('POST', `/api/v1/tags`).as('createTag')
+      cy.intercept('POST', '/api/v1/tags').as('createTag')
       cy.visit('/dynamic_recipes')
       cy.contains('Pasta').click()
       cy.contains('a', 'Edit').click()
@@ -38,9 +38,12 @@ describe('Edit Dynamic Recipe Tags', () => {
       cy.getByLabel('Tags').type('{enter}')
 
       // Add new tag
-      cy.getByLabel('Tags').clear().type('Chinese')
-        .wait(200).getDropdownItem('+ Create tag Chinese').click()
-        .wait('@createTag')
+      cy.getByLabel('Tags').clear()
+      cy.getByLabel('Tags').type('Chinese')
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.getByLabel('Tags').wait(200)
+      cy.getByLabel('Tags').getDropdownItem('+ Create tag Chinese').click()
+      cy.getByLabel('Tags').getDropdownItem('+ Create tag Chinese').wait('@createTag')
         .then(data => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
         })
@@ -51,15 +54,19 @@ describe('Edit Dynamic Recipe Tags', () => {
       })
 
       // Add another new tag
-      cy.getByLabel('Tags').clear().type('British')
-        .wait(200).getDropdownItem('+ Create tag British').click()
+      cy.getByLabel('Tags').clear()
+      cy.getByLabel('Tags').type('British')
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.getByLabel('Tags').wait(200).getDropdownItem('+ Create tag British').click()
+      cy.getByLabel('Tags').getDropdownItem('+ Create tag British')
         .wait('@createTag')
         .then(data => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
         })
 
       // Can't add tag if already exists
-      cy.getByLabel('Tags').clear().type('Chinese')
+      cy.getByLabel('Tags').clear()
+      cy.getByLabel('Tags').type('Chinese')
       cy.getTest('dropdown-item')
         .should('have.length', 1)
         .trim()

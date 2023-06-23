@@ -4,7 +4,6 @@ describe('Edit Recipe', () => {
   beforeEach(() => {
     cy.createFry().as('fry')
       .then(function () {
-
         cy.apiRequest('POST', '/testing/api/v1/tags', {
           tags: [
             { name: 'Italian' },
@@ -170,10 +169,13 @@ describe('Edit Recipe', () => {
       const recipeId = this.recipe.attributes.clientId
       cy.intercept('PATCH', `/api/v1/recipes/${recipeId}`).as('updateRecipe')
       cy.visit(`/recipes/${recipeId}/edit`)
-      cy.getByLabel('Name').clear().type('Space Chicken')
-      cy.getByLabel('Description').clear().type('Bad description.')
+      cy.getByLabel('Name').clear()
+      cy.getByLabel('Name').type('Space Chicken')
+      cy.getByLabel('Description').clear()
+      cy.getByLabel('Description').type('Bad description.')
       // Update 1st ingredient
-      cy.getTest('ingredient-0').find('input').clear().type('2 cups applesauce')
+      cy.getTest('ingredient-0').find('input').clear()
+      cy.getTest('ingredient-0').find('input').type('2 cups applesauce')
       // Add ingredient
       cy.contains('Add Ingredient').click()
       cy.getTest('ingredient-2').find('input').type('3 cups cheez-its')
@@ -194,11 +196,13 @@ describe('Edit Recipe', () => {
       cy.getTest('step-1').find('[data-test="more"]').click()
       cy.getDropdownItem('Delete').click()
       // Change cook time
-      cy.getByLabel('Hours').clear().type('2')
-      cy.getByLabel('Minutes').clear().type('45')
+      cy.getByLabel('Hours').clear()
+      cy.getByLabel('Hours').type('2')
+      cy.getByLabel('Minutes').clear()
+      cy.getByLabel('Minutes').type('45')
       // Change Note
-      cy.getByLabel('Notes').clear().type('Something else.')
-
+      cy.getByLabel('Notes').clear()
+      cy.getByLabel('Notes').type('Something else.')
       cy.contains('input', 'Update Recipe').click()
 
       const checkData = () => {

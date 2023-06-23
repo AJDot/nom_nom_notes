@@ -13,7 +13,7 @@ describe('Owner Can Edit Dynamic Recipe', () => {
     cy.wait('@createDynamicRecipe')
       .then(() => {
         cy.intercept('PATCH', '/api/v1/dynamic_recipes/*').as('updateDynamicRecipe')
-        cy.getContentEditable("Type anything...").type('PASTA/h1{enter}')
+        cy.getContentEditable('Type anything...').type('PASTA/h1{enter}')
       })
     cy.wait('@updateDynamicRecipe')
       .then(function () {
