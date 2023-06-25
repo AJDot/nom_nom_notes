@@ -234,6 +234,10 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
     }) as ((block) => block is Extract<Block, T>))
   }
 
+  async focus(block: Block) {
+    await this.options.focus(block)
+  }
+
   async focusAfter(block: Block) {
     await this.options.focusAfter(block)
   }

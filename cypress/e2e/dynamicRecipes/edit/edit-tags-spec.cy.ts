@@ -43,7 +43,7 @@ describe('Edit Dynamic Recipe Tags', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.getByLabel('Tags').wait(200)
       cy.getByLabel('Tags').getDropdownItem('+ Create tag Chinese').click()
-      cy.getByLabel('Tags').getDropdownItem('+ Create tag Chinese').wait('@createTag')
+      cy.wait('@createTag')
         .then(data => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
         })
@@ -58,8 +58,7 @@ describe('Edit Dynamic Recipe Tags', () => {
       cy.getByLabel('Tags').type('British')
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.getByLabel('Tags').wait(200).getDropdownItem('+ Create tag British').click()
-      cy.getByLabel('Tags').getDropdownItem('+ Create tag British')
-        .wait('@createTag')
+      cy.wait('@createTag')
         .then(data => {
           cy.wrap(data).its('response.statusCode').should('eq', 201)
         })

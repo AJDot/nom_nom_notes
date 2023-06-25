@@ -1,5 +1,15 @@
 <template>
-  <component class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
+  <component
+    :is="componentMap[block.type]"
+    class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input"
+    :mode="mode"
+    :data-id="block.id"
+    :block="block"
+    :director="director"
+    :draggable="draggable"
+    :droppable="droppable"
+    :editable="editable"
+  />
 </template>
 
 <script lang="ts">
@@ -49,7 +59,7 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop),
     },
     editable: {
       type: Boolean,

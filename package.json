@@ -16,8 +16,11 @@
     "test": "vite --mode test --port 5174",
     "build": "vite build",
     "cy:run": "cypress run --browser chrome --e2e",
+    "cy:run:record": "cypress run --browser chrome --e2e --record --key 7a494777-f684-43b5-94ca-97309cc8cbee",
     "cy:run:component": "cypress run --browser chrome --component --spec cypress/component/**/*.cy.ts",
+    "cy:run:component:record": "cypress run --browser chrome --component --spec cypress/component/**/*.cy.ts --record --key 7a494777-f684-43b5-94ca-97309cc8cbee",
     "cy:run:unit": "cypress run --component --spec src/**/*.spec.ts",
+    "cy:run:unit:record": "cypress run --component --spec src/**/*.spec.ts --record --key 7a494777-f684-43b5-94ca-97309cc8cbee",
     "cy:run:component-unit": "cypress run --browser chrome --component",
     "cy:open": "cypress open"
   },

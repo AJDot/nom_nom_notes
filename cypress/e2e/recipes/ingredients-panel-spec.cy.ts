@@ -23,7 +23,7 @@ describe('Ingredients Panel', () => {
           .should('exist')
           .and('include.text', '1 cup applesauce')
           .and('include.text', '2 tsp banana pudding')
-        cy.getTest('side-panel').find('h1').should('have.text', 'Ingredients')
+        cy.getTest('side-panel').find('h1').trim().should('equal', 'Ingredients')
         // "X" button closes the side panel
         cy.getTest('side-panel').findTest('close').click()
         cy.getTest('side-panel').should('not.exist')

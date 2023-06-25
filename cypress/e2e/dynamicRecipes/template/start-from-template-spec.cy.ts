@@ -33,7 +33,7 @@ describe('Start from dynamic recipe template', () => {
         .click()
       cy.getTest('new-dynamic-recipe-dropdown').contains('New from Template').should('exist')
       cy.getTest('new-dynamic-recipe-dropdown').contains('New from Template').click()
-      cy.getTest('new-dynamic-recipe-dropdown').contains('New from Template').should('not.exist')
+      cy.getTest('new-dynamic-recipe-dropdown').should('not.exist')
       cy.getModal().should('exist')
         .within(() => {
           cy.contains('Select template').should('exist')

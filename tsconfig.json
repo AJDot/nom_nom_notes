@@ -111,7 +111,6 @@
     "src/shims/vuex-shim.d.ts",
     "src/shims/axios-plugin.d.ts",
     "src/shims/router-extension-plugin.d.ts",
-    "src/shims/custom-shim.d.ts",
     "src/shims/current-user-mixin-shim.d.ts",
   ],
   "references": [

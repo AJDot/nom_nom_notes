@@ -1,13 +1,19 @@
 <template>
   <ul class="flex flex-col xs:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
     <li>
-      <router-link :to="{ name: $routerExtension.names.Recipes }" class="flex">
+      <router-link
+        :to="{ name: $routerExtension.names.Recipes }"
+        class="flex"
+      >
         <i class="material-icons my-auto">view_comfy</i>
         <span>Recipe Cards</span>
       </router-link>
     </li>
     <li v-if="recipe && ability.can('update', recipe)">
-      <router-link :to="{ name: $routerExtension.names.EditRecipe }" class="flex">
+      <router-link
+        :to="{ name: $routerExtension.names.EditRecipe }"
+        class="flex"
+      >
         <i class="material-icons my-auto">edit</i>
         <span>Edit Recipe</span>
       </router-link>
@@ -31,7 +37,7 @@ export default defineComponent({
     ability() {
       const store = useStore<RootState>(stateKey)
       return store.state.ability.ability
-    }
-  }
+    },
+  },
 })
 </script>

@@ -1,5 +1,9 @@
 <template>
-  <app-layout v-if="fetched" id="app" class="min-h-screen" />
+  <app-layout
+    v-if="fetched"
+    id="app"
+    class="min-h-screen"
+  />
 </template>
 
 <script lang="ts">
@@ -20,13 +24,13 @@ export default defineComponent({
   ],
   data() {
     return {
-      fetched: false
+      fetched: false,
     }
   },
   async created() {
     await store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
     await store.dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: this.currentUser })
     this.fetched = true
-  }
+  },
 })
 </script>

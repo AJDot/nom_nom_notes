@@ -1,11 +1,28 @@
 <template>
-  <transition-group appear name="fade-slide-vert">
-    <div v-for="(messages, type) in fullMessages" :key="type.toString()" class="p-2.5 mb-2.5 text-center text-white" :class="typeClass(type)" role="alert" data-test="flash">
+  <transition-group
+    appear
+    name="fade-slide-vert"
+  >
+    <div
+      v-for="(messages, type) in fullMessages"
+      :key="type.toString()"
+      class="p-2.5 mb-2.5 text-center text-white"
+      :class="typeClass(type)"
+      role="alert"
+      data-test="flash"
+    >
       <ul class="flex justify-between items-center">
-        <li v-for="(m, i) in messages" :key="`${type}-${i}`">
+        <li
+          v-for="(m, i) in messages"
+          :key="`${type}-${i}`"
+        >
           {{ m }}
         </li>
-        <button type="button" class="btn-clear" @click="close(type)">
+        <button
+          type="button"
+          class="btn-clear"
+          @click="close(type)"
+        >
           <i class="material-icons align-middle">
             close
           </i>
@@ -76,14 +93,14 @@ export default defineComponent({
     this.getFlash()
   },
   methods: {
-    close(type: string): void {
+    close(type: string | number): void {
       delete this.flash[type]
     },
     getFlash(): void {
       this.flash = Object.assign({}, this.flashState.flash)
       this.$store.commit(StoreModulePath.Flash + FlashMutationTypes.RESET)
     },
-    typeClass(type: string | number): String {
+    typeClass(type: string | number): string {
       const classes = {
         alert: 'bg-red',
         success: 'bg-green',

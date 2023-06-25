@@ -1,25 +1,82 @@
 <template>
-  <draggable :key="mode" :draggable="draggable" :droppable="droppableTest" class="relative flex self-stretch rounded-md basis-0 shadow-input bg-gray-100" :hover-color="hoverColor" :item="block" @drop="onDrop" @mouseenter="showControls" @mouseleave="hideControls" data-test-block="sidebar">
-    <button v-if="isEditable && controlsVisible" @click="openDropdown" type="button" class="absolute -top-2 -right-2">
+  <draggable
+    :key="mode"
+    :draggable="draggable"
+    :droppable="droppableTest"
+    class="relative flex self-stretch rounded-md basis-0 shadow-input bg-gray-100"
+    :hover-color="hoverColor"
+    :item="block"
+    data-test-block="sidebar"
+    @drop="onDrop"
+    @mouseenter="showControls"
+    @mouseleave="hideControls"
+  >
+    <button
+      v-if="isEditable && controlsVisible"
+      type="button"
+      class="absolute -top-2 -right-2"
+      @click="openDropdown"
+    >
       <i class="material-icons my-auto">edit</i>
     </button>
-    <SidePanel :state="sidePanelState" @close="sidePanelState = false" class="flex self-stretch grow">
+    <SidePanel
+      :state="sidePanelState"
+      class="flex self-stretch grow"
+      @close="sidePanelState = false"
+    >
       <template #control>
-        <button type="button" aria-disabled="true" class="flex grow self-stretch py-2 border-transparent rounded-md break-anywhere sm:px-1" @click.prevent="onSidebarClick" ref="button">
-          <span data-focus class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]" :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]" :placeholder="placeholder" :contenteditable="isEditable" v-html="block.content.text" ref="text" @input="onInput" @keydown="onKeydown" @click="onClick"></span>
+        <button
+          ref="button"
+          type="button"
+          aria-disabled="true"
+          class="flex grow self-stretch py-2 border-transparent rounded-md break-anywhere sm:px-1"
+          @click.prevent="onSidebarClick"
+        >
+          <span
+            ref="text"
+            data-focus
+            class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]"
+            :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]"
+            :placeholder="placeholder"
+            :contenteditable="isEditable"
+            @input="onInput"
+            @keydown="onKeydown"
+            @click="onClick"
+            v-html="block.content.text"
+          />
         </button>
       </template>
-      <base-block v-if="contentBlock" :block="contentBlock" :director="director" mode="show" />
+      <base-block
+        v-if="contentBlock"
+        :block="contentBlock"
+        :director="director"
+        mode="show"
+      />
     </SidePanel>
-    <dropdown :state="editDropdownState" @close="closeDropdown" position-type="mouse" :open-event="dropdownOpenEvent">
+    <dropdown
+      :state="editDropdownState"
+      position-type="mouse"
+      :open-event="dropdownOpenEvent"
+      @close="closeDropdown"
+    >
       <section class="w-96 max-h-72 p-2">
         <dl class="mt-2 mb-4 sm:col-span-2">
           <dt class="text-lg border-b border-gray-400 mb-2">
-            <h1 class="text-2xl m-2">Panel Block</h1>
-            <p class="m-2 text-gray-500">Choose block to display in side panel</p>
+            <h1 class="text-2xl m-2">
+              Panel Block
+            </h1>
+            <p class="m-2 text-gray-500">
+              Choose block to display in side panel
+            </p>
           </dt>
           <dd>
-            <button type="button" @click="enterChooseBlockMode" class="btn w-full">Choose Display Block</button>
+            <button
+              type="button"
+              class="btn w-full"
+              @click="enterChooseBlockMode"
+            >
+              Choose Display Block
+            </button>
           </dd>
         </dl>
       </section>
@@ -59,7 +116,7 @@ export default defineComponent({
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     placeholder(): string {
-      return "Sidebar"
+      return 'Sidebar'
     },
     rotateStyle() {
       if (this.director.find(this.block.parentId)?.type === 'row') {
@@ -72,13 +129,14 @@ export default defineComponent({
       if (!this.block.content.blockId) return null
 
       return this.director.find(this.block.content.blockId)
-    }
+    },
   },
   methods: {
     ...mapActions('interfaces/choice', { setChoiceState: ChoiceActionTypes.SET, unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
       this.director.onMove({ moveId, toId })
+      this.save()
     },
     onClick(event) {
       if (!this.isEditable && !this.isChooseMode) return
@@ -98,10 +156,12 @@ export default defineComponent({
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       this.director.onInput({
-        block: this.block, event, call: () => {
+        block: this.block,
+        event,
+        call: () => {
           captain.onInput({ event })
           this.save()
-        }
+        },
       })
     },
     onKeydown(event) {
@@ -138,15 +198,16 @@ export default defineComponent({
     onEnter(event: KeyboardEvent) {
       if (!this.isEditable) return
 
-      if (event.shiftKey) {
-      } else {
+      if (!event.shiftKey) {
         const captain = this.director.captainFor(this.block)
         this.director.onEnter({
-          block: this.block, event, call: () => {
+          block: this.block,
+          event,
+          call: () => {
             captain.onEnter({ event })
             this.save()
             this.director.focusAfter(this.block)
-          }
+          },
         })
         event.preventDefault()
       }
@@ -156,20 +217,23 @@ export default defineComponent({
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
         this.director.onBackspace({
-          block: this.block, event, call: () => {
+          block: this.block,
+          event,
+          call: () => {
             this.director.focusBefore(this.block)
             this.director.destroy(this.block, 'down')
             this.save()
-          }
+          },
         })
       }
     },
-    async onDelete(event) {
+    async onDelete(_event) {
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
+        const nextBlock = this.director.blockAfter(this.block)
         this.director.destroy(this.block, 'down')
-        setTimeout(() => this.director.focusAfter(this.block), 50)
+        if (nextBlock) setTimeout(() => this.director.focus(nextBlock), 50)
         this.save()
       }
     },

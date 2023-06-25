@@ -69,12 +69,12 @@ export type FindAttachmentReturn<T> = { attachment: T, url: string, alt?: string
 export interface BlockDirectorOptions<FType> {
   blocks: Array<Block>
   findAttachment(args: { id: string | null | undefined }): FindAttachmentReturn<FType>
+  focus(block: Block): Promise<void>
   focusAfter(block: Block): Promise<void>
   focusBefore(block: Block): Promise<void>
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent, call: () => void }): void
-  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: unknown[] }, call: () => void }): void
   onDestroyAttachments(args: { block: Block }): Promise<void>
   onEnter(args: { block: Block, event: KeyboardEvent, call: () => void }): void
   onImageUpload(args: { block: ContentAttachmentIdBlock, image: Uploader }): void
@@ -101,6 +101,7 @@ export interface BlockDirector<FType> {
   findAttachment(args: { id: string | null | undefined }): FindAttachmentReturn<FType>
   findNearest(block: Block, type: Block['type']): Block | null
   findWhere<T extends Record<string, unknown>>(criteria: T, opts?: { order?: 'display' }): Extract<Block, T>[]
+  focus(block: Block): Promise<void>
   focusAfter(block: Block): Promise<void>
   focusBefore(block: Block): Promise<void>
   indexOf(block: Block): number | null
@@ -110,7 +111,6 @@ export interface BlockDirector<FType> {
   onArrowDown(args: { block: Block, event: KeyboardEvent }): void
   onArrowUp(args: { block: Block, event: KeyboardEvent }): void
   onBackspace(args: { block: Block, event: InputEvent, call: () => void }): void
-  onChoose(args: { block: Block, event: PointerEvent, choice: { type: string, args: unknown[] } }): void
   onCreate(args: { block: Block, inside?: Block }): void
   onDestroyAttachments(args: { block: Block }): Promise<void>
   onEnter(args: { block: Block, event: KeyboardEvent, call: () => void }): void

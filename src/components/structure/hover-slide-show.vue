@@ -1,9 +1,12 @@
 <template>
-  <img v-bind="currentImage" @mousemove="handleMousemove" />
+  <img
+    v-bind="currentImage"
+    @mousemove="handleMousemove"
+  >
 </template>
 
 <script lang="ts">
-import { defineComponent, ImgHTMLAttributes } from "vue"
+import { defineComponent, ImgHTMLAttributes } from 'vue'
 
 interface Data {
   currentImage: ImgHTMLAttributes

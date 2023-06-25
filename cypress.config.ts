@@ -4,6 +4,7 @@ import { config as dotenvConfig } from 'dotenv'
 dotenvConfig({ path: './.env.test' })
 
 export default defineConfig({
+  projectId: 'hww73m',
   e2e: {
     baseUrl: process.env.VITE_VUE_APP_URL || 'http://localhost:5174',
     supportFile: 'cypress/support/index.ts',

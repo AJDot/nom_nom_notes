@@ -1,12 +1,34 @@
 <template>
   <div class="relative">
-    <dropdown :state="dropdownState" @close="hideResults">
+    <dropdown
+      :state="dropdownState"
+      @close="hideResults"
+    >
       <template #control>
-        <a-input ref="search" v-model="q" :id="id" type="search" @keyup="search" @keydown.enter.prevent="select(currentResult)" placeholder="Search..." :disabled="disabled" @keydown.prevent.down="down" @keydown.prevent.up="up" @blur="(makeCurrent(null))" />
+        <a-input
+          :id="id"
+          ref="search"
+          v-model="q"
+          type="search"
+          placeholder="Search..."
+          :disabled="disabled"
+          @keyup="search"
+          @keydown.enter.prevent="select(currentResult)"
+          @keydown.prevent.down="down"
+          @keydown.prevent.up="up"
+          @blur="(makeCurrent(null))"
+        />
       </template>
       <ul>
         <template v-if="hasResults">
-          <dropdown-item v-for="(item, i) in results.flat()" @click="select(item)" :class="{ 'select-blue': item === currentResult }" :aria-current="(item === currentResult)" :data-select="`item-${i}`">
+          <dropdown-item
+            v-for="(item, i) in results.flat()"
+            :key="item.value"
+            :class="{ 'select-blue': item === currentResult }"
+            :aria-current="(item === currentResult)"
+            :data-select="`item-${i}`"
+            @click="select(item)"
+          >
             <dropdown-item-button>
               {{ item.label }}
             </dropdown-item-button>
@@ -40,6 +62,7 @@ export default defineComponent({
     searcher: {
       type: Object as () => USearcher<unknown>,
       required: false,
+      default: null,
     },
     searchers: {
       type: Array as () => Array<USearcher<unknown>>,
@@ -62,7 +85,7 @@ export default defineComponent({
     return {
       q: '',
       dropdownState: false,
-      selector: new Selector<SearchResult<unknown>[][]>()
+      selector: new Selector<SearchResult<unknown>[][]>(),
     }
   },
   computed: {
@@ -75,7 +98,7 @@ export default defineComponent({
       },
       set(collections: Array<Array<SearchResult<unknown>>>) {
         this.selector.collections = collections
-      }
+      },
     },
     currentResult(): SearchResult<unknown> | null {
       return this.selector.current
@@ -86,6 +109,11 @@ export default defineComponent({
     hasResults(): boolean {
       return Boolean(this.results.some(items => items.length))
     },
+  },
+  created() {
+    if (!this.searchers.length) {
+      console[import.meta.env.DEV ? 'error' : 'warn']('Searcher must be provided')
+    }
   },
   methods: {
     async search(evt: KeyboardEvent): Promise<void> {
@@ -116,14 +144,15 @@ export default defineComponent({
 
       this.q = ''
       this.hideResults()
-      this.$emit('select', { data: item });
-      (<InstanceType<typeof AInput>>this.$refs.search).$el.focus()
+      this.$emit('select', { data: item })
+      const search = this.$refs.search as InstanceType<typeof AInput>
+      search.$el.focus()
     },
-    down(evt: KeyboardEvent) {
+    down(_evt: KeyboardEvent) {
       this.selector.down()
       this.currentScrollIntoView()
     },
-    up(evt: KeyboardEvent) {
+    up(_evt: KeyboardEvent) {
       this.selector.up()
       this.currentScrollIntoView()
     },
@@ -141,12 +170,7 @@ export default defineComponent({
           .get(0)
           ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
       }
-    }
-  },
-  created() {
-    if (!this.searchers.length) {
-      console[import.meta.env.DEV ? 'error' : 'warn']('Searcher must be provided')
-    }
+    },
   },
 })
 </script>

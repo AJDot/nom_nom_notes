@@ -8,11 +8,13 @@ declare module '@vue/runtime-core' {
     $routerExtension: RouterExtension
     $modal: ModalStore
     $flipper: Flipper
+    $filters: Record<string, (...args) => unknown>
   }
   export interface App {
     $routerExtension: RouterExtension
     $modal: ModalStore
     $flipper: Flipper
+    $filters: Record<string, (...args) => unknown>
   }
 }
 
@@ -21,11 +23,13 @@ declare module 'vue/types/vue' {
     $routerExtension: RouterExtension
     $modal: ModalStore
     $flipper: Flipper
+    $filters: Record<string, (...args) => unknown>
   }
 
   interface VueConstructor {
     $routerExtension: RouterExtension
     $modal: ModalStore
     $flipper: Flipper
+    $filters: Record<string, (...args) => unknown>
   }
 }

@@ -1,22 +1,55 @@
 <template>
-  <form v-if="dynamicRecipe" class="mx-3" @submit.prevent>
+  <form
+    v-if="dynamicRecipe"
+    class="mx-3"
+    @submit.prevent
+  >
     <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
       <dl class="mt-2 mb-4 sm:col-span-1">
-        <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
+        <dt class="text-lg border-b border-gray-400 mb-2">
+          <label for="name">Name</label>
+        </dt>
         <dd>
-          <a-input id="name" v-model="dynamicRecipeName" :editable="isEditable" type="text" name="name" placeholder="My Super Awesome Recipe" />
+          <a-input
+            id="name"
+            v-model="dynamicRecipeName"
+            :editable="isEditable"
+            type="text"
+            name="name"
+            placeholder="My Super Awesome Recipe"
+          />
         </dd>
       </dl>
       <dl class="mt-2 mb-4 sm:col-span-1">
-        <dt class="text-lg border-b border-gray-400 mb-2"><label for="tags">Tags</label></dt>
+        <dt class="text-lg border-b border-gray-400 mb-2">
+          <label for="tags">Tags</label>
+        </dt>
         <dd>
-          <search v-if="!isShowMode" id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" :disabled="!isEditMode" />
+          <search
+            v-if="!isShowMode"
+            id="tags"
+            :searchers="[tagSearcher, createTagSearcher]"
+            :disabled="!isEditMode"
+            @select="addTag"
+          />
           <ul :class="isShowMode ? 'flex flex-wrap gap-x-2' : ''">
-            <li v-for="tag in unmarkedTags" :key="tag.clientId" :data-test="`tag-${tag.name}`" class="mt-2" :class="isShowMode ? 'inline-block' : 'flex'">
+            <li
+              v-for="tag in unmarkedTags"
+              :key="tag.clientId"
+              :data-test="`tag-${tag.name}`"
+              class="mt-2"
+              :class="isShowMode ? 'inline-block' : 'flex'"
+            >
               <span class="grow my-auto">
                 {{ tag.name }}
               </span>
-              <button v-if="isEditMode" type="button" class="btn" data-test="tag-destroy" @click="destroyTagging(tag)">
+              <button
+                v-if="isEditMode"
+                type="button"
+                class="btn"
+                data-test="tag-destroy"
+                @click="destroyTagging(tag)"
+              >
                 <i class="material-icons align-middle">delete</i>
               </button>
             </li>
@@ -24,17 +57,44 @@
         </dd>
       </dl>
       <div class="sm:col-span-2">
-        <base-block-group :blocks="topLevelBlocks" :mode="mode" :director="blockDirector" :draggable="isEditable" :droppable="isEditable" :editable="isEditable" />
-        <base-block v-if="isEditable && !blockDirector.find(textBlock.id)" :block="textBlock" :mode="mode" :director="blockDirector" />
-        <dropdown :state="dropdownState" position-type="cursor">
+        <base-block-group
+          :blocks="topLevelBlocks"
+          :mode="mode"
+          :director="blockDirector"
+          :draggable="isEditable"
+          :droppable="isEditable"
+          :editable="isEditable"
+        />
+        <base-block
+          v-if="isEditable && !blockDirector.find(textBlock.id)"
+          :block="textBlock"
+          :mode="mode"
+          :director="blockDirector"
+        />
+        <dropdown
+          :state="dropdownState"
+          position-type="cursor"
+        >
           <ul class="max-w-lg">
             <template v-if="commandSelector.collections.some(c => c.length)">
-              <dropdown-item v-for="commandResult in commandSelector.collections.flat()" :class="{ 'select-blue': commandResult === commandSelector.current }">
-                <dropdown-item-button @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })" class="grid grid-cols-1 text-left">
+              <dropdown-item
+                v-for="commandResult in commandSelector.collections.flat()"
+                :key="commandResult.value"
+                :class="{ 'select-blue': commandResult === commandSelector.current }"
+              >
+                <dropdown-item-button
+                  class="grid grid-cols-1 text-left"
+                  @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })"
+                >
                   <h1 class="font-sans text-lg bold">
                     {{ commandResult.label }}
                   </h1>
-                  <p v-if="commandResult.raw.description" class="text-gray-500">{{ commandResult.raw.description }}</p>
+                  <p
+                    v-if="commandResult.raw.description"
+                    class="text-gray-500"
+                  >
+                    {{ commandResult.raw.description }}
+                  </p>
                 </dropdown-item-button>
               </dropdown-item>
             </template>
@@ -106,8 +166,8 @@ export default defineComponent({
     view: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['show', 'edit'].includes(prop)
-    }
+      validator: prop => typeof prop === 'string' && ['show', 'edit'].includes(prop),
+    },
   },
   data(): Data {
     const commandSelector = new Selector()
@@ -139,7 +199,7 @@ export default defineComponent({
         if (!this.dynamicRecipe) return []
 
         this.dynamicRecipe.blocks = value
-      }
+      },
     },
     topLevelBlocks: {
       get(): Block[] {
@@ -193,7 +253,7 @@ export default defineComponent({
         if (!this.dynamicRecipe) return
         this.dynamicRecipe.name = value
         this.save()
-      }
+      },
     },
     unmarkedTags(): Array<Tag> {
       return this.dynamicRecipe?.tags.filter(tag => {
@@ -231,6 +291,81 @@ export default defineComponent({
         collection: [{ command: Command.CreateTag, name: '+ Create tag' }],
       })
     },
+  },
+  watch: {
+    textBlockAttached(newVal, _oldVal) {
+      if (newVal) {
+        this.textBlock = {
+          id: Guid.create(),
+          type: 'text',
+          content: { text: '' },
+        }
+      }
+    },
+  },
+  async beforeMount() {
+    const clientId = router.currentRoute.value.params.clientId
+    const store = useStore<RootState>(stateKey)
+    if (clientId) {
+      try {
+        await store.dispatch(
+          StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
+          clientId,
+        )
+        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
+        if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
+      } catch (e) {
+        await this.$router.push({
+          name: this.$routerExtension.names.DynamicRecipes,
+        })
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: 'Dynamic Recipe not found.' },
+        })
+        return
+      }
+    } else {
+      this.dynamicRecipe = new DynamicRecipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
+    }
+
+    this.blockDirector = new BlockDirector<IFileUpload>({
+      blocks: this.dynamicRecipe.blocks,
+      findAttachment: this.findAttachment.bind(this),
+      focus: async (block) => {
+        await this.focusStepBlock(block, 0).get(0).focus()
+      },
+      focusAfter: this.focusAfter.bind(this),
+      focusBefore: this.focusBefore.bind(this),
+      onArrowDown: this.onArrowDown.bind(this),
+      onArrowUp: this.onArrowUp.bind(this),
+      onBackspace: this.onBackspace.bind(this),
+      onDestroyAttachments: this.onDestroyAttachments.bind(this),
+      onEnter: this.onEnter.bind(this),
+      onImageUpload: this.onImageUpload.bind(this),
+      onInput: this.onInput.bind(this),
+      onSave: this.onSave?.bind(this),
+    })
+
+    this.commandSearch = new Searcher({
+      label: 'label',
+      valueString: 'label',
+      type: 'command',
+      collection: () => {
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image', 'ingredient']
+        if (
+          this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
+          (this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row')
+        ) {
+          allowableCommands.push('addColumn')
+        }
+        return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
+          commands.push(this.blockDirector.COMMANDS[commandId])
+          return commands
+        }, [])
+      },
+      matcher(item, q) {
+        return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))
+      },
+    })
   },
   methods: {
     ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
@@ -319,7 +454,7 @@ export default defineComponent({
 
       call()
     },
-    onEnter({ block, event, call }: { block: Block, event: KeyboardEvent, call: Function }) {
+    onEnter({ block, call }: { block: Block, event: KeyboardEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
 
       if (this.dropdownState) {
@@ -355,7 +490,7 @@ export default defineComponent({
 
       this.focusBefore(block)
     },
-    onBackspace({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
+    onBackspace({ call }: { block: Block, event: InputEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
       if (this.dropdownState) return
 
@@ -419,7 +554,7 @@ export default defineComponent({
       const $focusableRoot = $focusables.eq(index)
       return $focusableRoot.is('[data-focus]') ? $focusableRoot : step > 0 ? $focusableRoot.find('[data-focus]').first() : $focusableRoot.find('[data-focus]').last()
     },
-    openSearch({ block, data, call }) {
+    openSearch({ block, call }: {block, data, call}) {
       this.currentBlock = block
       this.dropdownState = true
       this.q = ''
@@ -561,78 +696,6 @@ export default defineComponent({
         }
       }
       this.save()
-    },
-  },
-  async beforeMount() {
-    const clientId = router.currentRoute.value.params.clientId
-    const store = useStore<RootState>(stateKey)
-    if (clientId) {
-      try {
-        await store.dispatch(
-          StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
-          clientId,
-        )
-        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
-        if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
-      } catch (e) {
-        await this.$router.push({
-          name: this.$routerExtension.names.DynamicRecipes,
-        })
-        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: 'Dynamic Recipe not found.' },
-        })
-        return
-      }
-    } else {
-      this.dynamicRecipe = new DynamicRecipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
-    }
-
-    this.blockDirector = new BlockDirector<IFileUpload>({
-      blocks: this.dynamicRecipe.blocks,
-      findAttachment: this.findAttachment.bind(this),
-      focusAfter: this.focusAfter.bind(this),
-      focusBefore: this.focusBefore.bind(this),
-      onArrowDown: this.onArrowDown.bind(this),
-      onArrowUp: this.onArrowUp.bind(this),
-      onBackspace: this.onBackspace.bind(this),
-      onDestroyAttachments: this.onDestroyAttachments.bind(this),
-      onEnter: this.onEnter.bind(this),
-      onImageUpload: this.onImageUpload.bind(this),
-      onInput: this.onInput.bind(this),
-      onSave: this.onSave?.bind(this),
-    })
-
-    this.commandSearch = new Searcher({
-      label: 'label',
-      valueString: 'label',
-      type: 'command',
-      collection: () => {
-        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image', 'ingredient']
-        if (
-          this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
-          this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row'
-        ) {
-          allowableCommands.push('addColumn')
-        }
-        return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
-          commands.push(this.blockDirector.COMMANDS[commandId])
-          return commands
-        }, [])
-      },
-      matcher(item, q) {
-        return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))
-      },
-    })
-  },
-  watch: {
-    textBlockAttached(newVal, oldVal) {
-      if (newVal) {
-        this.textBlock = {
-          id: Guid.create(),
-          type: 'text',
-          content: { text: '' },
-        }
-      }
     },
   },
 })

@@ -68,10 +68,13 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 2 text block
-          cy.contains('Ingredient 2').clear()
-          cy.contains('Ingredient 2').should('exist')
-          cy.contains('Ingredient 2').type('{backspace}')
-          cy.contains('Ingredient 2').should('not.exist')
+          cy.contains('Ingredient 2').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{backspace}')
+            cy.wrap($el).should('not.exist')
+          })
+          cy.contains('Remove Empty Column').click()
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: h2Id, text: 'Heading 2' },
@@ -101,10 +104,16 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 3 and Sidebar
-          cy.contains('Ingredient 3').clear()
-          cy.contains('Ingredient 3').should('exist')
-          cy.contains('Ingredient 3').type('{del}{del}{del}{del}{del}{del}{del}{del}{backspace}')
-          cy.contains('Ingredient 3').should('not.exist')
+          cy.contains('Ingredient 3').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{del}')
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(60).then(() => {
+              cy.contains('Sidebar').type('{del}{del}{del}{del}{del}{del}{del}{backspace}')
+            })
+            cy.wrap($el).should('not.exist')
+          })
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: h2Id, text: 'Heading 2' },
@@ -116,10 +125,16 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Heading 2 and 3
-          cy.contains('Heading 2').clear()
-          cy.contains('Heading 2').should('exist')
-          cy.contains('Heading 2').type('{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}')
-          cy.contains('Heading 2').should('not.exist')
+          cy.contains('Heading 2').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{del}')
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(60).then(() => {
+              cy.contains('Heading 3').type('{del}{del}{del}{del}{del}{del}{del}{del}{del}{del}')
+            })
+            cy.wrap($el).should('not.exist')
+          })
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { id: rowId, text: 'Ingredient 1' },
@@ -129,10 +144,14 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient 1
-          cy.contains('Ingredient 1').clear()
-          cy.contains('Ingredient 1').should('exist')
-          cy.contains('Ingredient 1').type('{backspace}')
-          cy.contains('Ingredient 1').should('not.exist')
+          cy.contains('Ingredient 1').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{backspace}')
+            cy.wrap($el).should('not.exist')
+          })
+          cy.contains('Remove Empty Column').click()
+          cy.contains('Remove Empty Row').click()
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { text: '' }, // the "type anything... placeholder block"

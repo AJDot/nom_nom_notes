@@ -1,11 +1,42 @@
 <template>
-  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" @drop="onDrop" :data-focusable="false" class="flex flex-col gap-1 sm:gap-x-4 sm:gap-y-2 grow basis-0 py-1 rounded-md" :class="{ 'cursor-pointer': isChooseMode }" :hover-color="hoverColor" @click.self.stop="onClick" data-test-block="column">
-    <base-block-group v-if="childBlocks.length" :mode="mode" :blocks="childBlocks" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
-    <div v-else-if="isEditable" class="flex grow cursor-pointer place-items-center rounded-md">
-      <button type="button" @click="addText" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
+  <draggable
+    tag="section"
+    :draggable="draggable"
+    :droppable="droppableTest"
+    :item="block"
+    :data-focusable="false"
+    class="flex flex-col gap-1 sm:gap-x-4 sm:gap-y-2 grow basis-0 py-1 rounded-md"
+    :class="{ 'cursor-pointer': isChooseMode }"
+    :hover-color="hoverColor"
+    data-test-block="column"
+    @drop="onDrop"
+    @click.self.stop="onClick"
+  >
+    <base-block-group
+      v-if="childBlocks.length"
+      :mode="mode"
+      :blocks="childBlocks"
+      :director="director"
+      :draggable="draggable"
+      :droppable="droppable"
+      :editable="editable"
+    />
+    <div
+      v-else-if="isEditable"
+      class="flex grow cursor-pointer place-items-center rounded-md"
+    >
+      <button
+        type="button"
+        class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100"
+        @click="addText"
+      >
         + Add Item
       </button>
-      <button type="button" @click="destroy" class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100">
+      <button
+        type="button"
+        class="grow text-center text-gray-500 rounded-md outline-none hover:shadow-input hover:bg-gray-100 focus:shadow-input focus:bg-gray-100"
+        @click="destroy"
+      >
         - Remove Empty Column
       </button>
     </div>
@@ -25,7 +56,7 @@ import Guid from '~/utils/guid'
 export default defineComponent({
   name: 'ColumnBlock',
   components: {
-    Draggable
+    Draggable,
   },
   mixins: [
     blockMixin<ColumnBlock>(),
@@ -41,6 +72,7 @@ export default defineComponent({
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
       this.director.onMove({ moveId, toId })
+      this.save()
     },
     onClick(event) {
       if (!this.isEditable && !this.isChooseMode) return

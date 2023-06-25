@@ -1,7 +1,44 @@
 <template>
-  <draggable tag="section" :draggable="draggable" :droppable="droppableTest" :item="block" @drop="onDrop" class="flex flex-row basis-full p-1 rounded-md" :hover-color="hoverColor" :class="{ 'cursor-pointer': isChooseMode }" @click.self.stop="onClick" data-test-block="ingredient">
-    <div :key="block.id + '-amount'" :data-toggle-key="block.id" :placeholder="placeholder" data-focus class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.amount" @input="onInputAmount" @keydown="onKeydownAmount" ref="amount" v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"></div>
-    <div :key="block.id + '-text'" :data-toggle-key="block.id" :placeholder="placeholder" data-focus class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2" :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }" :contenteditable="isEditable" v-html="block.content.text" @input="onInputText" @keydown="onKeydownText" ref="text" v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"></div>
+  <draggable
+    tag="section"
+    :draggable="draggable"
+    :droppable="droppableTest"
+    :item="block"
+    class="flex flex-row basis-full p-1 rounded-md"
+    :hover-color="hoverColor"
+    :class="{ 'cursor-pointer': isChooseMode }"
+    data-test-block="ingredient"
+    @drop="onDrop"
+    @click.self.stop="onClick"
+  >
+    <div
+      :key="block.id + '-amount'"
+      ref="amount"
+      v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+      :data-toggle-key="block.id"
+      :placeholder="placeholder"
+      data-focus
+      class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
+      :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+      :contenteditable="isEditable"
+      @input="onInputAmount"
+      @keydown="onKeydownAmount"
+      v-html="block.content.amount"
+    />
+    <div
+      :key="block.id + '-text'"
+      ref="text"
+      v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+      :data-toggle-key="block.id"
+      :placeholder="placeholder"
+      data-focus
+      class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
+      :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+      :contenteditable="isEditable"
+      @input="onInputText"
+      @keydown="onKeydownText"
+      v-html="block.content.text"
+    />
   </draggable>
 </template>
 
@@ -17,9 +54,9 @@ import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { ToggleActionTypes } from '~/store/modules/interfaces/modules/toggle'
 
 export default defineComponent({
-  name: "IngredientBlock",
+  name: 'IngredientBlock',
   components: {
-    Draggable
+    Draggable,
   },
   mixins: [
     blockMixin<IngredientBlock>(),
@@ -29,7 +66,14 @@ export default defineComponent({
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     placeholder(): string {
-      return this.isEditable ? this.director.find(this.block.id) ? "Type '/' for commands" : "Type anything..." : ''
+      return this.isEditable ? this.director.find(this.block.id) ? "Type '/' for commands" : 'Type anything...' : ''
+    },
+  },
+  watch: {
+    mode(newVal, _oldVal) {
+      if (newVal !== 'show') {
+        this.setToggleState({ key: this.block.id, value: false })
+      }
     },
   },
   methods: {
@@ -38,6 +82,7 @@ export default defineComponent({
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
       this.director.onMove({ moveId, toId })
+      this.save()
     },
     onClick(event) {
       if (!this.isEditable && !this.isChooseMode) return
@@ -52,20 +97,24 @@ export default defineComponent({
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       this.director.onInput({
-        block: this.block, event, call: () => {
+        block: this.block,
+        event,
+        call: () => {
           captain.onInput({ event, contentType: 'amount' })
           this.save()
-        }
+        },
       })
     },
     onInputText(event) {
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       this.director.onInput({
-        block: this.block, event, call: () => {
+        block: this.block,
+        event,
+        call: () => {
           captain.onInput({ event, contentType: 'text' })
           this.save()
-        }
+        },
       })
     },
     onKeydownAmount(event) {
@@ -84,12 +133,13 @@ export default defineComponent({
         case 'Backspace':
           this.onBackspace(event)
           break
-        case 'Delete':
+        case 'Delete': {
           const captain = this.director.captainFor(this.block)
           if (captain.isEmpty) {
             this.onDelete(event)
           }
           break
+        }
       }
     },
     onKeydownText(event) {
@@ -126,15 +176,16 @@ export default defineComponent({
     onEnter(event: KeyboardEvent) {
       if (!this.isEditable) return
 
-      if (event.shiftKey) {
-      } else {
+      if (!event.shiftKey) {
         const captain = this.director.captainFor(this.block)
         this.director.onEnter({
-          block: this.block, event, call: () => {
+          block: this.block,
+          event,
+          call: () => {
             captain.onEnter({ event })
             this.save()
             this.director.focusAfter(this.block)
-          }
+          },
         })
         event.preventDefault()
       }
@@ -149,35 +200,30 @@ export default defineComponent({
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
         this.director.onBackspace({
-          block: this.block, event, call: () => {
+          block: this.block,
+          event,
+          call: () => {
             this.director.focusBefore(this.block)
             this.director.destroy(this.block, 'down')
             this.save()
-          }
+          },
         })
       }
     },
-    onDelete(event) {
+    onDelete(_event) {
       if (!this.isEditable) return
 
       const captain = this.director.captainFor(this.block)
       if (captain.isEmpty) {
+        const nextBlock = this.director.blockAfter(this.block)
         this.director.destroy(this.block, 'down')
-        setTimeout(() => this.director.focusAfter(this.block), 50)
+        if (nextBlock) setTimeout(() => this.director.focus(nextBlock), 50)
         this.save()
       }
-
     },
     save() {
       this.director.onSave()
     },
   },
-  watch: {
-    mode(newVal, oldVal) {
-      if (newVal !== 'show') {
-        this.setToggleState({ key: this.block.id, value: false })
-      }
-    }
-  }
 })
 </script>

@@ -1,18 +1,18 @@
 import { defineComponent, nextTick, watch } from 'vue'
 import SelectionUtils from '~/utils/selectionUtils'
-import { ContentBlock } from './../interfaces/blockInterfacesGeneral'
+import { ContentBlockIdBlock, Block } from './../interfaces/blockInterfacesGeneral'
 
 export default function (...keys: string[]) {
   return defineComponent({
     props: {
       block: {
-        type: Object as () => ContentBlock,
+        type: Object as () => Block,
         required: true,
       },
     },
     mounted() {
       for (const key of keys) {
-        watch(() => this.block.content[key], () => this.preserveCaret(key), { immediate: true })
+        watch(() => (<ContentBlockIdBlock> this.block).content[key], () => this.preserveCaret(key), { immediate: true })
       }
     },
     methods: {
