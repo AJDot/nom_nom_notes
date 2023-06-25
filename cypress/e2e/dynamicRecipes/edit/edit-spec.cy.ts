@@ -35,6 +35,8 @@ describe('Edit Dynamic Recipe', () => {
             path: 'images/super-cute-puppy.jpeg',
             type: 'image/jpeg',
           })
+          cy.getContentEditable('Type anything...').type('Soy Sauce/ingredient{enter}')
+          cy.contains('Soy Sauce').type('{upArrow}1 cup')
         })
       cy.wait('@image')
         .then(() => {
@@ -53,6 +55,7 @@ describe('Edit Dynamic Recipe', () => {
             .and('include.text', 'Water')
             .and('include.text', 'Salt')
             .findTest('close').click()
+          cy.getTest('side-panel').should('not.exist')
         })
 
       const data = [
@@ -73,6 +76,7 @@ describe('Edit Dynamic Recipe', () => {
         { type: 'text', text: 'Don\'t forget the thing with the thing.' },
         { type: 'sidebar', text: 'Sidebar button' },
         { type: 'image' },
+        { type: 'ingredient', text: '1 cupSoy Sauce' },
       ]
       cy.get('[data-test-block]')
         .should('have.length', data.length)

@@ -31,6 +31,7 @@ describe('Delete Dynamic Recipe Block', () => {
       const text3Id = Guid.create()
       const sidebarId = Guid.create()
       const imageId = Guid.create()
+      const ingredientId = Guid.create()
       const blocks: Block[] = [
         { id: h1Id, type: 'h1', content: { text: 'Heading 1' } },
         { id: h2Id, type: 'h2', content: { text: 'Heading 2' } },
@@ -43,6 +44,7 @@ describe('Delete Dynamic Recipe Block', () => {
         { id: text3Id, type: 'text', content: { text: 'Ingredient 3' } },
         { id: sidebarId, type: 'sidebar', content: { text: 'Sidebar', blockId: null } },
         { id: imageId, type: 'image', content: { attachmentId: null } },
+        { id: ingredientId, type: 'ingredient', content: { amount: '1 cup', text: 'Ingredient' } },
       ]
 
       cy.intercept('PATCH', '/api/v1/dynamic_recipes/*').as('update')
@@ -64,6 +66,7 @@ describe('Delete Dynamic Recipe Block', () => {
             { id: text3Id, text: 'Ingredient 3' },
             { id: sidebarId, text: 'Sidebar' },
             { id: imageId, text: '' },
+            { id: ingredientId, text: '1 cupIngredient' },
             { text: '' }, // the "type anything... placeholder block"
           ])
 
@@ -85,6 +88,7 @@ describe('Delete Dynamic Recipe Block', () => {
             { id: text3Id, text: 'Ingredient 3' },
             { id: sidebarId, text: 'Sidebar' },
             { id: imageId, text: '' },
+            { id: ingredientId, text: '1 cupIngredient' },
             { text: '' }, // the "type anything... placeholder block"
           ])
 
@@ -100,6 +104,7 @@ describe('Delete Dynamic Recipe Block', () => {
             { id: text1Id, text: 'Ingredient 1' },
             { id: text3Id, text: 'Ingredient 3' },
             { id: sidebarId, text: 'Sidebar' },
+            { id: ingredientId, text: '1 cupIngredient' },
             { text: '' }, // the "type anything... placeholder block"
           ])
 
@@ -121,6 +126,7 @@ describe('Delete Dynamic Recipe Block', () => {
             { id: rowId, text: 'Ingredient 1' },
             { id: column1Id, text: 'Ingredient 1' },
             { id: text1Id, text: 'Ingredient 1' },
+            { id: ingredientId, text: '1 cupIngredient' },
             { text: '' }, // the "type anything... placeholder block"
           ])
 
@@ -140,6 +146,7 @@ describe('Delete Dynamic Recipe Block', () => {
             { id: rowId, text: 'Ingredient 1' },
             { id: column1Id, text: 'Ingredient 1' },
             { id: text1Id, text: 'Ingredient 1' },
+            { id: ingredientId, text: '1 cupIngredient' },
             { text: '' }, // the "type anything... placeholder block"
           ])
 
@@ -152,6 +159,24 @@ describe('Delete Dynamic Recipe Block', () => {
           })
           cy.contains('Remove Empty Column').click()
           cy.contains('Remove Empty Row').click()
+          assertBlocks([
+            { id: h1Id, text: 'Heading 1' },
+            { id: ingredientId, text: '1 cupIngredient' },
+            { text: '' }, // the "type anything... placeholder block"
+          ])
+
+          // delete Ingredient
+          cy.contains('1 cup').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{downArrow}')
+          })
+          cy.contains('Ingredient').then($el => {
+            cy.wrap($el).clear()
+            cy.wrap($el).should('exist')
+            cy.wrap($el).type('{backspace}')
+            cy.wrap($el).should('not.exist')
+          })
           assertBlocks([
             { id: h1Id, text: 'Heading 1' },
             { text: '' }, // the "type anything... placeholder block"

@@ -77,6 +77,7 @@ export default defineComponent({
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
       this.director.onMove({ moveId, toId })
+      this.director.onSave()
     },
     onClick(event) {
       if (!this.isEditable && !this.isChooseMode) return
