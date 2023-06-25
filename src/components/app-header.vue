@@ -16,6 +16,11 @@
         <span class="hidden ml-5 text-2xl align-middle sm:text-4xl xs:inline-block">Nom Nom Notes</span>
       </h1>
       <ul class="text-2xl j-slash sm:text-3xl">
+        <li class="inline-block">
+          <router-link :to="{ name: $routerExtension.names.ShoppingList }">
+            Shopping List
+          </router-link>
+        </li>
         <li
           v-if="currentUser"
           class="inline-block"

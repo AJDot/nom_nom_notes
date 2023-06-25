@@ -28,6 +28,7 @@ import ListRecipe from '~/views/recipes/list.vue'
 import ListRecipeHeader from '~/views/recipes/listHeader.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
+import ShoppingList from '~/views/shoppingList/show.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
 
@@ -222,6 +223,11 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
       }),
       checkNotMobile,
     ],
+  },
+  {
+    name: RouteName.ShoppingList,
+    path: AppPath.shoppingList(),
+    component: ShoppingList,
   },
   {
     name: RouteName.SignIn,

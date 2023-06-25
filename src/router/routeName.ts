@@ -13,4 +13,5 @@ export enum RouteName {
   NotFound = 'not-found',
   ForgotPassword = 'forgot-password',
   ChangePassword = 'change-password',
+  ShoppingList = 'shopping-list',
 }

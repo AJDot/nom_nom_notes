@@ -72,6 +72,10 @@ class AppPath extends Path {
     return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
   }
 
+  shoppingList() {
+    return '/shopping_list'
+  }
+
   password() {
     return '/password'
   }
