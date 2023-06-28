@@ -12,33 +12,52 @@
     @click.self.stop="onClick"
   >
     <div
-      :key="block.id + '-amount'"
-      ref="amount"
-      v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
-      :data-toggle-key="block.id"
-      :placeholder="placeholder"
-      data-focus
-      class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
-      :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
-      :contenteditable="isEditable"
-      @input="onInputAmount"
-      @keydown="onKeydownAmount"
-      v-html="block.content.amount"
-    />
-    <div
-      :key="block.id + '-text'"
-      ref="text"
-      v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
-      :data-toggle-key="block.id"
-      :placeholder="placeholder"
-      data-focus
-      class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
-      :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
-      :contenteditable="isEditable"
-      @input="onInputText"
-      @keydown="onKeydownText"
-      v-html="block.content.text"
-    />
+      v-if="isShoppingListMode && block.content.text?.trim()"
+      class="flex items-center min-h-9 sm:px-2"
+    >
+      <input
+        :id="`shopping-list-checkbox-${block.id}`"
+        type="checkbox"
+        :value="block.id"
+        class="w-5 h-5 accent-green-500 bg-gray-100 border-gray-300 rounded-full focus:ring-gray-300 dark:focus:ring-gray-400 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+        @change="selectBlock"
+      >
+    </div>
+    <label
+      :for="`shopping-list-checkbox-${block.id}`"
+      class="flex grow sm:px-2"
+    >
+      <div
+        v-if="isEditable || block.content.amount"
+        :key="block.id + '-amount'"
+        ref="amount"
+        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+        for="shopping-list-checkbox"
+        :data-toggle-key="block.id"
+        :placeholder="placeholder('amount')"
+        data-focus
+        class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+        :contenteditable="isEditable"
+        @input="onInputAmount"
+        @keydown="onKeydownAmount"
+        v-html="block.content.amount"
+      />
+      <div
+        :key="block.id + '-text'"
+        ref="text"
+        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+        :data-toggle-key="block.id"
+        :placeholder="placeholder('text')"
+        data-focus
+        class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+        :contenteditable="isEditable"
+        @input="onInputText"
+        @keydown="onKeydownText"
+        v-html="block.content.text"
+      />
+    </label>
   </draggable>
 </template>
 
@@ -47,11 +66,18 @@ import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'vuex'
 import { IngredientBlock } from '~/interfaces/blockInterfacesGeneral'
+import { ShoppingListItem } from '~/interfaces/shoppingListInterfaces'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 import { StoreModulePath } from '~/store'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { ToggleActionTypes } from '~/store/modules/interfaces/modules/toggle'
+import { ShoppingListMutationTypes } from '~/store/modules/shoppingLists/mutations'
+import Guid from '~/utils/guid'
+
+interface Data {
+  shoppingListItem: ShoppingListItem | null
+}
 
 export default defineComponent({
   name: 'IngredientBlock',
@@ -62,12 +88,15 @@ export default defineComponent({
     blockMixin<IngredientBlock>(),
     preserveCaretMixin('amount', 'text'),
   ],
+  data(): Data {
+    return {
+      shoppingListItem: null,
+    }
+  },
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
-    placeholder(): string {
-      return this.isEditable ? this.director.find(this.block.id) ? "Type '/' for commands" : 'Type anything...' : ''
-    },
+    ...mapState(StoreModulePath.ShoppingLists, { selectedBlocks: 'selectedItems' }),
   },
   watch: {
     mode(newVal, _oldVal) {
@@ -77,7 +106,18 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions('interfaces/toggle', { setToggleState: ToggleActionTypes.SET, toggleToggleState: ToggleActionTypes.TOGGLE }),
+    selectBlock() {
+      if (this.shoppingListItem && this.selectedBlocks.includes(this.shoppingListItem)) {
+        this.$store.commit(
+          StoreModulePath.ShoppingLists + ShoppingListMutationTypes.UNSELECT_ITEM,
+          this.shoppingListItem.id,
+        )
+      } else {
+        this.shoppingListItem = { id: Guid.create(), referenceId: this.block.id, amount: this.block.content.amount, description: this.block.content.text! }
+        this.$store.commit(StoreModulePath.ShoppingLists + ShoppingListMutationTypes.SELECT_ITEM, this.shoppingListItem)
+      }
+    },
+    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Toggle, { setToggleState: ToggleActionTypes.SET, toggleToggleState: ToggleActionTypes.TOGGLE }),
     ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
@@ -223,6 +263,11 @@ export default defineComponent({
     },
     save() {
       this.director.onSave()
+    },
+    placeholder(type: 'amount' | 'text'): string {
+      if (!this.isEditable) return ''
+
+      return `${type === 'amount' ? 'Amount' : 'Description'} (Type '/' for commands)`
     },
   },
 })

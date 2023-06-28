@@ -189,6 +189,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
+    ...mapState(StoreModulePath.Interfaces + StoreModulePath.Mode, { currentMode: 'current' }),
     blocks: {
       get(): Block[] {
         if (!this.dynamicRecipe) return []
@@ -210,6 +211,8 @@ export default defineComponent({
       },
     },
     mode(): 'create' | 'show' | 'edit' | 'choose' {
+      if (this.currentMode) return this.currentMode
+
       switch (this.view) {
         case 'show':
           return 'show'
@@ -342,7 +345,7 @@ export default defineComponent({
       onEnter: this.onEnter.bind(this),
       onImageUpload: this.onImageUpload.bind(this),
       onInput: this.onInput.bind(this),
-      onSave: this.onSave?.bind(this),
+      onSave: this.onSave.bind(this),
     })
 
     this.commandSearch = new Searcher({

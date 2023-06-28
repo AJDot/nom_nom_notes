@@ -15,6 +15,7 @@ import signups from '~/store/modules/signups'
 import users from '~/store/modules/users'
 import ability from './modules/ability'
 import dynamicRecipes from './modules/dynamicRecipes'
+import shoppingLists from './modules/shoppingLists'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -35,6 +36,8 @@ export enum StoreModulePath {
   Toggle = 'toggle/',
   Choice = 'choice/',
   Ability = 'ability/',
+  Mode = 'mode/',
+  ShoppingLists = 'shoppingLists/',
 }
 
 export const store = createStore<RootState>({
@@ -52,6 +55,7 @@ export const store = createStore<RootState>({
     features,
     interfaces,
     ability,
+    shoppingLists,
   },
   state: {} as RootState,
   mutations: {},

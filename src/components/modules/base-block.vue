@@ -59,7 +59,7 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop),
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose', 'shopping'].includes(prop),
     },
     editable: {
       type: Boolean,

@@ -1,3 +1,5 @@
+import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
+import ShoppingList from 'Models/shoppingList'
 import User from 'Models/user'
 import { TAppAbility } from '~/appAbility'
 import { FlashState } from '~/store/modules/flash'
@@ -32,6 +34,11 @@ export interface AbilityState {
   ability: TAppAbility
 }
 
+export interface ShoppingListsState {
+  current: ShoppingList | null
+  selectedItems: ShoppingListItem[]
+}
+
 export enum StoreModuleType {
   Session = 'sessions',
   Features = 'features',
@@ -43,6 +50,7 @@ export enum StoreModuleType {
   DynamicRecipes = 'dynamicRecipes',
   Tags = 'tags',
   Ability = 'ability',
+  ShoppingLists = 'shoppingLists',
 }
 
 export interface RootState {
@@ -55,4 +63,5 @@ export interface RootState {
   [StoreModuleType.Tags]: TagsState
   [StoreModuleType.Users]: UsersState
   [StoreModuleType.Ability]: AbilityState
+  [StoreModuleType.ShoppingLists]: ShoppingListsState
 }

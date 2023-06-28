@@ -72,8 +72,12 @@ class AppPath extends Path {
     return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
   }
 
-  shoppingList() {
-    return '/shopping_list'
+  shoppingLists() {
+    return '/shopping_lists'
+  }
+
+  editShoppingLists() {
+    return this.shoppingLists() + '/edit'
   }
 
   password() {
@@ -168,6 +172,14 @@ class ApiPath extends Path {
 
   currentAbility() {
     return '/ability'
+  }
+
+  shoppingLists() {
+    return '/shopping_lists'
+  }
+
+  shoppingList(shoppingListClientId: string) {
+    return Path.buildPath(this.shoppingLists() + '/:clientId', { clientId: shoppingListClientId })
   }
 }
 

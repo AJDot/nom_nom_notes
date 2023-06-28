@@ -14,4 +14,5 @@ export enum RouteName {
   ForgotPassword = 'forgot-password',
   ChangePassword = 'change-password',
   ShoppingList = 'shopping-list',
+  EditShoppingList = 'edit-shopping-list',
 }

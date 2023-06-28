@@ -16,7 +16,10 @@
         <span class="hidden ml-5 text-2xl align-middle sm:text-4xl xs:inline-block">Nom Nom Notes</span>
       </h1>
       <ul class="text-2xl j-slash sm:text-3xl">
-        <li class="inline-block">
+        <li
+          v-if="canViewShoppingList"
+          class="inline-block"
+        >
           <router-link :to="{ name: $routerExtension.names.ShoppingList }">
             Shopping List
           </router-link>
@@ -89,6 +92,9 @@ export default defineComponent({
     },
     canSignIn(): boolean {
       return !this.signedIn && !this.$routerExtension.currentRouteIs(this.$routerExtension.names.SignIn)
+    },
+    canViewShoppingList(): boolean {
+      return [this.$routerExtension.names.SignIn, this.$routerExtension.names.SignUp, this.$routerExtension.names.ShoppingList, this.$routerExtension.names.EditShoppingList].every(route => !this.$routerExtension.currentRouteIs(route))
     },
   },
   async beforeCreate() {

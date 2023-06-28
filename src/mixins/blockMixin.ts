@@ -18,7 +18,7 @@ export default function <B extends Block>() {
       mode: {
         type: String,
         default: 'show',
-        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop),
+        validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose', 'shopping'].includes(prop),
       },
       editable: {
         type: Boolean,
@@ -48,6 +48,9 @@ export default function <B extends Block>() {
       },
       isChooseMode(): boolean {
         return this.mode === 'choose'
+      },
+      isShoppingListMode(): boolean {
+        return this.mode === 'shopping'
       },
       isEditable(): boolean {
         return this.editable && (this.isCreateMode || this.isEditMode)
