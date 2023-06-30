@@ -19,18 +19,20 @@
         <span>Edit</span>
       </router-link>
     </li>
-    <li v-if="dynamicRecipe && !isShoppingListMode">
-      <button @click="setCurrentMode('shopping')">
-        <i class="material-icons my-auto">receipt</i>
-        <span>Add to Shopping List</span>
-      </button>
-    </li>
-    <li v-if="dynamicRecipe && isShoppingListMode">
-      <button @click="confirmNewShoppingListItems">
-        <i class="material-icons my-auto">receipt</i>
-        <span>Confirm</span>
-      </button>
-    </li>
+    <template v-if="ability.can('update', 'ShoppingList')">
+      <li v-if="dynamicRecipe && !isShoppingListMode">
+        <button @click="setCurrentMode('shopping')">
+          <i class="material-icons my-auto">receipt</i>
+          <span>Add to Shopping List</span>
+        </button>
+      </li>
+      <li v-if="dynamicRecipe && isShoppingListMode">
+        <button @click="confirmNewShoppingListItems">
+          <i class="material-icons my-auto">receipt</i>
+          <span>Confirm</span>
+        </button>
+      </li>
+    </template>
   </ul>
 </template>
 
@@ -71,3 +73,5 @@ export default defineComponent({
   },
 })
 </script>
+~/interfaces/interfaces
+~/store/interfaces

@@ -12,12 +12,20 @@
           @click="destroySelected"
         >
           <i class="material-icons align-middle">delete</i>
-          <span class="m-auto">Delete ({{ selected.length }})</span>
+          <span class="m-auto">Delete ({{ selectedItemsIds.length }})</span>
+        </button>
+      </div>
+      <div>
+        <button
+          class="btn"
+          @click="isCondensed = !isCondensed"
+        >
+          {{ isCondensed ? 'Expand' : 'Condense' }}
         </button>
       </div>
       <template v-if="shoppingList.items.length">
         <div
-          v-for="item in shoppingList.items"
+          v-for="item in (isCondensed ? condensedItems : shoppingList.items)"
           :key="item.id"
           class="flex items-center sm:px-2 sm:py-1"
         >
@@ -60,19 +68,21 @@
 
 <script lang="ts">
 import RootState from '@vuex-orm/core/dist/src/modules/contracts/RootState'
+import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
+import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
 import { mapActions, mapMutations, mapState, useStore } from 'vuex'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
 import { FlashActionTypes, FlashMutationTypes } from '~/store/modules/flash'
-import { ShoppingListActionTypes } from '../../store/modules/shoppingLists/actions'
-import { ShoppingListItem } from '~/interfaces/shoppingListInterfaces'
-import { AxiosResponse, AxiosError } from 'axios'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { MathMutationTypes } from '~/store/modules/utils/modules/math'
 import { HttpStatusCode } from '~/utils/httpUtils'
+import math from '~/utils/math'
+import { ShoppingListActionTypes } from '../../store/modules/shoppingLists/actions'
 
 interface Data {
-  selected: string[]
+  isCondensed: boolean
 }
 
 export default defineComponent({
@@ -89,11 +99,75 @@ export default defineComponent({
   },
   data(): Data {
     return {
-      selected: [],
+      isCondensed: false,
     }
   },
   computed: {
     ...mapState(StoreModulePath.ShoppingLists, { shoppingList: 'current' }),
+    ...mapState(StoreModulePath.Utils + StoreModulePath.Math, { madeUpUnits: 'madeUp' }),
+    condensedItems(): Pick<ShoppingListItem, 'amount' | 'description'>[] {
+      if (!this.shoppingList) return []
+      const isMadeUp = (unit: math.Unit): boolean => {
+        return this.madeUpUnits.some(c => c.equalBase(unit))
+      }
+      function normalize(text: string): string {
+        return text.toLocaleLowerCase().replace(/[\W_]+/g, '')
+      }
+      const shoppingItems: ShoppingListItem[] = this.shoppingList.items
+
+      const items: {unit: math.Unit, description: string, descriptionNorm: string, amountOnly: boolean}[] = shoppingItems.map(item => {
+        const amount = item.amount || '1'
+        let [numString, unitString] = amount.split(' ')
+        unitString = unitString || item.description
+
+        const num = math.number(math.fraction(numString))
+        const normUnit = normalize(unitString)
+
+        try {
+          math.unit(normUnit)
+        } catch (e) {
+          this.addMadeUpUnit(normUnit)
+        }
+
+        const unit = math.unit(math.fraction(num), normUnit)
+        // const unit = math.unit(num, normUnit)
+        return { unit, description: item.description, descriptionNorm: normalize(item.description), amountOnly: isMadeUp(unit) }
+      })
+      let index = 0
+      while (index < items.length) {
+        const item = items[index]
+        let otherIndex = index + 1
+        while (otherIndex < items.length) {
+          const otherItem = items[otherIndex]
+          if (item.descriptionNorm === otherItem.descriptionNorm && item.unit.equalBase(otherItem.unit)) {
+            item.unit = math.add(item.unit, otherItem.unit)
+            items.splice(otherIndex, 1)
+          } else {
+            otherIndex++
+          }
+        }
+        index++
+      }
+      return items.map(item => {
+        let unit = item.unit ?? math.unit('')
+        if (item.amountOnly) unit = math.unit(unit.toNumber().toString())
+        const amountDecimal = unit.format({ fraction: 'decimal' }) // #=> 2.1(6) is outputted for 13/6
+        const parse = amountDecimal.match(/(\d+)(?:\.(\d+)?\((\d+)\))?(.+)?/)
+        let amount: string
+        if (parse) {
+          // #=> turns 2.1(6) into 2 1/6
+          const [whole, n = 1, d, unitString = ''] = parse.slice(1)
+          const parts: string[] = []
+          if (whole !== '0') parts.push(whole)
+          if (n && d) parts.push(` ${n}/${d}`)
+          parts.push(unitString)
+          amount = parts.join(' ')
+        } else {
+          amount = unit.format({ fraction: math.isInteger(unit.toNumber()) ? 'decimal' : 'ratio' })
+        }
+        return { amount, description: item.description }
+      })
+    },
     mode(): 'show' | 'edit' {
       switch (this.view) {
         case 'show':
