@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent, ImgHTMLAttributes } from 'vue'
-import { Uploader } from '~/interfaces/imageInterfaces'
+import { Uploader } from 'Interfaces/imageInterfaces'
 import Ellipsis from '../animations/ellipsis.vue'
 import ImagePlaceholder from '/icons/image_placeholder.svg'
 

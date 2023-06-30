@@ -1,4 +1,4 @@
-import { SearchDirectorOptions, SearchResult, USearchDirector } from '~/interfaces/searchInterfaces'
+import { SearchDirectorOptions, SearchResult, USearchDirector } from 'Interfaces/searchInterfaces'
 
 export default class SearchDirector<T> implements USearchDirector<T> {
   // eslint-disable-next-line no-useless-constructor

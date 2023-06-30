@@ -1,7 +1,7 @@
 import { Attribute } from '@vuex-orm/core'
 import { HasMany, HasOne, Nameable } from 'Interfaces/modelInterfaces'
 import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import FileUpload from './fileUpload'
 import Tag from './tag'
 import Tagging from './tagging'

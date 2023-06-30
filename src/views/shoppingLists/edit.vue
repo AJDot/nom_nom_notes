@@ -6,7 +6,7 @@
           Shopping List
         </h1>
         <button
-          v-if="isEditable && selected.length"
+          v-if="isEditable && selectedItemsIds.length"
           type="button"
           class="btn"
           @click="destroySelected"
@@ -32,7 +32,7 @@
           <input
             v-if="isEditable"
             :id="`shopping-list-checkbox-${item.id}`"
-            v-model="selected"
+            v-model="selectedItemsIds"
             type="checkbox"
             :value="item.id"
             class="w-5 h-5 accent-green-500 bg-gray-100 border-gray-300 rounded-full focus:ring-gray-300 dark:focus:ring-gray-400 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
@@ -40,7 +40,7 @@
           <label
             :for="`shopping-list-checkbox-${item.id}`"
             class="flex grow sm:px-2"
-            :class="{'cursor-pointer': isEditable, 'cursor-auto': !isEditable}"
+            :class="{ 'cursor-pointer': isEditable, 'cursor-auto': !isEditable }"
           >
             <p>
               <span v-html="item.amount" /> <span v-html="item.description" />
@@ -83,6 +83,7 @@ import { ShoppingListActionTypes } from '../../store/modules/shoppingLists/actio
 
 interface Data {
   isCondensed: boolean
+  selectedItemsIds: string[]
 }
 
 export default defineComponent({
@@ -100,6 +101,7 @@ export default defineComponent({
   data(): Data {
     return {
       isCondensed: false,
+      selectedItemsIds: [],
     }
   },
   computed: {
@@ -151,7 +153,7 @@ export default defineComponent({
       return items.map(item => {
         let unit = item.unit ?? math.unit('')
         if (item.amountOnly) unit = math.unit(unit.toNumber().toString())
-        const amountDecimal = unit.format({ fraction: 'decimal' }) // #=> 2.1(6) is outputted for 13/6
+        const amountDecimal = unit.format({ fraction: 'decimal' }) // #=> turns 13/6 into 2.1(6)
         const parse = amountDecimal.match(/(\d+)(?:\.(\d+)?\((\d+)\))?(.+)?/)
         let amount: string
         if (parse) {
@@ -197,7 +199,6 @@ export default defineComponent({
         )
       }
     } catch (e) {
-      // throw e
       await this.$router.push({
         name: this.$routerExtension.names.ShoppingList,
       })
@@ -209,8 +210,9 @@ export default defineComponent({
   methods: {
     ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
     ...mapMutations(StoreModulePath.Flash, { setFlash: FlashMutationTypes.SET }),
+    ...mapMutations(StoreModulePath.Utils + StoreModulePath.Math, { addMadeUpUnit: MathMutationTypes.ADD_MADE_UP_UNIT }),
     ...mapActions(StoreModulePath.ShoppingLists, { update: ShoppingListActionTypes.UPDATE }),
-    async save(opts: {onSuccess?: () => void} = {}) {
+    async save(opts: { onSuccess?: () => void } = {}) {
       try {
         const response = await this.update(this.shoppingList)
         opts.onSuccess?.()
@@ -226,19 +228,19 @@ export default defineComponent({
       if (index < 0) return false
 
       this.shoppingList.items.splice(index, 1)
-      const selectedIndex = this.selected.indexOf(item.id)
-      if (selectedIndex >= 0) this.selected.splice(selectedIndex, 1)
+      const selectedIndex = this.selectedItemsIds.indexOf(item.id)
+      if (selectedIndex >= 0) this.selectedItemsIds.splice(selectedIndex, 1)
       return this.save()
     },
     async destroySelected() {
-      this.selected.forEach(id => {
+      this.selectedItemsIds.forEach(id => {
         const item = this.shoppingList.items.find(i => i.id === id)
         const index = this.shoppingList.items.indexOf(item)
         if (index === null) return
 
         this.shoppingList.items.splice(index, 1)
       })
-      this.save({ onSuccess: () => { this.selected = [] } })
+      this.save({ onSuccess: () => { this.selectedItemsIds = [] } })
     },
     async updateSuccessful(response: AxiosResponse) {
       if (response.data.error) {

@@ -1,4 +1,4 @@
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import Guid from '~/utils/guid'
 
 export interface DynamicRecipeTemplate {

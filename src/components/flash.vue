@@ -36,9 +36,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { StoreModulePath } from '~/store'
-import { StoreModuleType } from '~/store/interfaces'
 import { FlashMutationTypes, FlashState } from '~/store/modules/flash'
 import { FlashHash } from 'Interfaces/flashInterfaces'
+import { StoreModuleType } from '~/store/interfaces'
 
 interface Data {
   flash: FlashHash

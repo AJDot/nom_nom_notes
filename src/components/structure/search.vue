@@ -46,7 +46,7 @@
 import AInput from '@/structure/a-input.vue'
 import { SearchResult, USearchDirector, USearcher } from 'Interfaces/searchInterfaces'
 import { defineComponent, nextTick } from 'vue'
-import { USelector } from '~/interfaces/selectInterfaces'
+import { USelector } from 'Interfaces/selectInterfaces'
 import SearcherDirector from '~/utils/searchDirector'
 import Selector from '~/utils/selector'
 

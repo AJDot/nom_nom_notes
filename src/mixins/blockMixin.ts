@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import draggableMixin from './draggableMixin'
 
 export default function <B extends Block>() {

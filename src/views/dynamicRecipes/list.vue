@@ -71,11 +71,12 @@
 
 <script lang="ts">
 import Search from '@/structure/search.vue'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { FileUpload } from 'Interfaces/fileUploadInterfaces'
+import { SearchResult } from 'Interfaces/searchInterfaces'
 import { defineComponent, ImgHTMLAttributes, ref } from 'vue'
 import { useStore } from 'vuex'
 import HoverSlideShow from '~/components/structure/hover-slide-show.vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { SearchResult } from '~/interfaces/searchInterfaces'
 import DynamicRecipe from '~/models/dynamicRecipe'
 import Tag from '~/models/tag'
 import { ApiPath } from '~/router/path'
@@ -85,7 +86,6 @@ import { ArrayUtils } from '~/utils/arrayUtils'
 import BlockDirector from '~/utils/blocks/blockDirector'
 import Searcher from '~/utils/searcher'
 import ImagePlaceholder from '/icons/image_placeholder.svg'
-import { FileUpload } from '~/interfaces/fileUploadInterfaces'
 
 export default defineComponent({
   name: 'DynamicRecipesIndex',

@@ -1,4 +1,4 @@
-import { Block, BlockCommandDict, BlockDirector as GBlockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, IngredientBlock, RowBlock, TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockCommandDict, BlockDirector as GBlockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, IngredientBlock, RowBlock, TextBlock } from 'Interfaces/blockInterfacesGeneral'
 import Uploader from '~/uploaders/uploader'
 import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'

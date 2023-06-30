@@ -112,24 +112,24 @@
 
 <script lang="ts">
 import Search from '@/structure/search.vue'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from 'Interfaces/blockInterfacesGeneral'
+import { FileUpload as IFileUpload } from 'Interfaces/fileUploadInterfaces'
+import { Uploader as IUploader } from 'Interfaces/imageInterfaces'
+import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
+import { USelector } from 'Interfaces/selectInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
 import { debounce } from 'lodash'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
 import { Command } from '~/enums/command'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
-import { FileUpload as IFileUpload } from '~/interfaces/fileUploadInterfaces'
-import { Uploader as IUploader } from '~/interfaces/imageInterfaces'
-import { SearchOptions, SearchResult, USearcher } from '~/interfaces/searchInterfaces'
-import { USelector } from '~/interfaces/selectInterfaces'
 import DynamicRecipe from '~/models/dynamicRecipe'
 import FileUpload, { FileUploadAttributes } from '~/models/fileUpload'
 import Tag, { RTag } from '~/models/tag'
 import Tagging from '~/models/tagging'
 import router from '~/router'
 import { ApiPath } from '~/router/path'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
@@ -703,3 +703,5 @@ export default defineComponent({
   },
 })
 </script>
+~/interfaces/interfaces
+~/store/interfaces

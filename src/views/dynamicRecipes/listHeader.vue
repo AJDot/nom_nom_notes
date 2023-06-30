@@ -109,13 +109,13 @@
 
 <script lang="ts">
 import Modal from '@/modal.vue'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { FileUpload } from 'Interfaces/fileUploadInterfaces'
 import { AxiosError } from 'axios'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import DynamicRecipeTemplateFactory, { DynamicRecipeTemplate } from '~/factories/dynamicRecipeTemplateFactory'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { FileUpload } from '~/interfaces/fileUploadInterfaces'
 import loading from '~/mixins/loading'
 import DynamicRecipe from '~/models/dynamicRecipe'
 import { StoreModulePath } from '~/store'

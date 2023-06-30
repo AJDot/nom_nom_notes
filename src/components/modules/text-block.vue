@@ -30,7 +30,7 @@
 import Draggable from '@/modules/draggable/draggable.vue'
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'vuex'
-import { TextBlock } from '~/interfaces/blockInterfacesGeneral'
+import { TextBlock } from 'Interfaces/blockInterfacesGeneral'
 import blockMixin from '~/mixins/blockMixin'
 import preserveCaretMixin from '~/mixins/preserveCaretMixin'
 import { StoreModulePath } from '~/store'

@@ -1,4 +1,4 @@
-import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UImageBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UImageBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 import { ObjectUtils } from '../objectUtils'

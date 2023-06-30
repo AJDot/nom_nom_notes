@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import draggableMixin from '~/mixins/draggableMixin'
 import ColumnBlock from './column-block.vue'
 import H1Block from './h1-block.vue'

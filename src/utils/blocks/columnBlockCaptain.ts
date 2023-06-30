@@ -1,4 +1,4 @@
-import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, UColumnBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ColumnBlock, ContentBlockIdBlock, UColumnBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 
 export default class ColumnBlockCaptain<FType> implements UColumnBlockCaptain<FType> {

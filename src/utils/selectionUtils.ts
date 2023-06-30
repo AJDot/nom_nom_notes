@@ -1,4 +1,4 @@
-import { Mutable } from '~/interfaces/utilInterfaces'
+import { Mutable } from 'Interfaces/utilInterfaces'
 
 class SelectionUtils {
   static getCaret(element: HTMLElement): number {

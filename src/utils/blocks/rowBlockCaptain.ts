@@ -1,4 +1,4 @@
-import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, URowBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, URowBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 
 export default class RowBlockCaptain<FType> implements URowBlockCaptain<FType> {
