@@ -4,7 +4,7 @@
     :draggable="draggable"
     :droppable="droppableTest"
     :item="block"
-    class="flex flex-row basis-full p-1 rounded-md"
+    class="flex flex-row basis-full gap-2 sm:gap-0 p-1 rounded-md"
     :hover-color="hoverColor"
     :class="{ 'cursor-pointer': isChooseMode }"
     data-test-block="ingredient"
@@ -13,7 +13,7 @@
   >
     <div
       v-if="isShoppingListMode && block.content.text?.trim()"
-      class="flex items-center min-h-9 sm:px-2"
+      class="flex items-center min-h-9"
     >
       <input
         :id="`shopping-list-checkbox-${block.id}`"

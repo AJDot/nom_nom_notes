@@ -1,75 +1,79 @@
 <template>
-  <div class="px-5 pt-5">
-    <template v-if="shoppingList">
-      <div class="flex">
-        <h1 class="grow text-3xl py-1 inline-block">
-          Shopping List
-        </h1>
-        <button
-          v-if="isEditable && selectedItemsIds.length"
-          type="button"
-          class="btn"
-          @click="destroySelected"
-        >
-          <i class="material-icons align-middle">delete</i>
-          <span class="m-auto">Delete ({{ selectedItemsIds.length }})</span>
-        </button>
-      </div>
-      <flash
-        v-if="isEditMode && !isEditable"
-        :messages="{alert: ['Expand list to enable deletion']}"
-        :dismissible="false"
-      />
-      <div>
-        <button
-          v-if="isShowMode || isEditMode && isCondensed"
-          class="btn"
-          @click="isCondensed = !isCondensed"
-        >
-          {{ isCondensed ? 'Expand' : 'Condense' }}
-        </button>
-      </div>
-      <template v-if="shoppingList.items.length">
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="flex items-center sm:px-2 sm:py-1"
-        >
-          <input
-            v-if="isEditable"
-            :id="`shopping-list-checkbox-${item.id}`"
-            v-model="selectedItemsIds"
-            type="checkbox"
-            :value="item.id"
-            class="w-5 h-5 accent-green-500 bg-gray-100 border-gray-300 rounded-full focus:ring-gray-300 dark:focus:ring-gray-400 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          >
-          <label
-            :for="`shopping-list-checkbox-${item.id}`"
-            class="flex grow sm:px-2"
-            :class="{ 'cursor-pointer': isEditable, 'cursor-auto': !isEditable }"
-          >
-            <p>
-              <span v-html="item.amount" /> <span v-html="item.description" />
-            </p>
-          </label>
-          <button
-            v-if="isEditable"
-            type="button"
-            class="btn"
-            @click="destroyItem(item)"
-          >
-            <i class="material-icons align-middle">delete</i>
-          </button>
+  <main class="mx-3">
+    <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+      <template v-if="shoppingList">
+        <div class="grid grid-cols-2 sm:grid-cols-2 col-span-2">
+          <div class="col-span-2">
+            <flash
+              v-if="isEditMode && !isEditable"
+              :messages="{alert: ['Expand list to enable deletion']}"
+              :dismissible="false"
+            />
+          </div>
+          <h1 class="text-3xl py-1 inline-block">
+            Shopping List
+          </h1>
+          <div class="flex flex-row-reverse">
+            <button
+              v-if="isShowMode || isEditMode && isCondensed"
+              class="btn"
+              @click="isCondensed = !isCondensed"
+            >
+              {{ isCondensed ? 'Expand' : 'Condense' }}
+            </button>
+            <button
+              v-if="isEditable && selectedItemsIds.length"
+              type="button"
+              class="btn"
+              @click="destroySelected"
+            >
+              <i class="material-icons align-middle">delete</i>
+              <span class="m-auto">Delete ({{ selectedItemsIds.length }})</span>
+            </button>
+          </div>
         </div>
+        <template v-if="shoppingList.items.length">
+          <div
+            v-for="item in items"
+            :key="item.id"
+            class="flex gap-3 sm:gap-1 col-span-2 sm:col-span-1 items-center px-2 py-0.5"
+          >
+            <input
+              v-if="isEditable"
+              :id="`shopping-list-checkbox-${item.id}`"
+              v-model="selectedItemsIds"
+              type="checkbox"
+              :value="item.id"
+              class="w-5 h-5 accent-green-500 bg-gray-100 border-gray-300 rounded-full focus:ring-gray-300 dark:focus:ring-gray-400 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 shrink-0"
+            >
+            <label
+              :for="`shopping-list-checkbox-${item.id}`"
+              class="flex grow sm:px-2"
+              :class="{ 'cursor-pointer': isEditable, 'cursor-auto': !isEditable }"
+            >
+              <p>
+                <span v-html="item.amount" /> <span v-html="item.description" />
+              </p>
+            </label>
+            <button
+              v-if="isEditable"
+              type="button"
+              class="btn"
+              @click="destroyItem(item)"
+            >
+              <i class="material-icons align-middle">delete</i>
+            </button>
+          </div>
+        </template>
+        <p v-else>
+          There are no items in your shopping list.
+        </p>
       </template>
-      <p v-else>
-        There are no items in your shopping list.
-      </p>
-    </template>
-    <template v-else>
-      <p>Shopping list not found.</p>
-    </template>
-  </div>
+      <template v-else>
+        <p>Shopping list not found.</p>
+      </template>
+    </section>
+  </main>
 </template>
 
 <script lang="ts">
