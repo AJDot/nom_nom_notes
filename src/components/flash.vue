@@ -4,7 +4,7 @@
     name="fade-slide-vert"
   >
     <div
-      v-for="(messages, type) in fullMessages"
+      v-for="(msgs, type) in fullMessages"
       :key="type.toString()"
       class="p-2.5 mb-2.5 text-center text-white"
       :class="typeClass(type)"
@@ -13,12 +13,13 @@
     >
       <ul class="flex justify-between items-center">
         <li
-          v-for="(m, i) in messages"
+          v-for="(m, i) in msgs"
           :key="`${type}-${i}`"
         >
           {{ m }}
         </li>
         <button
+          v-if="dismissible"
           type="button"
           class="btn-clear"
           @click="close(type)"
@@ -50,6 +51,14 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    messages: {
+      type: Object as () => FlashHash<Array<string>>,
+      default: null,
+    },
+    dismissible: {
+      type: Boolean,
+      default: true,
+    },
   },
   data(): Data {
     return {
@@ -58,6 +67,8 @@ export default defineComponent({
   },
   computed: {
     fullMessages(): FlashHash<Array<string>> {
+      if (this.messages) return this.messages
+
       const flashes: FlashHash<Array<string>> = {}
       for (const key in this.flash) {
         const val: string | string[] = this.flash[key]

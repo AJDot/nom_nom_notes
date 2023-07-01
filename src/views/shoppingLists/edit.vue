@@ -15,8 +15,14 @@
           <span class="m-auto">Delete ({{ selectedItemsIds.length }})</span>
         </button>
       </div>
+      <flash
+        v-if="isEditMode && !isEditable"
+        :messages="{alert: ['Expand list to enable deletion']}"
+        :dismissible="false"
+      />
       <div>
         <button
+          v-if="isShowMode || isEditMode && isCondensed"
           class="btn"
           @click="isCondensed = !isCondensed"
         >
@@ -25,7 +31,7 @@
       </div>
       <template v-if="shoppingList.items.length">
         <div
-          v-for="item in (isCondensed ? condensedItems : shoppingList.items)"
+          v-for="item in items"
           :key="item.id"
           class="flex items-center sm:px-2 sm:py-1"
         >
@@ -67,6 +73,7 @@
 </template>
 
 <script lang="ts">
+import Flash from '@/flash.vue'
 import RootState from '@vuex-orm/core/dist/src/modules/contracts/RootState'
 import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
@@ -77,6 +84,7 @@ import { StoreModulePath, stateKey } from '~/store'
 import { FlashActionTypes, FlashMutationTypes } from '~/store/modules/flash'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { MathMutationTypes } from '~/store/modules/utils/modules/math'
+import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import math from '~/utils/math'
 import { ShoppingListActionTypes } from '../../store/modules/shoppingLists/actions'
@@ -88,6 +96,7 @@ interface Data {
 
 export default defineComponent({
   name: 'ShoppingListEdit',
+  components: { Flash },
   mixins: [
     currentUserMixin,
   ],
@@ -107,33 +116,33 @@ export default defineComponent({
   computed: {
     ...mapState(StoreModulePath.ShoppingLists, { shoppingList: 'current' }),
     ...mapState(StoreModulePath.Utils + StoreModulePath.Math, { madeUpUnits: 'madeUp' }),
-    condensedItems(): Pick<ShoppingListItem, 'amount' | 'description'>[] {
+    items(): Pick<ShoppingListItem, 'id' | 'amount' | 'description'>[] {
+      return this.isCondensed ? this.condensedItems : this.shoppingList.items
+    },
+    condensedItems(): Pick<ShoppingListItem, 'id' | 'amount' | 'description'>[] {
       if (!this.shoppingList) return []
       const isMadeUp = (unit: math.Unit): boolean => {
         return this.madeUpUnits.some(c => c.equalBase(unit))
       }
-      function normalize(text: string): string {
-        return text.toLocaleLowerCase().replace(/[\W_]+/g, '')
-      }
       const shoppingItems: ShoppingListItem[] = this.shoppingList.items
 
-      const items: {unit: math.Unit, description: string, descriptionNorm: string, amountOnly: boolean}[] = shoppingItems.map(item => {
+      const items: {id: string, unit: math.Unit, description: string, descriptionNorm: string}[] = shoppingItems.map(item => {
         const amount = item.amount || '1'
-        let [numString, unitString] = amount.split(' ')
-        unitString = unitString || item.description
+        const [numString, unitString = item.description] = amount.split(' ')
 
-        const num = math.number(math.fraction(numString))
-        const normUnit = normalize(unitString)
+        const num = math.toNumber(numString)
+        const normUnit = math.toUnitType(unitString)
 
-        try {
-          math.unit(normUnit)
-        } catch (e) {
-          this.addMadeUpUnit(normUnit)
+        math.ensureUnit(normUnit, this.addMadeUpUnit.bind(this))
+
+        const unit = math.unit(num, normUnit)
+        return {
+          id: Guid.create(),
+          unit,
+          description:
+            item.description,
+          descriptionNorm: math.toUnitType(item.description),
         }
-
-        const unit = math.unit(math.fraction(num), normUnit)
-        // const unit = math.unit(num, normUnit)
-        return { unit, description: item.description, descriptionNorm: normalize(item.description), amountOnly: isMadeUp(unit) }
       })
       let index = 0
       while (index < items.length) {
@@ -151,23 +160,17 @@ export default defineComponent({
         index++
       }
       return items.map(item => {
+        const parts: string[] = []
         let unit = item.unit ?? math.unit('')
-        if (item.amountOnly) unit = math.unit(unit.toNumber().toString())
-        const amountDecimal = unit.format({ fraction: 'decimal' }) // #=> turns 13/6 into 2.1(6)
-        const parse = amountDecimal.match(/(\d+)(?:\.(\d+)?\((\d+)\))?(.+)?/)
-        let amount: string
-        if (parse) {
-          // #=> turns 2.1(6) into 2 1/6
-          const [whole, n = 1, d, unitString = ''] = parse.slice(1)
-          const parts: string[] = []
-          if (whole !== '0') parts.push(whole)
-          if (n && d) parts.push(` ${n}/${d}`)
-          parts.push(unitString)
-          amount = parts.join(' ')
+
+        if (isMadeUp(unit)) {
+          unit = math.unitTypeLess(unit)
         } else {
-          amount = unit.format({ fraction: math.isInteger(unit.toNumber()) ? 'decimal' : 'ratio' })
+          parts.push(math.unitType(unit))
         }
-        return { amount, description: item.description }
+
+        parts.unshift(math.format(unit))
+        return { id: item.id, amount: parts.join(' '), description: item.description }
       })
     },
     mode(): 'show' | 'edit' {
@@ -186,7 +189,7 @@ export default defineComponent({
       return this.mode === 'edit'
     },
     isEditable(): boolean {
-      return this.isEditMode
+      return this.isEditMode && !this.isCondensed
     },
   },
   async beforeMount() {
@@ -221,9 +224,7 @@ export default defineComponent({
         this.updateError(error as unknown as AxiosError)
       }
     },
-    async destroyItem(item: ShoppingListItem) {
-      console.log(item)
-
+    async destroyItem(item: Pick<ShoppingListItem, 'id'>) {
       const index = this.shoppingList.items.indexOf(item)
       if (index < 0) return false
 
