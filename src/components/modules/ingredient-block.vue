@@ -86,7 +86,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<IngredientBlock>(),
-    preserveCaretMixin('amount', 'text'),
+    preserveCaretMixin((_key, comp) => comp.isEditable, 'amount', 'text'),
   ],
   data(): Data {
     return {

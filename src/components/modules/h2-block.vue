@@ -40,7 +40,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<H2Block>(),
-    preserveCaretMixin('text'),
+    preserveCaretMixin((_key, comp) => comp.isEditable, 'text'),
   ],
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),

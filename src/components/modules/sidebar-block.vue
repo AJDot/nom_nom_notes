@@ -103,7 +103,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<SidebarBlock>(),
-    preserveCaretMixin('text'),
+    preserveCaretMixin((_key, comp) => comp.isEditable, 'text'),
   ],
   data() {
     return {

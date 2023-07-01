@@ -44,7 +44,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<TextBlock>(),
-    preserveCaretMixin('text'),
+    preserveCaretMixin((_key, comp) => comp.isEditable, 'text'),
   ],
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),

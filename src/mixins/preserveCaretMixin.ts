@@ -1,8 +1,9 @@
-import { defineComponent, nextTick, watch } from 'vue'
+import { CreateComponentPublicInstance, defineComponent, nextTick, watch } from 'vue'
 import SelectionUtils from '~/utils/selectionUtils'
-import { ContentBlockIdBlock, Block } from './../interfaces/blockInterfacesGeneral'
+import { Block, ContentBlockIdBlock } from './../interfaces/blockInterfacesGeneral'
 
-export default function (...keys: string[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function (enabled: (key: string, comp: CreateComponentPublicInstance<any>) => boolean = () => true, ...keys: string[]) {
   return defineComponent({
     props: {
       block: {
@@ -12,7 +13,7 @@ export default function (...keys: string[]) {
     },
     mounted() {
       for (const key of keys) {
-        watch(() => (<ContentBlockIdBlock> this.block).content[key], () => this.preserveCaret(key), { immediate: true })
+        watch(() => (<ContentBlockIdBlock> this.block).content[key], () => enabled(key, this) && this.preserveCaret(key), { immediate: true })
       }
     },
     methods: {
