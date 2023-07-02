@@ -13,7 +13,6 @@ import sessions from '~/store/modules/sessions'
 import signups from '~/store/modules/signups'
 import tags from '~/store/modules/tags'
 import users from '~/store/modules/users'
-import utils from '~/store/modules/utils'
 import ability from './modules/ability'
 import dynamicRecipes from './modules/dynamicRecipes'
 import shoppingLists from './modules/shoppingLists'
@@ -39,8 +38,6 @@ export enum StoreModulePath {
   Ability = 'ability/',
   Mode = 'mode/',
   ShoppingLists = 'shoppingLists/',
-  Utils = 'utils/',
-  Math = 'math/',
 }
 
 export const store = createStore<RootState>({
@@ -59,7 +56,6 @@ export const store = createStore<RootState>({
     interfaces,
     ability,
     shoppingLists,
-    utils,
   },
   state: {} as RootState,
   mutations: {},

@@ -87,7 +87,6 @@ import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
 import { FlashActionTypes, FlashMutationTypes } from '~/store/modules/flash'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
-import { MathMutationTypes } from '~/store/modules/utils/modules/math'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import math from '~/utils/math'
@@ -119,13 +118,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(StoreModulePath.ShoppingLists, { shoppingList: 'current' }),
-    ...mapState(StoreModulePath.Utils + StoreModulePath.Math, { madeUpUnits: 'madeUp' }),
     items(): Pick<ShoppingListItem, 'id' | 'quantity' | 'name' | 'description'>[] {
       return this.isCondensed ? this.condensedItems : this.shoppingList.items
     },
     condensedItems(): Pick<ShoppingListItem, 'id' | 'quantity'| 'name' | 'description'>[] {
       if (!this.shoppingList) return []
-      const isMadeUp: (unit: math.Unit) => boolean = unit => this.madeUpUnits.some(c => c.equalBase(unit))
       const shoppingItems: ShoppingListItem[] = this.shoppingList.items
 
       const items: {id: string, unit: math.Unit, name: string, nameNorm: string, description: string}[] = shoppingItems.map(item => {
@@ -135,7 +132,7 @@ export default defineComponent({
         const num = math.toNumber(numString)
         const normUnit = math.toUnitType(unitString)
 
-        math.ensureUnit(normUnit, this.addMadeUpUnit.bind(this))
+        math.ensureUnit(normUnit)
 
         const unit = math.unit(num, normUnit)
         return {
@@ -162,17 +159,7 @@ export default defineComponent({
         index++
       }
       return items.map(item => {
-        const parts: string[] = []
-        let unit = item.unit ?? math.unit('')
-
-        if (isMadeUp(unit)) {
-          unit = math.unitTypeLess(unit)
-        } else {
-          parts.push(math.unitType(unit))
-        }
-
-        parts.unshift(math.format(unit))
-        return { id: item.id, quantity: parts.join(' '), name: item.name, description: '' }
+        return { id: item.id, quantity: math.format(item.unit ?? math.unit('')), name: item.name, description: '' }
       })
     },
     mode(): 'show' | 'edit' {
@@ -215,7 +202,6 @@ export default defineComponent({
   methods: {
     ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
     ...mapMutations(StoreModulePath.Flash, { setFlash: FlashMutationTypes.SET }),
-    ...mapMutations(StoreModulePath.Utils + StoreModulePath.Math, { addMadeUpUnit: MathMutationTypes.ADD_MADE_UP_UNIT }),
     ...mapActions(StoreModulePath.ShoppingLists, { update: ShoppingListActionTypes.UPDATE }),
     async save(opts: { onSuccess?: () => void } = {}) {
       try {

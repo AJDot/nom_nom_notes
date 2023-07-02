@@ -9,6 +9,8 @@ math.createUnit({
 })
 
 class MathClass {
+  madeUpUnits: Unit[] = []
+
   add(unitA: Unit, unitB: Unit): Unit {
     return math.add(unitA, unitB)
   }
@@ -17,22 +19,47 @@ class MathClass {
     return math.createUnit(unitType)
   }
 
-  ensureUnit(unitType: string, callback: (unitType: string) => void) {
+  ensureUnit(unitType: string): Unit {
     try {
-      math.unit(unitType)
+      return math.unit(unitType)
     } catch (e) {
-      callback(unitType)
-      math.unit(unitType) // check that callback created unit
+      const unit = this.createUnit(unitType)
+      this.madeUpUnits.push(unit)
+      return unit
     }
-    return true
   }
 
   format(unit: Unit): string {
-    return this.simplify(unit).toFraction(true)
+    const parts: string[] = []
+    unit = unit.simplify()
+    if (this.isMadeUp(unit)) {
+      unit = this.unitTypeLess(unit)
+    } else {
+      parts.push(this.unitType(unit))
+    }
+
+    parts.unshift(this.simplify(unit).toFraction(true))
+    return parts.join(' ')
   }
 
   fraction(amount: number): Fraction {
     return math.fraction(amount) as Fraction
+  }
+
+  isMadeUp(unit: Unit): boolean {
+    return this.madeUpUnits.some(c => c.equalBase(unit))
+  }
+
+  /**
+   * attempt to simplify fraction to a "nice" fraction within 1/6 (or something like that)
+   * disclaimer: may change value represented
+   * @example 0.37
+   *   simplify(0.37) //=> 1/3
+   * @example 0.45
+   *   simplify(0.45) //=> 1/2
+   */
+  simplify(unit: Unit): Fraction {
+    return new Fraction(unit.toNumeric() as number | Fraction).simplify(1 / 16)
   }
 
   toNumber(amount: string): number {
@@ -57,18 +84,6 @@ class MathClass {
 
   unitTypeLess(unit: Unit): Unit {
     return math.unit(unit.toNumber().toString())
-  }
-
-  /**
-   * attempt to simplify fraction to a "nice" fraction within 1/6 (or something like that)
-   * disclaimer: may change value represented
-   * @example 0.37
-   *   simplify(0.37) //=> 1/3
-   * @example 0.45
-   *   simplify(0.45) //=> 1/2
-   */
-  private simplify(unit: Unit): Fraction {
-    return new Fraction(unit.toNumeric() as number | Fraction).simplify(1 / 16)
   }
 }
 
