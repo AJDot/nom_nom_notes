@@ -1,5 +1,5 @@
-import FractionJS from 'fraction.js'
-import { Fraction, Unit, all, create } from 'mathjs'
+import Fraction from 'fraction.js'
+import { Unit, all, create } from 'mathjs'
 const math = create(all, {})
 
 math.createUnit({
@@ -8,7 +8,7 @@ math.createUnit({
   can: {},
 })
 
-class Math {
+class MathClass {
   add(unitA: Unit, unitB: Unit): Unit {
     return math.add(unitA, unitB)
   }
@@ -28,16 +28,11 @@ class Math {
   }
 
   format(unit: Unit): string {
-    const amount = unit.toNumeric() as number | FractionJS
-    if (typeof amount === 'number') {
-      return amount.toString()
-    } else {
-      return amount.toFraction(true)
-    }
+    return this.simplify(unit).toFraction(true)
   }
 
   fraction(amount: number): Fraction {
-    return math.fraction(amount)
+    return math.fraction(amount) as Fraction
   }
 
   toNumber(amount: string): number {
@@ -63,6 +58,18 @@ class Math {
   unitTypeLess(unit: Unit): Unit {
     return math.unit(unit.toNumber().toString())
   }
+
+  /**
+   * attempt to simplify fraction to a "nice" fraction within 1/6 (or something like that)
+   * disclaimer: may change value represented
+   * @example 0.37
+   *   simplify(0.37) //=> 1/3
+   * @example 0.45
+   *   simplify(0.45) //=> 1/2
+   */
+  private simplify(unit: Unit): Fraction {
+    return new Fraction(unit.toNumeric() as number | Fraction).simplify(1 / 16)
+  }
 }
 
-export default new Math()
+export default new MathClass()

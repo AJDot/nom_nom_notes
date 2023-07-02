@@ -12,7 +12,7 @@
     @click.self.stop="onClick"
   >
     <div
-      v-if="isShoppingListMode && block.content.text?.trim()"
+      v-if="isShoppingListMode && block.content.name?.trim()"
       class="flex items-center min-h-9"
     >
       <input
@@ -28,20 +28,36 @@
       class="flex grow sm:px-2"
     >
       <div
-        v-if="isEditable || block.content.amount"
-        :key="block.id + '-amount'"
-        ref="amount"
+        v-if="isEditable || block.content.quantity"
+        :key="block.id + '-quantity'"
+        ref="quantity"
         v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
         for="shopping-list-checkbox"
         :data-toggle-key="block.id"
-        :placeholder="placeholder('amount')"
+        :placeholder="placeholder('quantity')"
         data-focus
         class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
         :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
         :contenteditable="isEditable"
-        @input="onInputAmount"
-        @keydown="onKeydownAmount"
-        v-html="block.content.amount"
+        @input="onInputQuantity"
+        @keydown="onKeydownQuantity"
+        v-html="block.content.quantity"
+      />
+      <div
+        v-if="isEditable || block.content.name"
+        :key="block.id + '-name'"
+        ref="name"
+        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+        for="shopping-list-checkbox"
+        :data-toggle-key="block.id"
+        :placeholder="placeholder('name')"
+        data-focus
+        class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+        :contenteditable="isEditable"
+        @input="onInputName"
+        @keydown="onKeydownName"
+        v-html="block.content.name"
       />
       <div
         :key="block.id + '-text'"
@@ -86,7 +102,7 @@ export default defineComponent({
   },
   mixins: [
     blockMixin<IngredientBlock>(),
-    preserveCaretMixin((_key, comp) => comp.isEditable, 'amount', 'text'),
+    preserveCaretMixin((_key, comp) => comp.isEditable, 'quantity', 'name', 'text'),
   ],
   data(): Data {
     return {
@@ -113,7 +129,7 @@ export default defineComponent({
           this.shoppingListItem.id,
         )
       } else {
-        this.shoppingListItem = { id: Guid.create(), referenceId: this.block.id, amount: this.block.content.amount, description: this.block.content.text! }
+        this.shoppingListItem = { id: Guid.create(), referenceId: this.block.id, quantity: this.block.content.quantity, name: this.block.content.name!, description: this.block.content.text! }
         this.$store.commit(StoreModulePath.ShoppingLists + ShoppingListMutationTypes.SELECT_ITEM, this.shoppingListItem)
       }
     },
@@ -133,14 +149,26 @@ export default defineComponent({
         this.unsetCurrentChoice()
       }
     },
-    onInputAmount(event) {
+    onInputQuantity(event) {
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
       this.director.onInput({
         block: this.block,
         event,
         call: () => {
-          captain.onInput({ event, contentType: 'amount' })
+          captain.onInput({ event, contentType: 'quantity' })
+          this.save()
+        },
+      })
+    },
+    onInputName(event) {
+      if (!this.isEditable) return
+      const captain = this.director.captainFor(this.block)
+      this.director.onInput({
+        block: this.block,
+        event,
+        call: () => {
+          captain.onInput({ event, contentType: 'name' })
           this.save()
         },
       })
@@ -157,7 +185,32 @@ export default defineComponent({
         },
       })
     },
-    onKeydownAmount(event) {
+    onKeydownQuantity(event) {
+      if (!this.isEditable) return
+
+      switch (event.key) {
+        case 'ArrowDown':
+          $(this.$refs.name as HTMLElement).trigger('focus')
+          break
+        case 'ArrowUp':
+          this.onArrowUp(event)
+          break
+        case 'Enter':
+          this.onEnter(event)
+          break
+        case 'Backspace':
+          this.onBackspace(event)
+          break
+        case 'Delete': {
+          const captain = this.director.captainFor(this.block)
+          if (captain.isEmpty) {
+            this.onDelete(event)
+          }
+          break
+        }
+      }
+    },
+    onKeydownName(event) {
       if (!this.isEditable) return
 
       switch (event.key) {
@@ -165,7 +218,7 @@ export default defineComponent({
           $(this.$refs.text as HTMLElement).trigger('focus')
           break
         case 'ArrowUp':
-          this.onArrowUp(event)
+          $(this.$refs.quantity as HTMLElement).trigger('focus')
           break
         case 'Enter':
           this.onEnter(event)
@@ -190,7 +243,7 @@ export default defineComponent({
           this.onArrowDown(event)
           break
         case 'ArrowUp':
-          $(this.$refs.amount as HTMLElement).trigger('focus')
+          $(this.$refs.name as HTMLElement).trigger('focus')
           break
         case 'Enter':
           this.onEnter(event)
@@ -264,10 +317,17 @@ export default defineComponent({
     save() {
       this.director.onSave()
     },
-    placeholder(type: 'amount' | 'text'): string {
+    placeholder(type: 'quantity' | 'name' | 'text'): string {
       if (!this.isEditable) return ''
 
-      return `${type === 'amount' ? 'Amount' : 'Description'} (Type '/' for commands)`
+      switch (type) {
+        case 'quantity':
+          return 'Quantity'
+        case 'name':
+          return 'Name'
+        case 'text':
+          return "Description (Type '/' for commands)"
+      }
     },
   },
 })

@@ -89,11 +89,11 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
     },
     ingredient: {
       label: 'Ingredient',
-      description: 'Add an ingredient amount and description',
+      description: 'Add an ingredient',
       call: block => {
         block.type = 'ingredient'
         const ingredientBlock: IngredientBlock = block as IngredientBlock
-        ingredientBlock.content = { amount: '', text: ingredientBlock.content.text }
+        ingredientBlock.content = { quantity: '', name: ingredientBlock.content.text, text: '' }
       },
     },
   }

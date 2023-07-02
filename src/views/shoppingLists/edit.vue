@@ -52,7 +52,7 @@
               :class="{ 'cursor-pointer': isEditable, 'cursor-auto': !isEditable }"
             >
               <p>
-                <span v-html="item.amount" /> <span v-html="item.description" />
+                <span v-html="item.quantity" /> <span v-html="item.name" /> <span v-html="item.description" />
               </p>
             </label>
             <button
@@ -120,19 +120,17 @@ export default defineComponent({
   computed: {
     ...mapState(StoreModulePath.ShoppingLists, { shoppingList: 'current' }),
     ...mapState(StoreModulePath.Utils + StoreModulePath.Math, { madeUpUnits: 'madeUp' }),
-    items(): Pick<ShoppingListItem, 'id' | 'amount' | 'description'>[] {
+    items(): Pick<ShoppingListItem, 'id' | 'quantity' | 'name' | 'description'>[] {
       return this.isCondensed ? this.condensedItems : this.shoppingList.items
     },
-    condensedItems(): Pick<ShoppingListItem, 'id' | 'amount' | 'description'>[] {
+    condensedItems(): Pick<ShoppingListItem, 'id' | 'quantity'| 'name' | 'description'>[] {
       if (!this.shoppingList) return []
-      const isMadeUp = (unit: math.Unit): boolean => {
-        return this.madeUpUnits.some(c => c.equalBase(unit))
-      }
+      const isMadeUp: (unit: math.Unit) => boolean = unit => this.madeUpUnits.some(c => c.equalBase(unit))
       const shoppingItems: ShoppingListItem[] = this.shoppingList.items
 
-      const items: {id: string, unit: math.Unit, description: string, descriptionNorm: string}[] = shoppingItems.map(item => {
-        const amount = item.amount || '1'
-        const [numString, unitString = item.description] = amount.split(' ')
+      const items: {id: string, unit: math.Unit, name: string, nameNorm: string, description: string}[] = shoppingItems.map(item => {
+        const quantity = item.quantity || '1'
+        const [numString, unitString = item.name] = quantity.split(' ')
 
         const num = math.toNumber(numString)
         const normUnit = math.toUnitType(unitString)
@@ -143,9 +141,9 @@ export default defineComponent({
         return {
           id: Guid.create(),
           unit,
-          description:
-            item.description,
-          descriptionNorm: math.toUnitType(item.description),
+          name: item.name,
+          nameNorm: math.toUnitType(item.name),
+          description: item.description,
         }
       })
       let index = 0
@@ -154,7 +152,7 @@ export default defineComponent({
         let otherIndex = index + 1
         while (otherIndex < items.length) {
           const otherItem = items[otherIndex]
-          if (item.descriptionNorm === otherItem.descriptionNorm && item.unit.equalBase(otherItem.unit)) {
+          if (item.nameNorm === otherItem.nameNorm && item.unit.equalBase(otherItem.unit)) {
             item.unit = math.add(item.unit, otherItem.unit)
             items.splice(otherIndex, 1)
           } else {
@@ -174,7 +172,7 @@ export default defineComponent({
         }
 
         parts.unshift(math.format(unit))
-        return { id: item.id, amount: parts.join(' '), description: item.description }
+        return { id: item.id, quantity: parts.join(' '), name: item.name, description: '' }
       })
     },
     mode(): 'show' | 'edit' {

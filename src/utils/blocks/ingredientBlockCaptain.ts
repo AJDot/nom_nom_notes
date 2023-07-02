@@ -8,7 +8,7 @@ export default class IngredientBlockCaptain<FType> implements UIngredientBlockCa
   constructor(public block: IngredientBlock, public director: BlockDirector<FType>) {}
 
   get isEmpty(): boolean {
-    if (ObjectUtils.dig(this.block, 'content', 'amount') || ObjectUtils.dig(this.block, 'content', 'text')) return false
+    if (ObjectUtils.dig(this.block, 'content', 'quantity') || ObjectUtils.dig(this.block, 'content', 'name') || ObjectUtils.dig(this.block, 'content', 'text')) return false
 
     return true
   }
@@ -25,7 +25,7 @@ export default class IngredientBlockCaptain<FType> implements UIngredientBlockCa
     this.director.addAfter(newBlock, this.block)
   }
 
-  onInput({ event, contentType }: { event: InputEvent, contentType: 'amount' | 'text' }) {
+  onInput({ event, contentType }: { event: InputEvent, contentType: 'quantity' | 'name' | 'text' }) {
     this.block.content[contentType] = (<HTMLElement>event.target)?.innerHTML
     if (!this.director.find(this.block.id)) {
       this.director.add(this.block)

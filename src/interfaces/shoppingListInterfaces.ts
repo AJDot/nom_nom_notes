@@ -1,6 +1,7 @@
 export interface ShoppingListItem {
   id: string
   referenceId: string
-  amount: string | null
+  quantity: string | null
+  name: string
   description: string
 }

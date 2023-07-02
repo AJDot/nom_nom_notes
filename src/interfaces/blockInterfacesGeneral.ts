@@ -46,7 +46,7 @@ export interface ImageBlock extends BaseBlock {
 
 export interface IngredientBlock extends BaseBlock {
   type: 'ingredient'
-  content: { amount: string | null, text: string | null }
+  content: { quantity: string, name: string | null, text: string | null }
 }
 
 export type Block = H1Block | H2Block | H3Block | TextBlock | RowBlock | ColumnBlock | SidebarBlock | ImageBlock | IngredientBlock
@@ -157,7 +157,7 @@ export interface UImageBlockCaptain<FType> extends UBlockCaptainBase<ImageBlock,
 
 }
 export interface UIngredientBlockCaptain<FType> extends UBlockCaptainBase<IngredientBlock, FType> {
-  onInput(args: { event: InputEvent, contentType: 'amount' | 'text' }): void
+  onInput(args: { event: InputEvent, contentType: 'quantity' | 'name' | 'text' }): void
 }
 
 export type TBlockCaptain<B extends Block, FType> = B extends H1Block ? UH1BlockCaptain<FType> : B extends H2Block ? UH2BlockCaptain<FType> : B extends H3Block ? UH3BlockCaptain<FType> : B extends TextBlock ? UTextBlockCaptain<FType> : B extends RowBlock ? URowBlockCaptain<FType> : B extends ColumnBlock ? UColumnBlockCaptain<FType> : B extends SidebarBlock ? USidebarBlockCaptain<FType> : B extends ImageBlock ? UImageBlockCaptain<FType> : B extends IngredientBlock ? UIngredientBlockCaptain<FType> : never
