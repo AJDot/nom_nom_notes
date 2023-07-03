@@ -17,12 +17,12 @@ describe('Edit Dynamic Recipe', () => {
       cy.getByLabel('Name').type('Pasta')
       cy.wait('@createDynamicRecipe')
         .then(() => {
-          cy.getContentEditable('Type anything...').type('PASTA/h1{enter}{enter}/columns{enter}')
-          cy.getContentEditable("Type '/' for commands").type('Ingredients/h2{enter}{enter}')
-          cy.getContentEditable("Type '/' for commands").type('Noodles{enter}Water{enter}Salt{downArrow}')
-          cy.getContentEditable("Type '/' for commands").type('Directions/h2{enter}{enter}Boil water{enter}Add noodles{enter}Drain noodles when cooked/add column{enter}')
-          cy.getContentEditable("Type '/' for commands").type('Notes/h3{enter}{enter}Don\'t forget the thing with the thing.{enter}')
-          cy.getContentEditable("Type '/' for commands").type('Sidebar button/sidebar{enter}')
+          cy.getContentEditableEmpty('Type anything...').type('PASTA/h1{enter}{enter}/columns{enter}')
+          cy.getContentEditableEmpty("Type '/' for commands").type('Ingredients/h2{enter}{enter}')
+          cy.getContentEditableEmpty("Type '/' for commands").type('Noodles{enter}Water{enter}Salt{downArrow}')
+          cy.getContentEditableEmpty("Type '/' for commands").type('Directions/h2{enter}{enter}Boil water{enter}Add noodles{enter}Drain noodles when cooked/add column{enter}')
+          cy.getContentEditableEmpty("Type '/' for commands").type('Notes/h3{enter}{enter}Don\'t forget the thing with the thing.{enter}')
+          cy.getContentEditableEmpty("Type '/' for commands").type('Sidebar button/sidebar{enter}')
           cy.contains('Sidebar button').trigger('mouseenter')
           cy.contains('edit').click()
           cy.contains('Choose Display Block').click()
@@ -35,7 +35,7 @@ describe('Edit Dynamic Recipe', () => {
             path: 'images/super-cute-puppy.jpeg',
             type: 'image/jpeg',
           })
-          cy.getContentEditable('Type anything...').type('Soy Sauce/ingredient{enter}')
+          cy.getContentEditableEmpty('Type anything...').type('Soy Sauce/ingredient{enter}')
           cy.contains('Soy Sauce').type('{upArrow}1 cup')
         })
       cy.wait('@image')

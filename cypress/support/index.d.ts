@@ -84,11 +84,18 @@ declare namespace Cypress {
     forceSignOut(): Chainable<ModelResponse>
 
     /**
+     * Get the DOM element according to being contenteditable and having a given content
+     * @example
+     * cy.getContentEditable("Ingredient")
+     */
+    getContentEditable(content: string): Chainable<Subject>
+
+    /**
      * Get the DOM element according to being contenteditable, empty, and having a given placeholder attribute
      * @example
-     * cy.getContentEditable("Type '\' for commands")
+     * cy.getContentEditableEmpty("Type '\' for commands")
      */
-    getContentEditable(placeholder: string): Chainable<Subject>
+    getContentEditableEmpty(placeholder: string): Chainable<Subject>
 
     /**
      * Get the DOM element in the alert section with text 'Not Valid'

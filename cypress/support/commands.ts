@@ -39,8 +39,12 @@ Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
 
-Cypress.Commands.add('getContentEditable', (placeholder: string) => {
+Cypress.Commands.add('getContentEditableEmpty', (placeholder: string) => {
   return cy.get(`[contenteditable="true"][placeholder="${placeholder}"]:empty`).first()
+})
+
+Cypress.Commands.add('getContentEditable', (content: string) => {
+  return cy.contains('[contenteditable="true"]', content)
 })
 
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {

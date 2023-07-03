@@ -100,7 +100,7 @@ describe('Start from dynamic recipe template', () => {
         { type: 'text', text: '' }, // the "type anything... placeholder block"
       ])
 
-      cy.contains('List').click()
+      cy.contains(/^List$/).click()
       cy.getDynamicRecipeCard(0).should('contain', 'New Recipe')
       cy.reload()
         .then(() => {
@@ -172,7 +172,7 @@ describe('Start from dynamic recipe template', () => {
         { type: 'text', text: '' }, // the "type anything... placeholder block"
       ])
 
-      cy.contains('List').click()
+      cy.contains(/^List$/).click()
       cy.getDynamicRecipeCard(0).should('contain', 'New Recipe')
       cy.reload()
         .then(() => {
@@ -249,7 +249,7 @@ describe('Start from dynamic recipe template', () => {
         { type: 'text', text: '' }, // the "type anything... placeholder block"
       ])
 
-      cy.contains('List').click()
+      cy.contains(/^List$/).click()
       cy.getDynamicRecipeCard(0).should('contain', 'New Recipe')
       cy.reload()
         .then(() => {

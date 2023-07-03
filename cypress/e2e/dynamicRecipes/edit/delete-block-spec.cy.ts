@@ -44,7 +44,7 @@ describe('Delete Dynamic Recipe Block', () => {
         { id: text3Id, type: 'text', content: { text: 'Ingredient 3' } },
         { id: sidebarId, type: 'sidebar', content: { text: 'Sidebar', blockId: null } },
         { id: imageId, type: 'image', content: { attachmentId: null } },
-        { id: ingredientId, type: 'ingredient', content: { amount: '1 cup', text: 'Ingredient' } },
+        { id: ingredientId, type: 'ingredient', content: { quantity: '1 cup', name: 'Ingredient', text: null } },
       ]
 
       cy.intercept('PATCH', '/api/v1/dynamic_recipes/*').as('update')
@@ -166,12 +166,12 @@ describe('Delete Dynamic Recipe Block', () => {
           ])
 
           // delete Ingredient
-          cy.contains('1 cup').then($el => {
+          cy.getContentEditable('1 cup').then($el => {
             cy.wrap($el).clear()
             cy.wrap($el).should('exist')
             cy.wrap($el).type('{downArrow}')
           })
-          cy.contains('Ingredient').then($el => {
+          cy.getContentEditable('Ingredient').then($el => {
             cy.wrap($el).clear()
             cy.wrap($el).should('exist')
             cy.wrap($el).type('{backspace}')
