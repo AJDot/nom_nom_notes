@@ -15,7 +15,7 @@
           </h1>
           <div class="flex flex-row-reverse">
             <button
-              v-if="isShowMode || isEditMode && isCondensed"
+              v-if="items.length && (isShowMode || isEditMode && isCondensed)"
               class="btn"
               @click="isCondensed = !isCondensed"
             >
@@ -42,6 +42,7 @@
               v-if="isEditable"
               :id="`shopping-list-checkbox-${item.id}`"
               v-model="selectedItemsIds"
+              :data-test="`shopping-list-item-checkbox-${item.id}`"
               type="checkbox"
               :value="item.id"
               class="w-5 h-5 accent-green-500 bg-gray-100 border-gray-300 rounded-full focus:ring-gray-300 dark:focus:ring-gray-400 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 shrink-0"
@@ -59,6 +60,7 @@
               v-if="isEditable"
               type="button"
               class="btn"
+              :data-test="`shopping-list-item-delete-${item.id}`"
               @click="destroyItem(item)"
             >
               <i class="material-icons align-middle">delete</i>
@@ -78,13 +80,13 @@
 
 <script lang="ts">
 import Flash from '@/flash.vue'
-import RootState from '@vuex-orm/core/dist/src/modules/contracts/RootState'
 import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
 import { mapActions, mapMutations, mapState, useStore } from 'vuex'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
+import { RootState } from '~/store/interfaces'
 import { FlashActionTypes, FlashMutationTypes } from '~/store/modules/flash'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import Guid from '~/utils/guid'

@@ -1,6 +1,6 @@
 <template>
   <ul class="flex flex-col xs:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
-    <li v-if="shoppingList && ability.can('update', shoppingList)">
+    <li v-if="shoppingList?.items.length && ability.can('update', shoppingList)">
       <router-link
         :to="{ name: $routerExtension.names.EditShoppingList }"
         class="flex"

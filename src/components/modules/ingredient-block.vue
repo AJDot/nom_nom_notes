@@ -129,7 +129,7 @@ export default defineComponent({
           this.shoppingListItem.id,
         )
       } else {
-        this.shoppingListItem = { id: Guid.create(), referenceId: this.block.id, quantity: this.block.content.quantity, name: this.block.content.name!, description: this.block.content.text! }
+        this.shoppingListItem = { id: Guid.create(), quantity: this.block.content.quantity, name: this.block.content.name!, description: this.block.content.text! }
         this.$store.commit(StoreModulePath.ShoppingLists + ShoppingListMutationTypes.SELECT_ITEM, this.shoppingListItem)
       }
     },
