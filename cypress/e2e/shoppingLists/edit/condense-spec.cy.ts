@@ -37,7 +37,7 @@ describe('Condense Shopping List', () => {
     cy.contains('2 cup coconut softened').should('not.exist')
     cy.contains('3 cup butter softened').should('not.exist')
     cy.contains('1 banana').should('exist')
-    cy.contains('3 cup butter').should('exist')
+    cy.contains('3 cups butter').should('exist')
     cy.contains('2 cup coconut').should('exist')
   })
 
@@ -83,16 +83,21 @@ describe('Condense Shopping List', () => {
       shopping_list: {
         ownerId: this.fry.attributes.clientId,
         items: [
+          { id: Guid.create(), quantity: '1/3 cup', name: 'red onion' },
           { id: Guid.create(), quantity: '2.25 tsp', name: 'banana' },
           { id: Guid.create(), quantity: '2.75 tbsp', name: 'banana' },
           { id: Guid.create(), quantity: '2/3 cup', name: 'banana' },
+          { id: Guid.create(), quantity: '1/3 cup', name: 'red onion' },
+          { id: Guid.create(), quantity: '1 TBSP', name: 'butter' },
         ],
       } as ShoppingList,
     })
     cy.visit('/shopping_lists')
     cy.contains('button', 'Condense').click()
+    cy.contains('2/3 cup red onion').should('exist')
     cy.contains('7/8 cup banana').should('exist')
     cy.contains('button', 'Expand').click()
+    cy.contains('1/3 cup red onion').should('exist')
     cy.contains('2.25 tsp banana').should('exist')
     cy.contains('2.75 tbsp banana').should('exist')
     cy.contains('2/3 cup banana').should('exist')

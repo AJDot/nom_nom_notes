@@ -83,7 +83,7 @@ import Flash from '@/flash.vue'
 import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
-import { mapActions, mapMutations, mapState, useStore } from 'vuex'
+import { mapActions, mapMutations, mapState, useStore, MapperForMutationWithNamespace } from 'vuex'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
@@ -131,15 +131,9 @@ export default defineComponent({
         const quantity = item.quantity || '1'
         const [numString, unitString = item.name] = quantity.split(' ')
 
-        const num = math.toNumber(numString)
-        const normUnit = math.toUnitType(unitString)
-
-        math.ensureUnit(normUnit)
-
-        const unit = math.unit(num, normUnit)
         return {
           id: Guid.create(),
-          unit,
+          unit: math.ensureUnit(math.toNumber(numString), math.toUnitType(unitString)),
           name: item.name,
           nameNorm: math.toUnitType(item.name),
           description: item.description,
@@ -152,7 +146,19 @@ export default defineComponent({
         while (otherIndex < items.length) {
           const otherItem = items[otherIndex]
           if (item.nameNorm === otherItem.nameNorm && item.unit.equalBase(otherItem.unit)) {
-            item.unit = math.add(item.unit, otherItem.unit)
+            // makes sure the "biggest" unit it the one used. e.g. combining "cup" and "tsp" will make sure "cup" is taken
+            const unitDef = item.unit.units[0].unit
+            const otherUnitDef = otherItem.unit.units[0].unit
+            if (unitDef.value > otherUnitDef.value) {
+              item.unit = math.add(item.unit, otherItem.unit)
+            } else if (unitDef.value < otherUnitDef.value) {
+              item.unit = math.add(otherItem.unit, item.unit)
+            } else if (unitDef.name === otherUnitDef.name + 's') {
+              item.unit = math.add(item.unit, otherItem.unit)
+            } else {
+              item.unit = math.add(otherItem.unit, item.unit)
+            }
+            console.log(item.nameNorm, item.unit.units[0].unit.name, item.unit.toString(), item.unit.simplify().toString(), math.simplify(item.unit).toString())
             items.splice(otherIndex, 1)
           } else {
             otherIndex++

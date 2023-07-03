@@ -19,11 +19,12 @@ class MathClass {
     return math.createUnit(unitType)
   }
 
-  ensureUnit(unitType: string): Unit {
+  ensureUnit(quantity: number, unitType: string): Unit {
     try {
-      return math.unit(unitType)
+      return math.unit(quantity, unitType)
     } catch (e) {
-      const unit = this.createUnit(unitType)
+      this.createUnit(unitType)
+      const unit = math.unit(quantity, unitType)
       this.madeUpUnits.push(unit)
       return unit
     }
@@ -31,7 +32,6 @@ class MathClass {
 
   format(unit: Unit): string {
     const parts: string[] = []
-    unit = unit.simplify()
     if (this.isMadeUp(unit)) {
       unit = this.unitTypeLess(unit)
     } else {
@@ -51,7 +51,7 @@ class MathClass {
   }
 
   /**
-   * attempt to simplify fraction to a "nice" fraction within 1/6 (or something like that)
+   * attempt to simplify fraction to a "nice" fraction within 1/16 (or something like that)
    * disclaimer: may change value represented
    * @example 0.37
    *   simplify(0.37) //=> 1/3
