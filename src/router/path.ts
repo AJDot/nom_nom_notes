@@ -1,7 +1,7 @@
 import AppConfig from '~/appConfig'
 
 class Path {
-  protected static buildPath(path: string, wildcards: Record<string, any>) {
+  protected static buildPath(path: string, wildcards: Record<string, string | undefined | Record<string, unknown>>) {
     let result = path
     for (const [key, value] of Object.entries(wildcards)) {
       let val
@@ -70,6 +70,14 @@ class AppPath extends Path {
 
   editDynamicRecipe(dynamicRecipeClientId: string) {
     return this.dynamicRecipe(dynamicRecipeClientId) + '/edit'
+  }
+
+  shoppingLists() {
+    return '/shopping_lists'
+  }
+
+  editShoppingLists() {
+    return this.shoppingLists() + '/edit'
   }
 
   password() {
@@ -165,10 +173,17 @@ class ApiPath extends Path {
   currentAbility() {
     return '/ability'
   }
+
+  shoppingLists() {
+    return '/shopping_lists'
+  }
+
+  shoppingList(shoppingListClientId: string) {
+    return Path.buildPath(this.shoppingLists() + '/:clientId', { clientId: shoppingListClientId })
+  }
 }
 
 const appPath = new AppPath()
 const apiPath = new ApiPath()
 
-export { appPath as AppPath, apiPath as ApiPath }
-
+export { apiPath as ApiPath, appPath as AppPath }

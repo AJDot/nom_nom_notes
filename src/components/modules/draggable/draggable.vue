@@ -1,5 +1,16 @@
 <template>
-  <component :is="tag" :draggable="draggable" @dragstart="onStartDrag" @mouseover.stop="onMouseover" @mouseout.stop="onMouseout" @drop="onDrop" @dragover="onDragOver" @dragleave="onDragLeave" class="p-1" :class="hoverClass.concat(dragClass)">
+  <component
+    :is="tag"
+    :draggable="draggable"
+    class="p-1"
+    :class="hoverClass.concat(dragClass)"
+    @dragstart="onStartDrag"
+    @mouseover.stop="onMouseover"
+    @mouseout.stop="onMouseout"
+    @drop="onDrop"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+  >
     <slot />
   </component>
 </template>
@@ -28,8 +39,8 @@ export default defineComponent({
     },
     hoverColor: {
       type: String,
-      default: 'bg-gray-100'
-    }
+      default: 'bg-gray-100',
+    },
   },
   emits: {
     drop: null,
@@ -74,12 +85,12 @@ export default defineComponent({
       }
       this.dragClass = []
     },
-    onMouseover(event) {
+    onMouseover(_event) {
       this.hoverClass = [this.hoverColor, 'shadow-input']
     },
-    onMouseout(event) {
+    onMouseout(_event) {
       this.hoverClass = []
     },
-  }
+  },
 })
 </script>

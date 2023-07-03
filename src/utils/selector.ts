@@ -1,8 +1,10 @@
 import { USelector } from './../interfaces/selectInterfaces'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default class Selector<Collections extends any[][]> implements USelector<Collections> {
   current: Collections[number][number] | null = null
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(private _collections: Collections = [] as unknown as Collections) {
   }
 

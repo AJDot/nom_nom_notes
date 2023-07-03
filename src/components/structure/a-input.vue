@@ -1,6 +1,17 @@
 <template>
-  <input v-if="editable" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :class="classes" :disabled="disabled">
-  <div v-else :class="classes">{{ modelValue }}</div>
+  <input
+    v-if="editable"
+    :value="modelValue"
+    :class="classes"
+    :disabled="disabled"
+    @input="emitModelValue"
+  >
+  <div
+    v-else
+    :class="classes"
+  >
+    {{ modelValue }}
+  </div>
 </template>
 
 <script lang="ts">
@@ -31,8 +42,13 @@ export default defineComponent({
   },
   data() {
     return {
-      classes: "outline-none w-full p-2 border border-gray-400 rounded-md transition-background hover:bg-gray-100 hover:shadow-input focus:bg-gray-100 focus:shadow-input tracking-normal"
+      classes: 'outline-none w-full p-2 border border-gray-400 rounded-md transition-background hover:bg-gray-100 hover:shadow-input focus:bg-gray-100 focus:shadow-input tracking-normal',
     }
+  },
+  methods: {
+    emitModelValue(event) {
+      this.$emit('update:modelValue', event.target?.value)
+    },
   },
 })
 </script>

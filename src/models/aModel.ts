@@ -9,7 +9,7 @@ export type AModelFields = Fields & {
   [key in keyof AModelAttributes | 'id']: Attribute
 }
 
-export default abstract class AModel extends Model implements AModelAttributes, AModelComputed {
+export default class AModel extends Model implements AModelAttributes, AModelComputed {
   id!: string
   clientId!: string
   _destroy!: boolean
@@ -64,7 +64,7 @@ export default abstract class AModel extends Model implements AModelAttributes, 
     return this.selfClass.getIdFromRecord(this) as never
   }
 
-  get selfClass(): typeof Model {
-    return this.$self()
+  get selfClass(): typeof AModel {
+    return this.$self() as unknown as typeof AModel
   }
 }

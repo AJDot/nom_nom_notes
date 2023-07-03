@@ -39,8 +39,12 @@ Cypress.Commands.add('resetDb', () => {
   cy.request('POST', Cypress.env('api_url') + '/testing/api/v1/databases/clean')
 })
 
-Cypress.Commands.add('getContentEditable', (placeholder: string) => {
+Cypress.Commands.add('getContentEditableEmpty', (placeholder: string) => {
   return cy.get(`[contenteditable="true"][placeholder="${placeholder}"]:empty`).first()
+})
+
+Cypress.Commands.add('getContentEditable', (content: string) => {
+  return cy.contains('[contenteditable="true"]', content)
 })
 
 Cypress.Commands.add('getRecipeCard', (indexOrName: string | number) => {
@@ -185,22 +189,20 @@ Cypress.Commands.add('uploadFile', (options: { path: string, type: string }) => 
   })
 })
 
-Cypress.Commands.add("drag", { prevSubject: "element" }, (subject: Cypress.JQueryWithSelector<HTMLElement>, target: string | { target: string, dragOpts?: Record<string, any>, dropOpts?: Record<string, any> }, _options?: Partial<Cypress.TypeOptions>) => {
+Cypress.Commands.add('drag', { prevSubject: 'element' }, (subject: Cypress.JQueryWithSelector<HTMLElement>, target: string | { target: string, dragOpts?: Record<string, unknown>, dropOpts?: Record<string, unknown> }, _options?: Partial<Cypress.TypeOptions>) => {
   const dataTransfer = new DataTransfer()
-  let dragOpts: Record<string, any> = { dataTransfer, force: true }
-  let dropOpts: Record<string, any> = { dataTransfer, force: true }
-  if (typeof target === 'string') {
-    target = target
-  } else {
+  let dragOpts: Record<string, unknown> = { dataTransfer, force: true }
+  let dropOpts: Record<string, unknown> = { dataTransfer, force: true }
+  if (typeof target !== 'string') {
     dragOpts = Object.assign(dragOpts, target.dragOpts ?? {})
     dropOpts = Object.assign(dropOpts, target.dropOpts ?? {})
     target = target.target
   }
   cy.wrap(subject).trigger('dragstart', dragOpts)
-  cy.get(target)
-    .trigger('dragenter', dropOpts)
-    .trigger('dragover', dropOpts)
-    .trigger('drop', dropOpts)
-    .wait(50)
-    .trigger('dragend', dropOpts)
+  cy.get(target).trigger('dragenter', dropOpts)
+  cy.get(target).trigger('dragover', dropOpts)
+  cy.get(target).trigger('drop', dropOpts)
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.get(target).wait(50)
+  cy.get(target).trigger('dragend', dropOpts)
 })

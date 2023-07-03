@@ -4,14 +4,14 @@ describe('Reset Password', () => {
   })
 
   context('with a valid token', () => {
-    beforeEach(function() {
+    beforeEach(function () {
       cy.apiRequest('PUT', '/testing/api/v1/password/forgot', {
         email: this.fry.attributes.email,
         originUrl: Cypress.config().baseUrl + '/password/change',
       }).its('body.token').as('token')
     })
 
-    it('allows resetting password with valid form fields', function() {
+    it('allows resetting password with valid form fields', function () {
       const newPassword = '123456'
       // try to sign in first with the new password to see it's not right
       cy.visit('/sign_in')
@@ -19,6 +19,7 @@ describe('Reset Password', () => {
           cy.getByLabel('Email').type(this.fry.attributes.email)
           cy.getByLabel('Password').type(newPassword)
           cy.contains('input', 'Sign In').click()
+          cy.contains('input', 'Sign In')
             .then(() => {
               cy.url().should('contain', 'sign_in')
               cy.getFlash('Not Authorized')
@@ -35,6 +36,7 @@ describe('Reset Password', () => {
                   cy.getByLabel('Password').type(newPassword)
                   cy.getByLabel('Confirm Password').type(newPassword)
                   cy.contains('input', 'Change Password').click()
+                  cy.contains('input', 'Change Password')
                     .then(() => {
                       cy.url().should('contain', 'sign_in')
                       cy.getFlash('Password was reset successfully. Please sign in.')
@@ -54,7 +56,7 @@ describe('Reset Password', () => {
         })
     })
 
-    it('does not allow resetting password with invalid form fields', function() {
+    it('does not allow resetting password with invalid form fields', function () {
       const newPassword = '123456'
       // try to sign in first with the new password to see it's not right
       // "click" link in email to change password
@@ -65,6 +67,7 @@ describe('Reset Password', () => {
           cy.getByLabel('Password').type(newPassword)
           cy.getByLabel('Confirm Password').type(newPassword + 'A')
           cy.contains('input', 'Change Password').click()
+          cy.contains('input', 'Change Password')
             .then(() => {
               cy.url().should('contain', 'password/change')
               cy.getFlash('Password confirmation doesn\'t match Password')
@@ -73,8 +76,8 @@ describe('Reset Password', () => {
     })
   })
 
-  context('when token is expired by time', function() {
-    beforeEach(function() {
+  context('when token is expired by time', function () {
+    beforeEach(function () {
       cy.apiRequest('PUT', '/testing/api/v1/password/forgot', {
         email: this.fry.attributes.email,
         originUrl: Cypress.config().baseUrl + '/password/change',
@@ -84,7 +87,7 @@ describe('Reset Password', () => {
       })
     })
 
-    it('does not allow resetting password', function() {
+    it('does not allow resetting password', function () {
       const newPassword = '123456'
       // try to sign in first with the new password to see it's not right
       // "click" link in email to change password
@@ -95,6 +98,7 @@ describe('Reset Password', () => {
           cy.getByLabel('Password').type(newPassword)
           cy.getByLabel('Confirm Password').type(newPassword)
           cy.contains('input', 'Change Password').click()
+          cy.contains('input', 'Change Password')
             .then(() => {
               cy.url().should('contain', `password/change?token=${this.token}`)
               cy.getFlash('Link not valid or expired.')
@@ -103,8 +107,8 @@ describe('Reset Password', () => {
     })
   })
 
-  context('when token is expired because a new token was requested', function() {
-    beforeEach(function() {
+  context('when token is expired because a new token was requested', function () {
+    beforeEach(function () {
       cy.apiRequest('PUT', '/testing/api/v1/password/forgot', {
         email: this.fry.attributes.email,
         originUrl: Cypress.config().baseUrl + '/password/change',
@@ -117,7 +121,7 @@ describe('Reset Password', () => {
         })
     })
 
-    it('does not allow resetting password', function() {
+    it('does not allow resetting password', function () {
       cy.visit(`password/change?token=${this.firstToken}`)
         .then(() => {
           const newPassword = '123456'
@@ -126,6 +130,7 @@ describe('Reset Password', () => {
           cy.getByLabel('Password').type(newPassword)
           cy.getByLabel('Confirm Password').type(newPassword)
           cy.contains('input', 'Change Password').click()
+          cy.contains('input', 'Change Password')
             .then(() => {
               cy.url().should('contain', `password/change?token=${this.firstToken}`)
               cy.getFlash('Link not valid or expired.')
@@ -135,6 +140,7 @@ describe('Reset Password', () => {
                   cy.getByLabel('Password').type(newPassword)
                   cy.getByLabel('Confirm Password').type(newPassword)
                   cy.contains('input', 'Change Password').click()
+                  cy.contains('input', 'Change Password')
                     .then(() => {
                       cy.url().should('contain', 'sign_in')
                       cy.getFlash('Password was reset successfully. Please sign in.')

@@ -3,7 +3,6 @@ import { InjectionKey } from 'vue'
 import { createStore, Store } from 'vuex'
 import database from '~/store/database'
 import { RootState } from '~/store/interfaces'
-import tags from '~/store/modules/tags'
 import features from '~/store/modules/features'
 import flash from '~/store/modules/flash'
 import interfaces from '~/store/modules/interfaces'
@@ -12,9 +11,11 @@ import modal from '~/store/modules/modal'
 import recipes from '~/store/modules/recipes'
 import sessions from '~/store/modules/sessions'
 import signups from '~/store/modules/signups'
+import tags from '~/store/modules/tags'
 import users from '~/store/modules/users'
 import ability from './modules/ability'
 import dynamicRecipes from './modules/dynamicRecipes'
+import shoppingLists from './modules/shoppingLists'
 
 // define injection key
 export const stateKey: InjectionKey<Store<RootState>> = Symbol('state')
@@ -35,6 +36,8 @@ export enum StoreModulePath {
   Toggle = 'toggle/',
   Choice = 'choice/',
   Ability = 'ability/',
+  Mode = 'mode/',
+  ShoppingLists = 'shoppingLists/',
 }
 
 export const store = createStore<RootState>({
@@ -52,6 +55,7 @@ export const store = createStore<RootState>({
     features,
     interfaces,
     ability,
+    shoppingLists,
   },
   state: {} as RootState,
   mutations: {},

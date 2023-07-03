@@ -31,11 +31,14 @@ export const ArrayUtils = {
         return `${items.slice(0, lastIndex).join(separator)}${separator} ${lastSeparator} ${items[lastIndex]}`
     }
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gatherBy<T extends Record<PropertyKey, any>>(array: T[], key: string, props: string | Array<string> = [], spreads: string | Array<string> = []): Record<PropertyKey, Array<T>> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const gathered: Record<PropertyKey, any> = {}
     ArrayUtils.wrap(array).forEach((item) => {
       const val = item[key]
       if (!gathered[val]) gathered[val] = []
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const hash: Record<PropertyKey, any> = {}
       this.wrap(props).forEach(p => { hash[p] = item[p] })
       this.wrap(spreads).forEach(s => { Object.assign(hash, item[s]) })
@@ -73,15 +76,15 @@ export const ArrayUtils = {
     items.splice(newIndex, 0, items.splice(oldIndex, 1)[0])
     return items
   },
-  move: function<T>(items: T[], item: T, newIndex: number = items.length): T[] {
+  move: function <T>(items: T[], item: T, newIndex: number = items.length): T[] {
     const oldIndex = items.indexOf(item)
     return this.moveIndex(items, oldIndex, newIndex)
   },
-  moveUp: function<T>(items: T[], item: T): T[] {
+  moveUp: function <T>(items: T[], item: T): T[] {
     const oldIndex = items.indexOf(item)
     return this.moveIndex(items, oldIndex, oldIndex - 1)
   },
-  moveDown: function<T>(items: T[], item: T): T[] {
+  moveDown: function <T>(items: T[], item: T): T[] {
     const oldIndex = items.indexOf(item)
     return this.moveIndex(items, oldIndex, oldIndex + 1)
   },

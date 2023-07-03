@@ -1,4 +1,4 @@
-export interface USelector<Collections extends any[][]> {
+export interface USelector<Collections extends unknown[][]> {
   current: Collections[number][number] | null
   currentIndex: number | null
   collections: Collections

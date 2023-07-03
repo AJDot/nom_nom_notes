@@ -7,7 +7,10 @@
       </router-link>
     </li>
     <li>
-      <router-link :to="{ name: $routerExtension.names.DynamicRecipes }" class="flex">
+      <router-link
+        :to="{ name: $routerExtension.names.DynamicRecipes }"
+        class="flex"
+      >
         <i class="material-icons my-auto">view_comfy</i>
         <span>Dynamic Recipe Cards</span>
       </router-link>

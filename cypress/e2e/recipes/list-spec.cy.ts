@@ -126,7 +126,8 @@ describe('Recipes List', () => {
           cy.getRecipeCard(1).should('contain', 'Penne')
           // Noodle is filtered out
           cy.getRecipeCard(2).should('not.exist')
-          cy.get(filter).clear().type('It')
+          cy.get(filter).clear()
+          cy.get(filter).type('It')
           cy.getDropdownItem('Chinese').should('not.exist')
           cy.getDropdownItem('Italian').click()
           cy.getRecipeCard(0).should('contain', 'Pasta')

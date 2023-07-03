@@ -17,6 +17,7 @@ function getValue<T, V>(item: T, getter: KeysOfType<T, V> | ((item: T, options: 
 export default class Searcher<T> implements USearcher<T> {
   results: Array<SearchResult<T>> = []
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(private options: SearchOptions<T>) {
   }
 
@@ -35,7 +36,7 @@ export default class Searcher<T> implements USearcher<T> {
         params: {
           query: Object.assign({},
             options.query,
-            { term: q, },
+            { term: q },
           ),
         },
       })
@@ -48,7 +49,6 @@ export default class Searcher<T> implements USearcher<T> {
         raw: obj,
       }
     })
-
   }
 
   private async searchLocal(q = '', options: SearchOptionsLocal<T>): Promise<void> {

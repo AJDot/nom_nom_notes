@@ -54,8 +54,8 @@ describe('Dynamic Recipes List', () => {
         },
         dynamic_recipes: [
           { name: 'Noodle' },
-          { name: 'Penne' }
-        ]
+          { name: 'Penne' },
+        ],
       }).its('body').as('dynamicRecipes')
         .then(function () {
           cy.visit('/dynamic_recipes')
@@ -64,7 +64,7 @@ describe('Dynamic Recipes List', () => {
           cy.getDynamicRecipeCard(1).should('contain', 'Pasta')
           cy.getDynamicRecipeCard(2).should('contain', 'Penne')
 
-          cy.getDynamicRecipeCard('Pasta').within((response) => {
+          cy.getDynamicRecipeCard('Pasta').within((_response) => {
             // shows tags
             cy.contains('Italian').should('exist')
             cy.contains('Chinese').should('exist')
@@ -125,7 +125,8 @@ describe('Dynamic Recipes List', () => {
           cy.getDynamicRecipeCard(1).should('contain', 'Penne')
           // Noodle is filtered out
           cy.getDynamicRecipeCard(2).should('not.exist')
-          cy.get(filter).clear().type('It')
+          cy.get(filter).clear()
+          cy.get(filter).type('It')
           cy.getDropdownItem('Chinese').should('not.exist')
           cy.getDropdownItem('Italian').click()
           cy.getDynamicRecipeCard(0).should('contain', 'Pasta')

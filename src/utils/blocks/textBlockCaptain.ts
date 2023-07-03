@@ -1,16 +1,24 @@
-import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, TextBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, TextBlock, UTextBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
+import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class TextBlockCaptain<FType> implements UBlockCaptain<TextBlock, FType> {
+export default class TextBlockCaptain<FType> implements UTextBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: TextBlock, public director: BlockDirector<FType>) {}
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  get isEmpty(): boolean {
+    if (ObjectUtils.dig(this.block, 'content', 'text')) return false
+
+    return true
+  }
+
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     const parent = this.director.find(this.block.parentId)
     const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
     if (parent) newBlock.parentId = parent.id
@@ -33,13 +41,15 @@ export default class TextBlockCaptain<FType> implements UBlockCaptain<TextBlock,
       case 'row':
       case 'sidebar':
       case 'image':
+      case 'ingredient':
         this.director.move(block, this.block)
         break
-      case 'column':
+      case 'column': {
         const row: RowBlock = { id: Guid.create(), type: 'row' }
         this.director.addBefore(row, this.block)
         this.director.moveInside(block, row)
         break
+      }
       default:
         assertNever(block)
     }

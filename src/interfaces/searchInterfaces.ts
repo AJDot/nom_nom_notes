@@ -2,8 +2,6 @@ import { KeysOfType } from 'Interfaces/utilInterfaces'
 
 export type SearchType = 'result' | 'command'
 
-export type SearchOptions<T> = SearchOptionsLocal<T> | SearchOptionsEndpoint<T>
-
 export interface SearchOptionsLocal<T> {
   type: SearchType
   label: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
@@ -17,8 +15,10 @@ export interface SearchOptionsEndpoint<T> {
   label: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
   valueString: KeysOfType<T, string> | ((item: T, options: { q: string }) => string)
   endpoint: string
-  query?: Record<PropertyKey, any>
+  query?: Record<PropertyKey, unknown>
 }
+
+export type SearchOptions<T> = SearchOptionsLocal<T> | SearchOptionsEndpoint<T>
 
 export interface SearchResult<V, Type extends SearchType = SearchType> {
   type: Type

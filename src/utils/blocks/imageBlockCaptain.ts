@@ -1,21 +1,29 @@
-import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, ImageBlock, RowBlock, UImageBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 import Guid from '../guid'
+import { ObjectUtils } from '../objectUtils'
 
-export default class ImageBlockCaptain<FType> implements UBlockCaptain<ImageBlock, FType> {
+export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: ImageBlock, public director: BlockDirector<FType>) {
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  get isEmpty(): boolean {
+    if (ObjectUtils.dig(this.block, 'content', 'attachmentId')) return false
+
+    return true
+  }
+
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     throw new Error('Method not implemented.')
   }
 
-  onInput({ event }: { event: InputEvent }) {
+  onInput(_args: { event: InputEvent }) {
     throw new Error('Method not implemented.')
   }
 
@@ -28,13 +36,15 @@ export default class ImageBlockCaptain<FType> implements UBlockCaptain<ImageBloc
       case 'row':
       case 'sidebar':
       case 'image':
+      case 'ingredient':
         this.director.move(block, this.block)
         break
-      case 'column':
+      case 'column': {
         const row: RowBlock = { id: Guid.create(), type: 'row' }
         this.director.addBefore(row, this.block)
         this.director.moveInside(block, row)
         break
+      }
       default:
         assertNever(block)
     }

@@ -1,19 +1,29 @@
 <template>
   <ul class="flex flex-col xs:flex-row gap-5 sm:place-items-center sm:justify-center text-2xl mt-4">
     <li>
-      <router-link :to="{ name: $routerExtension.names.Recipe }" class="flex">
+      <router-link
+        :to="{ name: $routerExtension.names.Recipe }"
+        class="flex"
+      >
         <i class="material-icons my-auto">receipt</i>
         <span>Back to Recipe</span>
       </router-link>
     </li>
     <li v-if="recipe">
-      <a href="#" class="flex" @click.prevent="confirmDestroy">
+      <a
+        href="#"
+        class="flex"
+        @click.prevent="confirmDestroy"
+      >
         <i class="material-icons my-auto">delete</i>
         <span>Delete Recipe</span>
       </a>
     </li>
   </ul>
-  <modal :state="modalState" center>
+  <modal
+    :state="modalState"
+    center
+  >
     <template #header>
       <h3>Delete recipe</h3>
     </template>
@@ -21,10 +31,17 @@
       <p>Are you sure you want to delete this recipe? This action cannot be undone.</p>
     </template>
     <template #footer>
-      <button class="btn ml-3 text-white bg-red hover:text-white hover:bg-red-700" type="button" @click="destroy">
+      <button
+        class="btn ml-3 text-white bg-red hover:text-white hover:bg-red-700"
+        type="button"
+        @click="destroy"
+      >
         Delete Recipe
       </button>
-      <button class="btn ml-3 text-gray-900 bg-white border-solid border border-gray-400 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100" @click="resetModal">
+      <button
+        class="btn ml-3 text-gray-900 bg-white border-solid border border-gray-400 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100"
+        @click="resetModal"
+      >
         Cancel
       </button>
     </template>

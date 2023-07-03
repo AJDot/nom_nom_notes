@@ -1,12 +1,13 @@
-import { defineConfig } from "cypress"
-import { config as dotenvConfig } from "dotenv"
+import { defineConfig } from 'cypress'
+import { config as dotenvConfig } from 'dotenv'
 
-dotenvConfig({ path: "./.env.test" })
+dotenvConfig({ path: './.env.test' })
 
 export default defineConfig({
+  projectId: 'hww73m',
   e2e: {
-    baseUrl: process.env.VITE_VUE_APP_URL || "http://localhost:5174",
-    supportFile: "cypress/support/index.ts",
+    baseUrl: process.env.VITE_VUE_APP_URL || 'http://localhost:5174',
+    supportFile: 'cypress/support/index.ts',
     videoUploadOnPasses: false,
     env: {
       api_url: process.env.VITE_VUE_APP_API_URL,
@@ -15,9 +16,9 @@ export default defineConfig({
 
   component: {
     devServer: {
-      framework: "vue",
-      bundler: "vite",
+      framework: 'vue',
+      bundler: 'vite',
     },
-    specPattern: ["cypress/component/**/*.cy.ts", "src/**/*.spec.ts"]
+    specPattern: ['cypress/component/**/*.cy.ts', 'src/**/*.spec.ts'],
   },
 })

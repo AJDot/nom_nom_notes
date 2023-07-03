@@ -1,12 +1,21 @@
 <template>
-  <base-block class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" v-for="block in blocks" :block="block" :key="block.id" :mode="mode" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
+  <base-block
+    v-for="block in blocks"
+    :key="block.id"
+    class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input"
+    :block="block"
+    :mode="mode"
+    :director="director"
+    :draggable="draggable"
+    :droppable="droppable"
+    :editable="editable"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import draggable from '~/components/modules/draggable/draggable.vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import draggableMixin from '~/mixins/draggableMixin'
 
 export default defineComponent({
@@ -14,9 +23,6 @@ export default defineComponent({
   mixins: [
     draggableMixin,
   ],
-  components: {
-    draggable
-  },
   props: {
     blocks: {
       type: Array as () => Block[],
@@ -29,7 +35,7 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose', 'shopping'].includes(prop),
     },
     editable: {
       type: Boolean,

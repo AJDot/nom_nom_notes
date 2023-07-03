@@ -1,5 +1,3 @@
-import { Collection } from '@vuex-orm/core'
-import { RRecord } from 'Interfaces/modelInterfaces'
 import User from 'Models/user'
 import { Mutation, MutationTree } from 'vuex'
 import { UsersState } from '~/store/interfaces'

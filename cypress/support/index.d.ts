@@ -7,6 +7,7 @@ declare type AssertTextOptionTypes = import('./test_typings').AssertTextOptionTy
 declare type AssertUrlOptionType = import('./test_typings').AssertUrlOptionType
 
 declare namespace Cypress {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export interface Hash<T = any> {
     [key: string]: T
 
@@ -14,7 +15,7 @@ declare namespace Cypress {
   }
 
   interface ModelResponse {
-    data: { attributes: Hash }
+    attributes: Hash
   }
 
   interface Chainable<Subject> {
@@ -31,19 +32,22 @@ declare namespace Cypress {
      * @param url {string}
      * @param body {RequestBody}
      */
-    apiRequest(method: string, url: string, body?: string | Record<string, unknown>): Chainable<Response>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    apiRequest(method: string, url: string, body?: string | Record<string, unknown>): Chainable<Response<any>>
 
     /**
      * Get the recipe card on the list page
      * @param indexOrName {string, number} index of card or name of recipe
      */
-    getRecipeCard(indexOrName: string | number): Chainable<Response>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getRecipeCard(indexOrName: string | number): Chainable<any>
 
     /**
      * Get the dynamic recipe card on the list page
      * @param indexOrName {string, number} index of card or name of dynamic recipe
      */
-    getDynamicRecipeCard(indexOrName: string | number): Chainable<Response>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getDynamicRecipeCard(indexOrName: string | number): Chainable<any>
 
     /**
      * Get a list item in a dropdown
@@ -80,16 +84,23 @@ declare namespace Cypress {
     forceSignOut(): Chainable<ModelResponse>
 
     /**
+     * Get the DOM element according to being contenteditable and having a given content
+     * @example
+     * cy.getContentEditable("Ingredient")
+     */
+    getContentEditable(content: string): Chainable<Subject>
+
+    /**
      * Get the DOM element according to being contenteditable, empty, and having a given placeholder attribute
      * @example
-     * cy.getContentEditable("Type '\' for commands")
+     * cy.getContentEditableEmpty("Type '\' for commands")
      */
-    getContentEditable(placeholder: string): Chainable<Subject>
+    getContentEditableEmpty(placeholder: string): Chainable<Subject>
 
     /**
      * Get the DOM element in the alert section with text 'Not Valid'
      * @example
-     * cy.getAlert('Not Valid')
+     * cy.getFlash('Not Valid')
      */
     getFlash(text: string): Chainable<Subject>
 
@@ -126,7 +137,7 @@ declare namespace Cypress {
     /**
      * Trim the whitespace of a subject's text
      * @example
-     * 
+     *
      * cy.contains('No results found.  ').trim().should('equal', 'No results found.')
      */
     trim(): Chainable<Subject>
@@ -176,6 +187,6 @@ declare namespace Cypress {
      * cy.get('#draggable').drag('#droppable')
      *
      */
-    drag(target: string | { target: string, dragOpts?: Record<string, any>, dropOpts?: Record<string, any> }): Chainable<Subject>
+    drag(target: string | { target: string, dragOpts?: Record<string, unknown>, dropOpts?: Record<string, unknown> }): Chainable<Subject>
   }
 }

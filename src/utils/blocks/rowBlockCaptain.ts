@@ -1,20 +1,25 @@
-import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, UBlockCaptain } from '~/interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, URowBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
 import assertNever from '../assertNever'
 
-export default class RowBlockCaptain<FType> implements UBlockCaptain<RowBlock, FType> {
+export default class RowBlockCaptain<FType> implements URowBlockCaptain<FType> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(public block: RowBlock, public director: BlockDirector<FType>) {
   }
 
-  onChoose({ event, choice }: { event: PointerEvent, choice: { type: string; args: [ContentBlockIdBlock] } }): void {
+  get isEmpty(): boolean {
+    return this.director.childrenFor(this.block).length === 0
+  }
+
+  onChoose({ choice }: { event: PointerEvent, choice: { type: string, args: [ContentBlockIdBlock] } }): void {
     const block = choice.args[0]
     block.content.blockId = this.block.id
   }
 
-  onEnter({ event }: { event: KeyboardEvent }): void {
+  onEnter(_args: { event: KeyboardEvent }): void {
     throw new Error('Method not implemented.')
   }
 
-  onInput({ event }: { event: InputEvent }) {
+  onInput(_args: { event: InputEvent }) {
     throw new Error('Method not implemented.')
   }
 
@@ -26,6 +31,7 @@ export default class RowBlockCaptain<FType> implements UBlockCaptain<RowBlock, F
       case 'text':
       case 'row':
       case 'image':
+      case 'ingredient':
         this.director.move(block, this.block)
         break
       case 'column':

@@ -23,9 +23,9 @@ const actions: ActionTree<FeaturesState, RootState> & FeatureActions = {
       commit(FeatureMutationTypes.ADD, response.data)
       return response
     } catch (err) {
-      commit(FeatureMutationTypes.ADD, { key, state: "off" })
+      commit(FeatureMutationTypes.ADD, { key, state: 'off' })
     }
-  }
+  },
 }
 
 export default actions

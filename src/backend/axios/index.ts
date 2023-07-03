@@ -80,7 +80,6 @@ securedAxiosInstance.interceptors.response.use(undefined, (error) => {
         } else {
           // redirect to signin if refresh fails
           location.replace(AppPath.base() + AppPath.signin())
-          return
         }
       })
   } else {

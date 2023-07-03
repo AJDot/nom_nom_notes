@@ -4,12 +4,12 @@
  */
 import { Uploader } from 'Interfaces/imageInterfaces'
 
-export interface RRecord extends ClientIdable {
-  id: string | undefined
-}
-
 export interface ClientIdable {
   clientId: string | undefined
+}
+
+export interface RRecord extends ClientIdable {
+  id: string | undefined
 }
 
 export interface Nameable {

@@ -13,6 +13,7 @@ describe('Sign Out', () => {
         cy.contains('orangejoe').should('exist')
       })
     cy.contains('a', 'Sign Out').click()
+    cy.contains('a', 'Sign Out')
       .then(() => {
         cy.contains('a', 'Sign Out').should('not.exist')
         cy.contains('orangejoe').should('not.exist')

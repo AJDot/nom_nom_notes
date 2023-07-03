@@ -2,27 +2,58 @@
   <header>
     <div class="px-4 py-2 flex flex-col xs:flex-row items-center justify-between">
       <h1>
-        <router-link :to="{ name: $routerExtension.names.Home }" aria-label="Go to Nom Nom Notes Home" class="inline-block align-middle">
-          <img src="/logo-512x512.png" alt="Nom Nom Notes" class="h-20 w-20">
+        <router-link
+          :to="{ name: $routerExtension.names.Home }"
+          aria-label="Go to Nom Nom Notes Home"
+          class="inline-block align-middle"
+        >
+          <img
+            src="/logo-512x512.png"
+            alt="Nom Nom Notes"
+            class="h-20 w-20"
+          >
         </router-link>
         <span class="hidden ml-5 text-2xl align-middle sm:text-4xl xs:inline-block">Nom Nom Notes</span>
       </h1>
       <ul class="text-2xl j-slash sm:text-3xl">
-        <li v-if="currentUser" class="inline-block">
+        <li
+          v-if="canViewShoppingList"
+          class="inline-block"
+        >
+          <router-link :to="{ name: $routerExtension.names.ShoppingList }">
+            Shopping List
+          </router-link>
+        </li>
+        <li
+          v-if="currentUser"
+          class="inline-block"
+        >
           {{ currentUser.username }}
         </li>
-        <li v-if="canSignIn" class="inline-block">
+        <li
+          v-if="canSignIn"
+          class="inline-block"
+        >
           <router-link :to="{ name: $routerExtension.names.SignIn, params: { originalRequest: $router.currentRoute.value.path } }">
             Sign In
           </router-link>
         </li>
-        <li v-if="canSignUp" class="inline-block">
+        <li
+          v-if="canSignUp"
+          class="inline-block"
+        >
           <router-link :to="{ name: $routerExtension.names.SignUp }">
             Sign Up
           </router-link>
         </li>
-        <li v-if="signedIn" class="inline-block">
-          <a href="#" @click.prevent="signOut">Sign Out</a>
+        <li
+          v-if="signedIn"
+          class="inline-block"
+        >
+          <a
+            href="#"
+            @click.prevent="signOut"
+          >Sign Out</a>
         </li>
       </ul>
     </div>
@@ -51,7 +82,7 @@ export default defineComponent({
   components: { Flash },
   data() {
     return {
-      FeatureName: FeatureName,
+      FeatureName,
     }
   },
   computed: {
@@ -61,6 +92,9 @@ export default defineComponent({
     },
     canSignIn(): boolean {
       return !this.signedIn && !this.$routerExtension.currentRouteIs(this.$routerExtension.names.SignIn)
+    },
+    canViewShoppingList(): boolean {
+      return [this.$routerExtension.names.SignIn, this.$routerExtension.names.SignUp, this.$routerExtension.names.ShoppingList, this.$routerExtension.names.EditShoppingList].every(route => !this.$routerExtension.currentRouteIs(route))
     },
   },
   async beforeCreate() {

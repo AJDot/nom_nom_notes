@@ -3,7 +3,6 @@ import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfa
 import DynamicRecipe, { DynamicRecipeAttributes } from 'Models/dynamicRecipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { securedAxiosInstance } from '~/backend/axios'
-import Tagging from '~/models/tagging'
 import { ApiPath } from '~/router/path'
 import { DynamicRecipesState, RootState } from '~/store/interfaces'
 import { DynamicRecipeMutationTypes } from '~/store/modules/dynamicRecipes/mutations'
@@ -24,20 +23,16 @@ type DynamicRecipeActions = {
 
 const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions = {
   async [DynamicRecipeActionTypes.FETCH]({ commit }: ActionContext<DynamicRecipesState, RootState>, id: string) {
-    try {
-      const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipe(id))
-      if (!response.data) throw new Error('Dynamic Recipe not found')
+    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipe(id))
+    if (!response.data) throw new Error('Dynamic Recipe not found')
 
-      commit(DynamicRecipeMutationTypes.ADD, {
-        id: response.data.data.id,
-        ...response.data.data.attributes,
-      })
-      const dynamicRecipe = DynamicRecipe.find(response.data.data.attributes.clientId!)!
-      await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
-      return response
-    } catch (err) {
-      throw err
-    }
+    commit(DynamicRecipeMutationTypes.ADD, {
+      id: response.data.data.id,
+      ...response.data.data.attributes,
+    })
+    const dynamicRecipe = DynamicRecipe.find(response.data.data.attributes.clientId!)!
+    await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
+    return response
   },
   async [DynamicRecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<DynamicRecipesState, RootState>) {
     const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData<DynamicRecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())

@@ -61,7 +61,7 @@ export class DurationFilter {
       if (quotient) {
         durations.push({
           amount: quotient,
-          unit: unit,
+          unit,
         })
       }
       current = remainder

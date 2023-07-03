@@ -1,22 +1,55 @@
 <template>
-  <form v-if="dynamicRecipe" class="mx-3" @submit.prevent>
+  <form
+    v-if="dynamicRecipe"
+    class="mx-3"
+    @submit.prevent
+  >
     <section class="max-w-screen-lg p-2.5 mx-auto mb-8 rounded-2xl shadow-card grid grid-cols-1 gap-x-4 sm:grid-cols-2">
       <dl class="mt-2 mb-4 sm:col-span-1">
-        <dt class="text-lg border-b border-gray-400 mb-2"><label for="name">Name</label></dt>
+        <dt class="text-lg border-b border-gray-400 mb-2">
+          <label for="name">Name</label>
+        </dt>
         <dd>
-          <a-input id="name" v-model="dynamicRecipeName" :editable="isEditable" type="text" name="name" placeholder="My Super Awesome Recipe" />
+          <a-input
+            id="name"
+            v-model="dynamicRecipeName"
+            :editable="isEditable"
+            type="text"
+            name="name"
+            placeholder="My Super Awesome Recipe"
+          />
         </dd>
       </dl>
       <dl class="mt-2 mb-4 sm:col-span-1">
-        <dt class="text-lg border-b border-gray-400 mb-2"><label for="tags">Tags</label></dt>
+        <dt class="text-lg border-b border-gray-400 mb-2">
+          <label for="tags">Tags</label>
+        </dt>
         <dd>
-          <search v-if="!isShowMode" id="tags" :searchers="[tagSearcher, createTagSearcher]" @select="addTag" :disabled="!isEditMode" />
+          <search
+            v-if="!isShowMode"
+            id="tags"
+            :searchers="[tagSearcher, createTagSearcher]"
+            :disabled="!isEditMode"
+            @select="addTag"
+          />
           <ul :class="isShowMode ? 'flex flex-wrap gap-x-2' : ''">
-            <li v-for="tag in unmarkedTags" :key="tag.clientId" :data-test="`tag-${tag.name}`" class="mt-2" :class="isShowMode ? 'inline-block' : 'flex'">
+            <li
+              v-for="tag in unmarkedTags"
+              :key="tag.clientId"
+              :data-test="`tag-${tag.name}`"
+              class="mt-2"
+              :class="isShowMode ? 'inline-block' : 'flex'"
+            >
               <span class="grow my-auto">
                 {{ tag.name }}
               </span>
-              <button v-if="isEditMode" type="button" class="btn" data-test="tag-destroy" @click="destroyTagging(tag)">
+              <button
+                v-if="isEditMode"
+                type="button"
+                class="btn"
+                data-test="tag-destroy"
+                @click="destroyTagging(tag)"
+              >
                 <i class="material-icons align-middle">delete</i>
               </button>
             </li>
@@ -24,17 +57,44 @@
         </dd>
       </dl>
       <div class="sm:col-span-2">
-        <base-block-group :blocks="topLevelBlocks" :mode="mode" :director="blockDirector" :draggable="isEditable" :droppable="isEditable" :editable="isEditable" />
-        <base-block v-if="isEditable && !blockDirector.find(textBlock.id)" :block="textBlock" :mode="mode" :director="blockDirector" />
-        <dropdown :state="dropdownState" position-type="cursor">
+        <base-block-group
+          :blocks="topLevelBlocks"
+          :mode="mode"
+          :director="blockDirector"
+          :draggable="isEditable"
+          :droppable="isEditable"
+          :editable="isEditable"
+        />
+        <base-block
+          v-if="isEditable && !blockDirector.find(textBlock.id)"
+          :block="textBlock"
+          :mode="mode"
+          :director="blockDirector"
+        />
+        <dropdown
+          :state="dropdownState"
+          position-type="cursor"
+        >
           <ul class="max-w-lg">
             <template v-if="commandSelector.collections.some(c => c.length)">
-              <dropdown-item v-for="commandResult in commandSelector.collections.flat()" :class="{ 'select-blue': commandResult === commandSelector.current }">
-                <dropdown-item-button @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })" class="grid grid-cols-1 text-left">
+              <dropdown-item
+                v-for="commandResult in commandSelector.collections.flat()"
+                :key="commandResult.value"
+                :class="{ 'select-blue': commandResult === commandSelector.current }"
+              >
+                <dropdown-item-button
+                  class="grid grid-cols-1 text-left"
+                  @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })"
+                >
                   <h1 class="font-sans text-lg bold">
                     {{ commandResult.label }}
                   </h1>
-                  <p v-if="commandResult.raw.description" class="text-gray-500">{{ commandResult.raw.description }}</p>
+                  <p
+                    v-if="commandResult.raw.description"
+                    class="text-gray-500"
+                  >
+                    {{ commandResult.raw.description }}
+                  </p>
                 </dropdown-item-button>
               </dropdown-item>
             </template>
@@ -52,24 +112,24 @@
 
 <script lang="ts">
 import Search from '@/structure/search.vue'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from 'Interfaces/blockInterfacesGeneral'
+import { FileUpload as IFileUpload } from 'Interfaces/fileUploadInterfaces'
+import { Uploader as IUploader } from 'Interfaces/imageInterfaces'
+import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
+import { USelector } from 'Interfaces/selectInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
 import { debounce } from 'lodash'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
 import { Command } from '~/enums/command'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { AllBlock, Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from '~/interfaces/blockInterfacesGeneral'
-import { FileUpload as IFileUpload } from '~/interfaces/fileUploadInterfaces'
-import { Uploader as IUploader } from '~/interfaces/imageInterfaces'
-import { SearchOptions, SearchResult, USearcher } from '~/interfaces/searchInterfaces'
-import { USelector } from '~/interfaces/selectInterfaces'
-import { default as DynamicRecipe, default as dynamicRecipe } from '~/models/dynamicRecipe'
+import DynamicRecipe from '~/models/dynamicRecipe'
 import FileUpload, { FileUploadAttributes } from '~/models/fileUpload'
 import Tag, { RTag } from '~/models/tag'
 import Tagging from '~/models/tagging'
 import router from '~/router'
 import { ApiPath } from '~/router/path'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
@@ -77,7 +137,7 @@ import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { TagActionTypes } from '~/store/modules/tags/actions'
 import Uploader from '~/uploaders/uploader'
-import { default as blockDirector, default as BlockDirector } from '~/utils/blocks/blockDirector'
+import BlockDirector from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import Logger from '~/utils/logger'
@@ -106,8 +166,8 @@ export default defineComponent({
     view: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['show', 'edit'].includes(prop)
-    }
+      validator: prop => typeof prop === 'string' && ['show', 'edit'].includes(prop),
+    },
   },
   data(): Data {
     const commandSelector = new Selector()
@@ -129,6 +189,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
+    ...mapState(StoreModulePath.Interfaces + StoreModulePath.Mode, { currentMode: 'current' }),
     blocks: {
       get(): Block[] {
         if (!this.dynamicRecipe) return []
@@ -139,7 +200,7 @@ export default defineComponent({
         if (!this.dynamicRecipe) return []
 
         this.dynamicRecipe.blocks = value
-      }
+      },
     },
     topLevelBlocks: {
       get(): Block[] {
@@ -150,6 +211,8 @@ export default defineComponent({
       },
     },
     mode(): 'create' | 'show' | 'edit' | 'choose' {
+      if (this.currentMode) return this.currentMode
+
       switch (this.view) {
         case 'show':
           return 'show'
@@ -193,7 +256,7 @@ export default defineComponent({
         if (!this.dynamicRecipe) return
         this.dynamicRecipe.name = value
         this.save()
-      }
+      },
     },
     unmarkedTags(): Array<Tag> {
       return this.dynamicRecipe?.tags.filter(tag => {
@@ -232,6 +295,81 @@ export default defineComponent({
       })
     },
   },
+  watch: {
+    textBlockAttached(newVal, _oldVal) {
+      if (newVal) {
+        this.textBlock = {
+          id: Guid.create(),
+          type: 'text',
+          content: { text: '' },
+        }
+      }
+    },
+  },
+  async beforeMount() {
+    const clientId = router.currentRoute.value.params.clientId
+    const store = useStore<RootState>(stateKey)
+    if (clientId) {
+      try {
+        await store.dispatch(
+          StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
+          clientId,
+        )
+        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
+        if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
+      } catch (e) {
+        await this.$router.push({
+          name: this.$routerExtension.names.DynamicRecipes,
+        })
+        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
+          flash: { alert: 'Dynamic Recipe not found.' },
+        })
+        return
+      }
+    } else {
+      this.dynamicRecipe = new DynamicRecipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
+    }
+
+    this.blockDirector = new BlockDirector<IFileUpload>({
+      blocks: this.dynamicRecipe.blocks,
+      findAttachment: this.findAttachment.bind(this),
+      focus: async (block) => {
+        await this.focusStepBlock(block, 0).get(0).focus()
+      },
+      focusAfter: this.focusAfter.bind(this),
+      focusBefore: this.focusBefore.bind(this),
+      onArrowDown: this.onArrowDown.bind(this),
+      onArrowUp: this.onArrowUp.bind(this),
+      onBackspace: this.onBackspace.bind(this),
+      onDestroyAttachments: this.onDestroyAttachments.bind(this),
+      onEnter: this.onEnter.bind(this),
+      onImageUpload: this.onImageUpload.bind(this),
+      onInput: this.onInput.bind(this),
+      onSave: this.onSave.bind(this),
+    })
+
+    this.commandSearch = new Searcher({
+      label: 'label',
+      valueString: 'label',
+      type: 'command',
+      collection: () => {
+        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image', 'ingredient']
+        if (
+          this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
+          (this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row')
+        ) {
+          allowableCommands.push('addColumn')
+        }
+        return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
+          commands.push(this.blockDirector.COMMANDS[commandId])
+          return commands
+        }, [])
+      },
+      matcher(item, q) {
+        return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))
+      },
+    })
+  },
   methods: {
     ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     getDynamicRecipe(): DynamicRecipe {
@@ -239,15 +377,7 @@ export default defineComponent({
       this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
       return this.dynamicRecipe
     },
-    onClick({ block, event, call }: { block: Block, event: PointerEvent, call: Function }) {
-      if (this.currentChoice) {
-        this.blockDirector.onChoose({ block, event, choice: this.currentChoice })
-        this.unsetCurrentChoice()
-      }
-      call()
-      this.save()
-    },
-    async onImageUpload({ block, image, call }: { block: ContentAttachmentIdBlock, image: IUploader, call: Function }) {
+    async onImageUpload({ block, image }: { block: ContentAttachmentIdBlock, image: IUploader }) {
       if (this.dynamicRecipe && image.raw) {
         const uploader = new Uploader(ApiPath.base() + ApiPath.fileUploads())
         const imageResponse = await uploader.post<FileUploadAttributes>({
@@ -270,7 +400,6 @@ export default defineComponent({
           ({ attachment: oldAttachment } = this.findAttachment({ id: oldAttachmentId }))
           oldAttachment?.markForDestruction()
         }
-        call()
         await this.save()
         if (oldAttachment) {
           const index = this.dynamicRecipe.attachments.indexOf(oldAttachment)
@@ -288,12 +417,12 @@ export default defineComponent({
         return { attachment: null, url: null, alt: null }
       }
     },
-    async onInput({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
+    async onInput({ block, event, call }: { block: Block, event: InputEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
 
       const data = event.data
       if (!this.dropdownState && data === '/') {
-        this.openSearch({ block, data })
+        this.openSearch({ block, data, call })
         return
       }
       if (this.dropdownState) {
@@ -327,10 +456,8 @@ export default defineComponent({
       }
 
       call()
-      this.save()
-      this.focus(block)
     },
-    onEnter({ block, event, call }: { block: Block, event: KeyboardEvent, call: Function }) {
+    onEnter({ block, call }: { block: Block, event: KeyboardEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
 
       if (this.dropdownState) {
@@ -343,8 +470,6 @@ export default defineComponent({
       }
 
       call()
-      this.focusAfter(block)
-      this.save()
     },
     onArrowDown({ block, event }) {
       if (!this.dynamicRecipe) return
@@ -368,43 +493,14 @@ export default defineComponent({
 
       this.focusBefore(block)
     },
-    onBackspace({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
+    onBackspace({ call }: { block: Block, event: InputEvent, call: () => void }) {
       if (!this.dynamicRecipe) return
-
-      const data = event.data
       if (this.dropdownState) return
 
-      if (!this.blockDirector.isEmpty(block)) return
-
-      const beforeBlock = this.blockDirector.blockBefore(block)
-      if (beforeBlock) {
-        this.focusBefore(block)
-        call()
-      }
-      this.save()
-    },
-    onDelete({ block, event, call }: { block: Block, event: InputEvent, call: Function }) {
-      if (!this.dynamicRecipe) return
-      if (!this.blockDirector.isEmpty(block)) return
-
-      const blockAfter = this.blockDirector.blockAfter(block)
-      if (blockAfter) {
-        this.focusAfter(block)
-        call()
-      }
-      this.save()
-    },
-    onMove({ move, to, call }: { move: Block, to: Block, call: Function }) {
       call()
-      this.save()
     },
-    onCreate({ block, inside, call }: { block: Block, inside?: Block, call: Function }) {
-      call()
-      this.save()
-    },
-    async onDestroy({ block, call }: { block: Block, call: Function }) {
-      call()
-      const b: AllBlock = block as AllBlock
+    async onDestroyAttachments(block) {
+      const b: ContentAttachmentIdBlock = block as ContentAttachmentIdBlock
       const attachmentId = ObjectUtils.dig(b, 'content', 'attachmentId')
       let attachment: FileUpload | null = null
       if (attachmentId) b.content.attachmentId = null
@@ -421,6 +517,7 @@ export default defineComponent({
     onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
       this.executeCommand({ block, command })
       this.focus(block)
+      this.save()
     },
     async executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
       if (block === null) return
@@ -458,15 +555,22 @@ export default defineComponent({
       let index = $focusables.index($(`[data-id="${block.id}"]`)) + step
       index %= $focusables.length
       const $focusableRoot = $focusables.eq(index)
-      return $focusableRoot.is('[data-focus]') ? $focusableRoot : $focusableRoot.find('[data-focus]')
+      return $focusableRoot.is('[data-focus]') ? $focusableRoot : step > 0 ? $focusableRoot.find('[data-focus]').first() : $focusableRoot.find('[data-focus]').last()
     },
-    openSearch({ block, data }) {
+    openSearch({ block, call }: {block, data, call}) {
       this.currentBlock = block
       this.dropdownState = true
       this.q = ''
       this.commandSearch.search(this.q)
       this.commandSelector.collections = [this.commandSearch.results]
       this.commandSelector.set(0)
+      $(':focus').on('keydown.search', (event) => {
+        if (event.key === 'Tab' || event.key === 'Escape') {
+          $(event.target).off('keydown.search')
+          this.closeSearch()
+          call()
+        }
+      })
     },
     closeSearch() {
       this.dropdownState = false
@@ -539,6 +643,9 @@ export default defineComponent({
         .then((response) => this.updateSuccessful(response))
         .catch((error) => this.updateError(error))
     }, 500),
+    async onSave() {
+      await this.save()
+    },
     async addTag(item: { data: SearchResult<RTag, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
       if (!this.dynamicRecipe) return
       let tag
@@ -594,78 +701,7 @@ export default defineComponent({
       this.save()
     },
   },
-  async beforeMount() {
-    const clientId = router.currentRoute.value.params.clientId
-    const store = useStore<RootState>(stateKey)
-    if (clientId) {
-      try {
-        await store.dispatch(
-          StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.FIND_OR_FETCH,
-          clientId,
-        )
-        this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
-        if (!this.dynamicRecipe.blocks) this.dynamicRecipe.blocks = []
-      } catch (e) {
-        await this.$router.push({
-          name: this.$routerExtension.names.DynamicRecipes,
-        })
-        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: 'Dynamic Recipe not found.' },
-        })
-        return
-      }
-    } else {
-      this.dynamicRecipe = new DynamicRecipe({ ownerId: this.currentUser.clientId, owner: this.currentUser })
-    }
-
-    this.blockDirector = new BlockDirector<IFileUpload>({
-      blocks: this.dynamicRecipe.blocks,
-      findAttachment: this.findAttachment.bind(this),
-      onArrowDown: this.onArrowDown.bind(this),
-      onArrowUp: this.onArrowUp.bind(this),
-      onBackspace: this.onBackspace.bind(this),
-      onClick: this.onClick.bind(this),
-      onCreate: this.onCreate.bind(this),
-      onDelete: this.onDelete.bind(this),
-      onDestroy: this.onDestroy.bind(this),
-      onEnter: this.onEnter.bind(this),
-      onImageUpload: this.onImageUpload.bind(this),
-      onInput: this.onInput.bind(this),
-      onMove: this.onMove.bind(this),
-    })
-
-    this.commandSearch = new Searcher({
-      label: 'label',
-      valueString: 'label',
-      type: 'command',
-      collection: () => {
-        const allowableCommands: Array<BlockCommandType> = ['h1', 'h2', 'h3', 'text', 'columns', 'sidebar', 'image']
-        if (
-          this.blockDirector.find(this.currentBlock?.parentId)?.type === 'column' ||
-          this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row'
-        ) {
-          allowableCommands.push('addColumn')
-        }
-        return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
-          commands.push(this.blockDirector.COMMANDS[commandId])
-          return commands
-        }, [])
-      },
-      matcher(item, q) {
-        return Boolean(item.label.toLocaleLowerCase().match(q.toLocaleLowerCase()))
-      },
-    })
-  },
-  watch: {
-    textBlockAttached(newVal, oldVal) {
-      if (newVal) {
-        this.textBlock = {
-          id: Guid.create(),
-          type: 'text',
-          content: { text: '' },
-        }
-      }
-    },
-  },
 })
 </script>
+~/interfaces/interfaces
+~/store/interfaces

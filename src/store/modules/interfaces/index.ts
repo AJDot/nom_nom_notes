@@ -5,11 +5,12 @@ import {
   GetterTree,
   Module,
   Mutation,
-  MutationTree
+  MutationTree,
 } from 'vuex'
 import { RootState } from '~/store/interfaces'
 import choice from './modules/choice'
 import toggle from './modules/toggle'
+import mode from './modules/mode'
 
 export interface InterfaceState {}
 
@@ -44,6 +45,7 @@ const interfaces: Module<InterfaceState, RootState> = {
   modules: {
     toggle,
     choice,
+    mode,
   },
   state,
   getters,

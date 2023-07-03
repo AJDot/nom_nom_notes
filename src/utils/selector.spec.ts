@@ -1,4 +1,4 @@
-import Selector from "./selector"
+import Selector from './selector'
 
 describe('selector.ts', () => {
   it('starts with nothing currently selected', () => {

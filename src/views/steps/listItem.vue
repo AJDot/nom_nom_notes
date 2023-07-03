@@ -2,7 +2,11 @@
   <li class="flex p-1 gap-1 items-center">
     <div>
       <label :for="`step-${index}-description`">
-        <button v-if="handle" type="button" class="btn handle">
+        <button
+          v-if="handle"
+          type="button"
+          class="btn handle"
+        >
           <i class="material-icons align-middle">
             drag_handle
           </i>
@@ -13,12 +17,28 @@
       </label>
     </div>
     <div class="grow">
-      <a-textarea :id="`step-${index}-description`" :value="description" :name="`step-${index}-description`" placeholder="Next step..." @input="$emit('update:description', $event.target.value)" class="w-full" />
+      <a-textarea
+        :id="`step-${index}-description`"
+        :value="description"
+        :name="`step-${index}-description`"
+        placeholder="Next step..."
+        class="w-full"
+        @input="$emit('update:description', $event.target.value)"
+      />
     </div>
     <div>
-      <dropdown :state="dropdownState" right @close="dropdownState = false">
+      <dropdown
+        :state="dropdownState"
+        right
+        @close="dropdownState = false"
+      >
         <template #control>
-          <button class="btn" type="button" @click="dropdownState = !dropdownState" data-test="more">
+          <button
+            class="btn"
+            type="button"
+            data-test="more"
+            @click="dropdownState = !dropdownState"
+          >
             <i class="material-icons align-middle">
               more_vert
             </i>
@@ -30,7 +50,10 @@
               Move Up
             </dropdown-item-button>
           </dropdown-item>
-          <dropdown-item v-if="!last" @click="moveDown">
+          <dropdown-item
+            v-if="!last"
+            @click="moveDown"
+          >
             <dropdown-item-button>
               Move Down
             </dropdown-item-button>
@@ -77,7 +100,7 @@ export default defineComponent({
     'update:description': null,
     'move:up': null,
     'move:down': null,
-    'destroy': null,
+    destroy: null,
   },
   data() {
     return {

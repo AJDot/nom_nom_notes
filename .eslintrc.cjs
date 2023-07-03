@@ -16,6 +16,7 @@ module.exports = {
   ],
   parserOptions: {
     parser: '@typescript-eslint/parser',
+    extraFileExtensions: ['.vue'],
     sourceType: 'module',
     ecmaVersion: 11,
   },
@@ -27,6 +28,14 @@ module.exports = {
     'plugin:chai-friendly/recommended',
     'standard',
   ],
+  overrides: [{
+    files: ['*.ts', '*.tsx'],
+    rules: {
+      // The core 'no-unused-vars' rules (in the eslint:recommeded ruleset)
+      // does not work with type definitions
+      'no-unused-vars': 'off',
+    },
+  }],
   rules: {
     // we should always disable console logs and debugging in production
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -65,10 +74,16 @@ module.exports = {
         requireLast: false,
       },
     }],
-    'comma-dangle': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'comma-dangle': ['error', 'always-multiline'],
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
     '@typescript-eslint/no-empty-interface': ['off'],
     'no-unused-expressions': 0,
     'chai-friendly/no-unused-expressions': 0,
+    'import/no-absolute-path': 'off',
+    'vue/multi-word-component-names': 'off',
+    // 'sort-keys': ['error', 'asc', { caseSensitive: true, natural: true, allowLineSeparatedGroups: true }],
+    // 'sort-imports': 'error',
+    'vue/no-v-html': 'off',
   },
 }

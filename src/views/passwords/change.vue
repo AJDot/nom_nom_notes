@@ -1,20 +1,39 @@
 <template>
-  <form class="max-w-screen-xs w-full self-center pt-4 px-2" @submit.prevent="changePassword">
+  <form
+    class="max-w-screen-xs w-full self-center pt-4 px-2"
+    @submit.prevent="changePassword"
+  >
     <section class="w-full flex flex-col">
-      <h2 class="text-2xl border-b border-gray-400 mb-2">Change Password</h2>
+      <h2 class="text-2xl border-b border-gray-400 mb-2">
+        Change Password
+      </h2>
       <dl class="password">
         <dt><label for="password">Password</label></dt>
         <dd>
-          <a-input id="password" v-model="formData.password" type="password" name="password" />
+          <a-input
+            id="password"
+            v-model="formData.password"
+            type="password"
+            name="password"
+          />
         </dd>
       </dl>
       <dl class="password">
         <dt><label for="password-confirmation">Confirm Password</label></dt>
         <dd>
-          <a-input id="password-confirmation" v-model="formData.passwordConfirmation" type="password" name="password-confirmation" />
+          <a-input
+            id="password-confirmation"
+            v-model="formData.passwordConfirmation"
+            type="password"
+            name="password-confirmation"
+          />
         </dd>
       </dl>
-      <input class="btn" type="submit" value="Change Password">
+      <input
+        class="btn"
+        type="submit"
+        value="Change Password"
+      >
     </section>
   </form>
 </template>

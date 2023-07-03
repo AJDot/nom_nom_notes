@@ -2,14 +2,14 @@ import Recipe from 'Models/recipe'
 import { Attribute } from '@vuex-orm/core'
 import AModel, { AModelAttributes, AModelFields } from 'Models/aModel'
 import DynamicRecipe from './dynamicRecipe'
-import { HasMany } from '~/interfaces/modelInterfaces'
+import { HasMany } from 'Interfaces/modelInterfaces'
 
 export type UserAttributes = AModelAttributes & {
   email: string
   username: string
 } &
-  HasMany<'recipes', Recipe> &
-  HasMany<'dynamicRecipes', DynamicRecipe>
+HasMany<'recipes', Recipe> &
+HasMany<'dynamicRecipes', DynamicRecipe>
 
 export interface RUser extends UserAttributes {
 }

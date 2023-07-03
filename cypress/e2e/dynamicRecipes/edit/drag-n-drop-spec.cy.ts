@@ -1,5 +1,5 @@
-import { Block } from "../../../../src/interfaces/blockInterfacesGeneral"
-import Guid from "../../../../src/utils/guid"
+import { Block } from '../../../../src/interfaces/blockInterfacesGeneral'
+import Guid from '../../../../src/utils/guid'
 
 describe('Drag n Drop Dynamic Recipe Blocks', function () {
   function assertDrag(blocks: Block[], before: { id?: string, text: string }[], dragId: string, dropId: string, after: { id?: string, text: string }[], opts: { dragOpts?, dropOpts?} = {}) {
@@ -10,7 +10,6 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
       dynamic_recipe: { name: 'Pasta', ownerId: this.fry.attributes.clientId, blocks },
     }).its('body.data.0').as('dynamicRecipe')
       .then(function () {
-
         cy.visit(`/dynamic_recipes/${this.dynamicRecipe.attributes.clientId}/edit`)
 
         // BEFORE DRAG
@@ -248,6 +247,30 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
 
       assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
+
+    it('allows me to move an ingredient block into an h1 block', function () {
+      const h1Id = Guid.create()
+      const ingredientId = Guid.create()
+      const blocks: Block[] = [
+        { id: h1Id, type: dropType, content: { text: 'Heading 1' } },
+        { id: ingredientId, type: 'ingredient', content: { amount: '', text: '' } },
+      ]
+
+      const before = [
+        { id: h1Id, text: 'Heading 1' },
+        { id: ingredientId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const dragId = ingredientId
+      const dropId = h1Id
+      const after = [
+        { id: ingredientId, text: '' },
+        { id: h1Id, text: 'Heading 1' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
   })
 
   describe('onto h2 block', function () {
@@ -430,6 +453,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
       const blocks: Block[] = [
         { id: dropId, type: dropType, content: { text: 'Heading 1' } },
         { id: dragId, type: 'image', content: { attachmentId: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: 'Heading 1' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: 'Heading 1' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
+
+    it('allows me to move an ingredient block into an h2 block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType, content: { text: 'Heading 1' } },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
       ]
 
       const before = [
@@ -642,6 +687,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
 
       assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
+
+    it('allows me to move an ingredient block into an h3 block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType, content: { text: 'Heading 1' } },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: 'Heading 1' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: 'Heading 1' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
   })
 
   describe('onto text block', function () {
@@ -824,6 +891,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
       const blocks: Block[] = [
         { id: dropId, type: dropType, content: { text: 'Heading 1' } },
         { id: dragId, type: 'image', content: { attachmentId: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: 'Heading 1' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: 'Heading 1' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
+
+    it('allows me to move an ingredient block into an text block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType, content: { text: 'Heading 1' } },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
       ]
 
       const before = [
@@ -1036,6 +1125,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
 
       assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
+
+    it('allows me to move an ingredient block into an sidebar block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType, content: { text: 'Heading 1', blockId: null } },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: 'Heading 1' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: 'Heading 1' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
   })
 
   describe('onto image block', function () {
@@ -1233,6 +1344,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
 
       assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
+
+    it('allows me to move an ingredient block into an image block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType, content: { attachmentId: null } },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: '' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
   })
 
   describe('onto row block', function () {
@@ -1414,6 +1547,28 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
       const blocks: Block[] = [
         { id: dropId, type: dropType },
         { id: dragId, type: 'image', content: { attachmentId: null } },
+      ]
+
+      const before = [
+        { id: dropId, text: ' + Add Column  - Remove Empty Row ' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: dragId, text: '' },
+        { id: dropId, text: ' + Add Column  - Remove Empty Row ' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
+
+    it('allows me to move an ingredient block into an row block', function () {
+      const dropId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: dropId, type: dropType },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
       ]
 
       const before = [
@@ -1689,6 +1844,36 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
 
       assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
     })
+
+    it('allows me to move an ingredient block into an column block', function () {
+      const rowId = Guid.create()
+      const dropId = Guid.create()
+      const textId = Guid.create()
+      const dragId = Guid.create()
+      const blocks: Block[] = [
+        { id: rowId, type: 'row' },
+        { id: dropId, type: dropType, parentId: rowId },
+        { id: textId, type: 'text', content: { text: 'Text' }, parentId: dropId },
+        { id: dragId, type: 'ingredient', content: { amount: null, text: null } },
+      ]
+
+      const before = [
+        { id: rowId, text: 'Text' },
+        { id: dropId, text: 'Text' },
+        { id: textId, text: 'Text' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const after = [
+        { id: rowId, text: 'Text' },
+        { id: dropId, text: 'Text' },
+        { id: textId, text: 'Text' },
+        { id: dragId, text: '' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
   })
 
   describe('onto text block in column', function () {
@@ -1920,6 +2105,38 @@ describe('Drag n Drop Dynamic Recipe Blocks', function () {
         { id: rowId, text: 'Ingredient 2' },
         { id: column1Id, text: 'Ingredient 2' },
         { id: imageId, text: '' },
+        { id: text2Id, text: 'Ingredient 2' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+
+      assertDrag.call(this, blocks, before, dragId, dropId, after, { dragOpts: { x: 2, y: 2 }, dropOpts: { x: 2, y: 2 } })
+    })
+
+    it('allows me to move an ingredient block into a column block', function () {
+      const ingredientId = Guid.create()
+      const rowId = Guid.create()
+      const column1Id = Guid.create()
+      const text2Id = Guid.create()
+      const blocks: Block[] = [
+        { id: ingredientId, type: 'ingredient', content: { amount: null, text: null } },
+        { id: rowId, type: 'row' },
+        { id: column1Id, type: 'column', parentId: rowId },
+        { id: text2Id, type: 'text', content: { text: 'Ingredient 2' }, parentId: column1Id },
+      ]
+
+      const before = [
+        { id: ingredientId, text: '' },
+        { id: rowId, text: 'Ingredient 2' },
+        { id: column1Id, text: 'Ingredient 2' },
+        { id: text2Id, text: 'Ingredient 2' },
+        { text: '' }, // the "type anything... placeholder block"
+      ]
+      const dragId = ingredientId
+      const dropId = text2Id
+      const after = [
+        { id: rowId, text: 'Ingredient 2' },
+        { id: column1Id, text: 'Ingredient 2' },
+        { id: ingredientId, text: '' },
         { id: text2Id, text: 'Ingredient 2' },
         { text: '' }, // the "type anything... placeholder block"
       ]

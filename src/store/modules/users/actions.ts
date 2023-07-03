@@ -25,6 +25,7 @@ const actions: ActionTree<UsersState, RootState> & UserActions = {
       const updateResponse: Record<string, Collection<User>> = await User.insertOrUpdate<typeof User>({ data: userData }) as Record<string, Collection<User>>
       commit(UserMutationTypes.SET_CURRENT, updateResponse[User.entity][0])
       return response
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       Logger.error(e.message)
     }

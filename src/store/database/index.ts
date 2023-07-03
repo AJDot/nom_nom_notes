@@ -1,13 +1,14 @@
 import VuexORM from '@vuex-orm/core'
+import DynamicRecipe from 'Models/dynamicRecipe'
 import Feature from 'Models/feature'
+import FileUpload from 'Models/fileUpload'
 import Ingredient from 'Models/ingredient'
 import Recipe from 'Models/recipe'
+import ShoppingList from 'Models/shoppingList'
 import Step from 'Models/step'
+import Tag from 'Models/tag'
 import Tagging from 'Models/tagging'
 import User from 'Models/user'
-import DynamicRecipe from '~/models/dynamicRecipe'
-import FileUpload from '~/models/fileUpload'
-import Tag from '~/models/tag'
 
 const database = new VuexORM.Database()
 database.register(Feature)
@@ -19,5 +20,6 @@ database.register(Tag)
 database.register(Tagging)
 database.register(DynamicRecipe)
 database.register(FileUpload)
+database.register(ShoppingList)
 
 export default database

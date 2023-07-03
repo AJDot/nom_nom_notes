@@ -1,9 +1,9 @@
-import { Mutable } from "~/interfaces/utilInterfaces"
+import { Mutable } from 'Interfaces/utilInterfaces'
 
 class SelectionUtils {
   static getCaret(element: HTMLElement): number {
     let position = 0
-    const isSupported = typeof window.getSelection !== "undefined"
+    const isSupported = typeof window.getSelection !== 'undefined'
     if (isSupported) {
       const selection = window.getSelection()
       if (selection && selection.rangeCount !== 0) {
@@ -18,14 +18,15 @@ class SelectionUtils {
   }
 
   static moveCaret(element: HTMLElement, position: number): void {
-    const isSupported = typeof window.getSelection !== "undefined"
+    const isSupported = typeof window.getSelection !== 'undefined'
     if (isSupported) {
       const range = document.createRange()
       const selection = window.getSelection()
       if (!selection) return
 
-      const lastNode: HTMLElement | ChildNode | Text = element.childNodes[element.childNodes.length - 1] ?? element
-      const length = ('length' in lastNode ? (lastNode.length || 0) : 0) as number
+      const lastNode: HTMLElement | HTMLElement['childNodes'][number] | Text = element.childNodes[element.childNodes.length - 1] ?? element
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const length = ('length' in lastNode ? ((<any>lastNode).length || 0) : 0) as number
 
       range.setStart(lastNode, Math.min(length, position))
       range.collapse(true)
@@ -37,7 +38,7 @@ class SelectionUtils {
 
   static getCaretRect(): Omit<DOMRectReadOnly, 'toJSON'> | null {
     let position: Mutable<Omit<DOMRectReadOnly, 'toJSON'>> | null = null
-    const isSupported = typeof window.getSelection !== "undefined"
+    const isSupported = typeof window.getSelection !== 'undefined'
     if (isSupported) {
       const selection = window.getSelection()
       if (!selection) return null

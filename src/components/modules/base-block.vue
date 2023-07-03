@@ -1,17 +1,28 @@
 <template>
-  <component class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input" :is="componentMap[block.type]" :mode="mode" :data-id="block.id" :block="block" :director="director" :draggable="draggable" :droppable="droppable" :editable="editable" />
+  <component
+    :is="componentMap[block.type]"
+    class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input"
+    :mode="mode"
+    :data-id="block.id"
+    :block="block"
+    :director="director"
+    :draggable="draggable"
+    :droppable="droppable"
+    :editable="editable"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { UBlockDirector } from '~/interfaces/blockInterfaces'
-import { Block } from '~/interfaces/blockInterfacesGeneral'
+import { UBlockDirector } from 'Interfaces/blockInterfaces'
+import { Block } from 'Interfaces/blockInterfacesGeneral'
 import draggableMixin from '~/mixins/draggableMixin'
 import ColumnBlock from './column-block.vue'
 import H1Block from './h1-block.vue'
 import H2Block from './h2-block.vue'
 import H3Block from './h3-block.vue'
 import ImageBlock from './image-block.vue'
+import IngredientBlock from './ingredient-block.vue'
 import RowBlock from './row-block.vue'
 import SidebarBlock from './sidebar-block.vue'
 import TextBlock from './text-block.vue'
@@ -31,6 +42,7 @@ export default defineComponent({
     ColumnBlock,
     SidebarBlock,
     ImageBlock,
+    IngredientBlock,
   },
   mixins: [
     draggableMixin,
@@ -47,7 +59,7 @@ export default defineComponent({
     mode: {
       type: String,
       default: 'show',
-      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose'].includes(prop)
+      validator: prop => typeof prop === 'string' && ['create', 'show', 'edit', 'choose', 'shopping'].includes(prop),
     },
     editable: {
       type: Boolean,
@@ -65,6 +77,7 @@ export default defineComponent({
         column: 'column-block',
         sidebar: 'sidebar-block',
         image: 'image-block',
+        ingredient: 'ingredient-block',
       },
     }
   },
