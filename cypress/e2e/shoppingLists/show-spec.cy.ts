@@ -14,6 +14,8 @@ describe('View Shopping List', () => {
       cy.url().should('contain', '/shopping_list')
       cy.contains('h1', 'Shopping List').should('exist')
       cy.contains('There are no items in your shopping list').should('exist')
+      cy.contains('Condense').should('not.exist')
+      cy.contains('Edit').should('not.exist')
     })
   })
 
@@ -28,6 +30,8 @@ describe('View Shopping List', () => {
       cy.url().should('contain', '/shopping_list')
       cy.contains('h1', 'Shopping List').should('exist')
       cy.contains('There are no items in your shopping list').should('exist')
+      cy.contains('Condense').should('not.exist')
+      cy.contains('Edit').should('not.exist')
     })
   })
 })

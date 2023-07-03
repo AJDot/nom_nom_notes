@@ -93,7 +93,7 @@ declare namespace Cypress {
     /**
      * Get the DOM element in the alert section with text 'Not Valid'
      * @example
-     * cy.getAlert('Not Valid')
+     * cy.getFlash('Not Valid')
      */
     getFlash(text: string): Chainable<Subject>
 
