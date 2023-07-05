@@ -12,7 +12,18 @@ class MathClass {
   madeUpUnits: Unit[] = []
 
   add(unitA: Unit, unitB: Unit): Unit {
-    return math.add(unitA, unitB)
+    // makes sure the "biggest" unit it the one used. e.g. combining "cup" and "tsp" will make sure "cup" is taken
+    const unitADef = unitA.units[0].unit
+    const unitBDef = unitB.units[0].unit
+    if (unitADef.value > unitBDef.value) {
+      return math.add(unitA, unitB)
+    } else if (unitADef.value < unitBDef.value) {
+      return math.add(unitB, unitA)
+    } else if (unitADef.name === unitBDef.name + 's') {
+      return math.add(unitA, unitB)
+    } else {
+      return math.add(unitB, unitA)
+    }
   }
 
   createUnit(unitType: string): Unit {
@@ -48,6 +59,20 @@ class MathClass {
 
   isMadeUp(unit: Unit): boolean {
     return this.madeUpUnits.some(c => c.equalBase(unit))
+  }
+
+  // Turn "1 1/2 teaspoons" into Unit
+  parseUnit(text: string, opts: {unitFallback?: string} = {}): Unit {
+    const wholeRegex = /\d+/
+    const fractionRegex = /\d+\/\d+/
+    const decimalRegex = /\d+\.\d+/
+    const mixedRegex = new RegExp(`${wholeRegex.source} ${fractionRegex.source}`)
+    const allRegex = new RegExp(`(?:(?<mixed>${mixedRegex.source})|(?<fraction>${fractionRegex.source})|(?<decimal>${decimalRegex.source})|(?<whole>${wholeRegex.source}))(?<unit>.*)`)
+
+    const { mixed, fraction, decimal, whole, unit } = text.match(allRegex).groups
+    const unitString = unit || opts.unitFallback || ''
+    const numString = this.toNumber(mixed ?? fraction ?? decimal ?? whole).toString()
+    return this.ensureUnit(this.toNumber(numString), this.toUnitType(unitString))
   }
 
   /**

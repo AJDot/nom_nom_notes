@@ -102,4 +102,50 @@ describe('Condense Shopping List', () => {
     cy.contains('2.75 tbsp banana').should('exist')
     cy.contains('2/3 cup banana').should('exist')
   })
+
+  it('combines using the largest unit', function() {
+    // here cups are used instead of TBSP
+    cy.apiRequest('POST', '/testing/api/v1/shopping_lists', {
+      shopping_list: {
+        ownerId: this.fry.attributes.clientId,
+        items: [
+          { id: Guid.create(), quantity: '1/3 cup', name: 'red onion' },
+          { id: Guid.create(), quantity: '1/3 TBSP', name: 'banana' },
+          { id: Guid.create(), quantity: '1 TBSP', name: 'red onion' },
+          { id: Guid.create(), quantity: '1 cup', name: 'banana' },
+        ],
+      } as ShoppingList,
+    })
+    cy.visit('/shopping_lists')
+    cy.contains('button', 'Condense').click()
+    cy.contains('2/5 cup red onion').should('exist')
+    cy.contains('1 cup banana').should('exist')
+    cy.contains('button', 'Expand').click()
+    cy.contains('1/3 cup red onion').should('exist')
+    cy.contains('1/3 TBSP banana').should('exist')
+    cy.contains('1 TBSP red onion').should('exist')
+    cy.contains('1 cup banana').should('exist')
+  })
+
+  it('can combine mixed numbers', function() {
+    cy.apiRequest('POST', '/testing/api/v1/shopping_lists', {
+      shopping_list: {
+        ownerId: this.fry.attributes.clientId,
+        items: [
+          { id: Guid.create(), quantity: '1 1/2 tsp', name: 'red onion' },
+          { id: Guid.create(), quantity: '1/3 TBSP', name: 'red onion' },
+          { id: Guid.create(), quantity: '1 TBSP', name: 'red onion' },
+          { id: Guid.create(), quantity: '3.33 teaspoons', name: 'red onion' },
+        ],
+      } as ShoppingList,
+    })
+    cy.visit('/shopping_lists')
+    cy.contains('button', 'Condense').click()
+    cy.contains('3 tbsp red onion').should('exist')
+    cy.contains('button', 'Expand').click()
+    cy.contains('1 1/2 tsp red onion').should('exist')
+    cy.contains('1/3 TBSP red onion').should('exist')
+    cy.contains('1 TBSP red onion').should('exist')
+    cy.contains('3.33 teaspoons red onion').should('exist')
+  })
 })
