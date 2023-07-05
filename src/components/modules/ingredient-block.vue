@@ -25,7 +25,7 @@
     </div>
     <label
       :for="`shopping-list-checkbox-${block.id}`"
-      class="flex grow sm:px-2"
+      class="flex grow flex-wrap sm:px-2"
     >
       <div
         v-if="isEditable || block.content.quantity"
