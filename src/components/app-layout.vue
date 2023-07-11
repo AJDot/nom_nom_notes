@@ -38,15 +38,16 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
 import AppHeader from '~/components/app-header.vue'
 import loading from '~/mixins/loading'
 
-export default {
+export default defineComponent({
   components: {
     AppHeader,
   },
   mixins: [
     loading,
   ],
-}
+})
 </script>
