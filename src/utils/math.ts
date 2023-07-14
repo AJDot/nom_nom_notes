@@ -41,9 +41,10 @@ class MathClass {
     }
   }
 
-  format(unit: Unit): string {
+  format(unit: Unit, opts: {unitTypeLess?: boolean} = {}): string {
+    const unitTypeLess: boolean = opts.unitTypeLess ?? false
     const parts: string[] = []
-    if (this.isMadeUp(unit)) {
+    if (unitTypeLess) {
       unit = this.unitTypeLess(unit)
     } else {
       parts.push(this.unitType(unit))
@@ -69,7 +70,7 @@ class MathClass {
     const mixedRegex = new RegExp(`${wholeRegex.source} ${fractionRegex.source}`)
     const allRegex = new RegExp(`(?:(?<mixed>${mixedRegex.source})|(?<fraction>${fractionRegex.source})|(?<decimal>${decimalRegex.source})|(?<whole>${wholeRegex.source}))(?<unit>.*)`)
 
-    const { mixed, fraction, decimal, whole, unit } = text.match(allRegex).groups
+    const { mixed, fraction, decimal, whole, unit } = text.match(allRegex)!.groups!
     const unitString = unit || opts.unitFallback || ''
     const numString = this.toNumber(mixed ?? fraction ?? decimal ?? whole).toString()
     return this.ensureUnit(this.toNumber(numString), this.toUnitType(unitString))

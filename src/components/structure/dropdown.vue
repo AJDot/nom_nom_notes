@@ -59,7 +59,11 @@ export default defineComponent({
     positionClasses(): string {
       switch (this.positionType) {
         case 'relative':
-          return 'left-0 right-0'
+          if (this.right) {
+            return 'right-0'
+          } else {
+            return 'left-0 right-0'
+          }
         default:
           return ''
       }
@@ -110,7 +114,7 @@ export default defineComponent({
       } else {
         document.removeEventListener('click', this.close)
       }
-      this.closeBuffer = this.positionType === 'mouse'
+      this.closeBuffer = this.positionType === 'mouse' || this.positionType === 'relative'
 
       if (!newVal) {
         this.position = null

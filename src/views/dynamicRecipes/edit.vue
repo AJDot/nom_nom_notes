@@ -1,4 +1,53 @@
 <template>
+  <div
+    v-if="canScale"
+    class="mx-3 mb-3"
+  >
+    <div class="container max-w-screen-lg mb-3 mx-auto">
+      <div class="relative float-right">
+        <dropdown
+          :state="scaleDropdownState"
+          right
+          @close="scaleDropdownState = false"
+        >
+          <template #control>
+            <button
+              class="btn"
+              type="button"
+              data-test="more"
+              @click="scaleDropdownState = !scaleDropdownState"
+            >
+              <span v-if="scaleDisplay">({{ scaleDisplay }})</span> Scale
+            </button>
+          </template>
+          <ul class="max-w-lg grid grid-cols-2">
+            <dropdown-item class="col-span-2">
+              <label class="grid grid-cols-3 p-2 items-center">
+                <span>Custom:</span>
+                <a-input
+                  placeholder="ex: 1.33, 1 1/3"
+                  class="col-span-2 border focus:border focus:shadow-none hover:shadow-none hover:border placeholder:text-green"
+                  @keydown.enter="onScaleEnter"
+                />
+              </label>
+            </dropdown-item>
+            <dropdown-item
+              v-for="scale in scaleSelector.collections.flat()"
+              :key="scale.value"
+              :class="{ 'select-blue': scale === scaleSelector.current }"
+            >
+              <dropdown-item-button
+                class="justify-center"
+                @click="onScaleClick(scale)"
+              >
+                {{ scale.label }}
+              </dropdown-item-button>
+            </dropdown-item>
+          </ul>
+        </dropdown>
+      </div>
+    </div>
+  </div>
   <form
     v-if="dynamicRecipe"
     class="mx-3"
@@ -144,6 +193,8 @@ import Logger from '~/utils/logger'
 import { ObjectUtils } from '~/utils/objectUtils'
 import Searcher from '~/utils/searcher'
 import Selector from '~/utils/selector'
+import { ScaleActionTypes } from '~/store/modules/scale'
+import math from '~/utils/math'
 
 interface Data {
   dynamicRecipe: DynamicRecipe | null
@@ -155,6 +206,13 @@ interface Data {
   currentBlock: Block | null
   emptyCommandSearchTimes: number
   textBlock: TextBlock
+  scaleDropdownState: boolean
+  scaleSelector: USelector<{label: string, value: string}[][]>
+}
+
+interface ScaleOption {
+  label: string
+  value: string
 }
 
 export default defineComponent({
@@ -185,11 +243,19 @@ export default defineComponent({
         type: 'text',
         content: { text: '' },
       },
+      scaleDropdownState: false,
+      scaleSelector: new Selector<ScaleOption[][]>([[
+        { value: '0.5', label: '1/2' },
+        { value: '1', label: '1' },
+        { value: '1.5', label: '1 1/2' },
+        { value: '2', label: '2' },
+      ]]),
     }
   },
   computed: {
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Mode, { currentMode: 'current' }),
+    ...mapState(StoreModulePath.Scale, { scale: 'scale' }),
     blocks: {
       get(): Block[] {
         if (!this.dynamicRecipe) return []
@@ -294,6 +360,16 @@ export default defineComponent({
         collection: [{ command: Command.CreateTag, name: '+ Create tag' }],
       })
     },
+    canScale(): boolean {
+      return this.isShowMode
+    },
+    scaleDisplay(): string | null {
+      if (this.scale !== '1') {
+        return math.format(math.parseUnit(this.scale, { unitFallback: 'scale' }), { unitTypeLess: true })
+      } else {
+        return null
+      }
+    },
   },
   watch: {
     textBlockAttached(newVal, _oldVal) {
@@ -372,6 +448,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
+    ...mapActions(StoreModulePath.Scale, { setScaleState: ScaleActionTypes.SET }),
     getDynamicRecipe(): DynamicRecipe {
       const clientId = router.currentRoute.value.params.clientId
       this.dynamicRecipe = DynamicRecipe.query().whereId(clientId).with('attachments|tags|taggings').first()!
@@ -700,8 +777,16 @@ export default defineComponent({
       }
       this.save()
     },
+    onScaleClick(scale: ScaleOption) {
+      this.setScale(scale.value)
+    },
+    onScaleEnter(event) {
+      this.setScale(event.target.value)
+    },
+    setScale(scale: string) {
+      this.scaleDropdownState = false
+      this.setScaleState(scale)
+    },
   },
 })
 </script>
-~/interfaces/interfaces
-~/store/interfaces

@@ -51,9 +51,10 @@ declare namespace Cypress {
 
     /**
      * Get a list item in a dropdown
-     * @param indexOrName {string} label of the dropdown item
+     * @param label {string} label of the dropdown item
      */
-    getDropdownItem(label: string)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getDropdownItem(label: string): Chainable<any>
 
     /**
      * Create a user in database

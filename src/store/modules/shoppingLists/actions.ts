@@ -58,6 +58,7 @@ const actions: ActionTree<ShoppingListsState, RootState> & ShoppingListActions =
 
     if (!response.data.error) {
       await shoppingList.save()
+      await shoppingList.selfClass.update({ where: shoppingList.primaryKey, data: { items: shoppingList.items } })
       await StoreUtils.processIncluded(shoppingList, response.data.included, response.data.data.relationships)
     }
     return response

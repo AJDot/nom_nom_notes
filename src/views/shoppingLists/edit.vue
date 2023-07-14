@@ -83,7 +83,7 @@ import Flash from '@/flash.vue'
 import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
 import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
-import { mapActions, mapMutations, mapState, useStore, MapperForMutationWithNamespace } from 'vuex'
+import { mapActions, mapMutations, mapState, useStore } from 'vuex'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
@@ -152,7 +152,8 @@ export default defineComponent({
         index++
       }
       return items.map(item => {
-        return { id: item.id, quantity: math.format(item.unit ?? math.unit('')), name: item.name, description: '' }
+        const unit = item.unit ?? math.unit('')
+        return { id: item.id, quantity: math.format(unit, { unitTypeLess: math.isMadeUp(unit) }), name: item.name, description: '' }
       })
     },
     mode(): 'show' | 'edit' {

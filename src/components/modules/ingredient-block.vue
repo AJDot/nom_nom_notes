@@ -41,7 +41,7 @@
         :contenteditable="isEditable"
         @input="onInputQuantity"
         @keydown="onKeydownQuantity"
-        v-html="block.content.quantity"
+        v-html="quantityDisplay"
       />
       <div
         v-if="isEditable || block.content.name"
@@ -90,6 +90,7 @@ import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
 import { ToggleActionTypes } from '~/store/modules/interfaces/modules/toggle'
 import { ShoppingListMutationTypes } from '~/store/modules/shoppingLists/mutations'
 import Guid from '~/utils/guid'
+import math from '~/utils/math'
 
 interface Data {
   shoppingListItem: ShoppingListItem | null
@@ -113,6 +114,19 @@ export default defineComponent({
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Toggle, { toggleState: 'state' }),
     ...mapState(StoreModulePath.Interfaces + StoreModulePath.Choice, { currentChoice: 'current' }),
     ...mapState(StoreModulePath.ShoppingLists, { selectedBlocks: 'selectedItems' }),
+    ...mapState(StoreModulePath.Scale, { scale: 'scale' }),
+    quantityDisplay(): string {
+      if (this.canScale) {
+        const unit = math.parseUnit(this.block.content.quantity || '1', { unitFallback: 'scale' })
+        const unitScaled = unit.multiply(math.toNumber(this.scale))
+        return math.format(unitScaled, { unitTypeLess: math.isMadeUp(unitScaled) })
+      } else {
+        return this.block.content.quantity
+      }
+    },
+    canScale(): boolean {
+      return (this.isShowMode || this.isShoppingListMode) && this.scale !== '1'
+    },
   },
   watch: {
     mode(newVal, _oldVal) {
@@ -122,6 +136,8 @@ export default defineComponent({
     },
   },
   methods: {
+    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Toggle, { setToggleState: ToggleActionTypes.SET, toggleToggleState: ToggleActionTypes.TOGGLE }),
+    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     selectBlock() {
       if (this.shoppingListItem && this.selectedBlocks.includes(this.shoppingListItem)) {
         this.$store.commit(
@@ -129,12 +145,10 @@ export default defineComponent({
           this.shoppingListItem.id,
         )
       } else {
-        this.shoppingListItem = { id: Guid.create(), quantity: this.block.content.quantity, name: this.block.content.name!, description: this.block.content.text! }
+        this.shoppingListItem = { id: Guid.create(), quantity: this.quantityDisplay, name: this.block.content.name!, description: this.block.content.text! }
         this.$store.commit(StoreModulePath.ShoppingLists + ShoppingListMutationTypes.SELECT_ITEM, this.shoppingListItem)
       }
     },
-    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Toggle, { setToggleState: ToggleActionTypes.SET, toggleToggleState: ToggleActionTypes.TOGGLE }),
-    ...mapActions(StoreModulePath.Interfaces + StoreModulePath.Choice, { unsetCurrentChoice: ChoiceActionTypes.UNSET }),
     onDrop(payload) {
       const { dragItemId: moveId, dropItemId: toId } = payload
       this.director.onMove({ moveId, toId })
