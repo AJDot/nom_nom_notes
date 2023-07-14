@@ -31,12 +31,13 @@ export default defineComponent({
     }
   },
   beforeCreate() {
-    Promise.all([
-      store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT),
-      store.dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: this.currentUser }),
-    ]).then(() => {
-      this.fetched = true
-    })
+    store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
+      .then(() => {
+        store.dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: this.currentUser })
+          .then(() => {
+            this.fetched = true
+          })
+      })
   },
 })
 </script>
