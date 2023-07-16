@@ -3,13 +3,13 @@ import Guid from '../../../src/utils/guid'
 describe('Recipes List', () => {
   context('Not logged in', () => {
     it('shows the app name', () => {
-      cy.visit('/')
+      cy.visit('/recipes')
       cy.contains('h1', 'Nom Nom Notes').should('exist')
     })
 
     it('makes recipes collection request successfully', () => {
       cy.intercept('GET', '/api/v1/recipes').as('getRecipes')
-      cy.visit('/')
+      cy.visit('/recipes')
       cy.url().should('include', '/recipes')
       cy.get('header').should('contain', 'New Recipe')
 
@@ -54,7 +54,7 @@ describe('Recipes List', () => {
           }).its('body').as('recipes')
         })
         .then(function () {
-          cy.visit('/')
+          cy.visit('/recipes')
           // recipes are in alphabetical order by name
           cy.getRecipeCard(0).should('contain', 'Noodle')
           cy.getRecipeCard(1).should('contain', 'Pasta')
@@ -113,7 +113,7 @@ describe('Recipes List', () => {
           }).its('body').as('recipes')
         })
         .then(function () {
-          cy.visit('/')
+          cy.visit('/recipes')
           cy.contains('Noodle').should('exist')
           cy.getTest('filters-toggle').click()
           const filter = '#filter-tag'

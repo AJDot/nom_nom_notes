@@ -43,7 +43,7 @@
         class="flex"
       >
         <i class="material-icons my-auto">view_comfy</i>
-        <span>Recipe Cards</span>
+        <span>Recipes</span>
       </router-link>
     </li>
   </ul>

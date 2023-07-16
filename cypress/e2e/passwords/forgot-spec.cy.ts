@@ -7,7 +7,7 @@ describe('Forgot Password', () => {
 
     it('redirects to home page', () => {
       cy.visit('/password/forgot')
-      cy.url().should('contain', '/recipes')
+      cy.url().should('contain', '/dynamic_recipes')
     })
   })
 

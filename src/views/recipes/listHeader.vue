@@ -12,7 +12,7 @@
         class="flex"
       >
         <i class="material-icons my-auto">view_comfy</i>
-        <span>Dynamic Recipe Cards</span>
+        <span>Dynamic Recipes</span>
       </router-link>
     </li>
   </ul>

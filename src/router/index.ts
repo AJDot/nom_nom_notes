@@ -135,7 +135,7 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
   {
     name: RouteName.Home,
     path: AppPath.home(),
-    redirect: { name: RouteName.Recipes },
+    redirect: { name: RouteName.DynamicRecipes },
   },
   {
     name: RouteName.Recipes,

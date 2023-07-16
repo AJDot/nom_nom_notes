@@ -41,7 +41,7 @@ describe('Destroy recipe', () => {
     cy.assertUrl('/recipes')
     cy.getFlash('Space Soup was deleted successfully').should('exist')
     cy.visit(`/recipes/${recipeId}/edit`)
-    cy.assertUrl('/recipes')
+    cy.assertUrl('/dynamic_recipes') // because this is the "Home" page
     cy.getFlash('The specified recipe was not found.').should('exist')
   })
 })

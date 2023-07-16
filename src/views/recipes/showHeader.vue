@@ -6,7 +6,7 @@
         class="flex"
       >
         <i class="material-icons my-auto">view_comfy</i>
-        <span>Recipe Cards</span>
+        <span>Recipes</span>
       </router-link>
     </li>
     <li v-if="recipe && ability.can('update', recipe)">

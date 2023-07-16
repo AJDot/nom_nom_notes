@@ -5,7 +5,7 @@ describe('Create Recipe', () => {
 
   context('Not logged in', () => {
     it('redirects to sign in first', function () {
-      cy.visit('/')
+      cy.visit('/recipes')
       cy.contains('New Recipe').click()
       cy.url().should('contain', '/sign_in')
       cy.contains('Email').type(this.fry.attributes.email)

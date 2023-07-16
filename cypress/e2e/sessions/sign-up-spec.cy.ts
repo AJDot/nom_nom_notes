@@ -21,11 +21,11 @@ describe('Sign Up', () => {
         cy.getByLabel('Confirm Password').type('i.c. wiener')
         cy.contains('input', 'Sign Up').click()
       })
-      cy.contains('New Recipe')
+      cy.contains('New Dynamic Recipe')
         .then(() => {
           expect(localStorage.getItem('csrf')).to.not.be.null
           expect(localStorage.getItem('signedIn')).to.eq('true')
-          cy.url().should('include', '/recipes')
+          cy.url().should('include', '/dynamic_recipes')
           cy.contains('a', 'Sign Up').should('not.exist')
           cy.contains('a', 'Sign Out').should('exist')
           cy.contains('orangejoe').should('exist')
@@ -69,7 +69,7 @@ describe('Sign Up', () => {
         cy.contains('label', /^Password$/).type('!')
         cy.contains('input', 'Sign Up').click()
       })
-      cy.url().should('include', '/recipes')
+      cy.url().should('include', '/dynamic_recipes')
     })
 
     it('allows sign up if email or username provided is not already taken', () => {
@@ -91,7 +91,7 @@ describe('Sign Up', () => {
             cy.getByLabel('Username').type('a')
             cy.contains('input', 'Sign Up').click()
           })
-          cy.url().should('include', '/recipes')
+          cy.url().should('include', '/dynamic_recipes')
           cy.contains('orangejoe').should('exist')
         })
     })
@@ -107,7 +107,7 @@ describe('Sign Up', () => {
         .then(() => {
           // trying to sign up when already signed in redirects to recipes list
           cy.visit('/sign_up')
-          cy.url().should('include', '/recipes')
+          cy.url().should('include', '/dynamic_recipes')
           cy.contains('orangejoe').should('exist')
         })
     })
@@ -126,7 +126,7 @@ describe('Sign Up', () => {
       cy.contains('Sign Up').should('not.exist')
       cy.visit('/sign_up')
       // redirect to recipes and shows flash message
-      cy.url().should('include', '/recipes')
+      cy.url().should('include', '/dynamic_recipes')
       cy.getFlash('Unable to sign up. Action is forbidden').should('exist')
     })
   })

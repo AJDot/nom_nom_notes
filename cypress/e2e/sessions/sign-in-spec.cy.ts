@@ -21,11 +21,11 @@ describe('Sign In', () => {
             cy.contains('label', /^Password$/).type('ah123456')
             cy.contains('input', 'Sign In').click()
           })
-          cy.contains('New Recipe').should('be.visible')
+          cy.contains('New Dynamic Recipe').should('be.visible')
             .then(() => {
               expect(localStorage.getItem('csrf')).to.not.be.null
               expect(localStorage.getItem('signedIn')).to.eq('true')
-              cy.url().should('include', '/recipes')
+              cy.url().should('include', '/dynamic_recipes')
               cy.contains('a', 'Sign Up').should('not.exist')
               cy.contains('a', 'Sign Out').should('exist')
               // username is displayed in app header
@@ -67,7 +67,7 @@ describe('Sign In', () => {
             cy.contains('label', /^Password$/).type('6')
             cy.contains('input', 'Sign In').click()
           })
-          cy.url().should('include', '/recipes')
+          cy.url().should('include', '/dynamic_recipes')
         })
     })
 
@@ -82,7 +82,7 @@ describe('Sign In', () => {
         .then(() => {
           // trying to sign up when already signed in redirects to recipes list
           cy.visit('/sign_up')
-          cy.url().should('include', '/recipes')
+          cy.url().should('include', '/dynamic_recipes')
         })
     })
   })
