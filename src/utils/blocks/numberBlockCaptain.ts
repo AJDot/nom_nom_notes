@@ -1,11 +1,11 @@
-import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, TextBlock, UTextBlockCaptain } from 'Interfaces/blockInterfacesGeneral'
+import { Block, BlockDirector, ContentBlockIdBlock, RowBlock, NumberBlock, UNumberBlockCaptain, TextBlock } from 'Interfaces/blockInterfacesGeneral'
 import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
 import Guid from '../guid'
 
-export default class TextBlockCaptain<FType> implements UTextBlockCaptain<FType> {
+export default class NumberBlockCaptain<FType> implements UNumberBlockCaptain<FType> {
   // eslint-disable-next-line no-useless-constructor
-  constructor(public block: TextBlock, public director: BlockDirector<FType>) {}
+  constructor(public block: NumberBlock, public director: BlockDirector<FType>) {}
 
   get isEmpty(): boolean {
     if (ObjectUtils.dig(this.block, 'content', 'text')) return false
@@ -22,11 +22,8 @@ export default class TextBlockCaptain<FType> implements UTextBlockCaptain<FType>
   onEnter(_args: { event: KeyboardEvent }): void {
     const parent = this.director.find(this.block.parentId)
     const newBlock: TextBlock = { id: Guid.create(), type: 'text', content: { text: '' } }
-    if (parent?.type === 'text') {
-      this.director.addAfter(newBlock, parent)
-    } else {
-      this.director.addAfter(newBlock, this.block)
-    }
+    if (parent) newBlock.parentId = parent.id
+    this.director.addAfter(newBlock, this.block)
   }
 
   onInput({ event }: { event: InputEvent }) {

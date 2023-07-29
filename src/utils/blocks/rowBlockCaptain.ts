@@ -32,6 +32,7 @@ export default class RowBlockCaptain<FType> implements URowBlockCaptain<FType> {
       case 'row':
       case 'image':
       case 'ingredient':
+      case 'number':
         this.director.move(block, this.block)
         break
       case 'column':

@@ -41,6 +41,7 @@ export default class SidebarBlockCaptain<FType> implements USidebarBlockCaptain<
       case 'row':
       case 'image':
       case 'ingredient':
+      case 'number':
         if (parent?.type === 'row') {
           const newColumn: ColumnBlock = { id: Guid.create(), type: 'column' }
           this.director.addBefore(newColumn, this.block)

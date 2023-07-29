@@ -120,7 +120,7 @@ const checkAbilityFactory: <T extends AppAbilityTuple[1]>(action: AppAbilityTupl
   }
 }
 
-const checkNotMobile: NavigationGuard = async (to, from) => {
+const checkNotMobile: NavigationGuard = async (_to, from) => {
   if (BrowserUtils.isMobile()) {
     await store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
       flash: { alert: 'Action not supported on mobile device.' },

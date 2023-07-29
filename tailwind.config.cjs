@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const defaultTheme = require('tailwindcss/defaultTheme')
 const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -14,7 +15,10 @@ module.exports = {
         input: `0 0 1px 0 ${theme.colors.gray[900]}`,
       }),
       minHeight: ({ theme }) => ({
-        ...theme('maxHeight')
+        ...theme('maxHeight'),
+      }),
+      minWidth: ({ theme }) => ({
+        ...theme('maxWidth'),
       }),
       borderColor: {
         transparent: 'transparent',
@@ -32,10 +36,10 @@ module.exports = {
       },
     },
     colors: {
-      'black': {
+      black: {
         DEFAULT: 'rgb(var(--color-black) / <alpha-value>)',
       },
-      'blue': {
+      blue: {
         100: 'rgb(var(--color-blue-100) / <alpha-value>)',
         300: 'rgb(var(--color-blue-300) / <alpha-value>)',
         DEFAULT: 'rgb(var(--color-blue-500) / <alpha-value>)',
@@ -43,7 +47,7 @@ module.exports = {
         700: 'rgb(var(--color-blue-700) / <alpha-value>)',
         900: 'rgb(var(--color-blue-900) / <alpha-value>)',
       },
-      'red': {
+      red: {
         100: 'rgb(var(--color-red-100) / <alpha-value>)',
         300: 'rgb(var(--color-red-300) / <alpha-value>)',
         DEFAULT: 'rgb(var(--color-red-500) / <alpha-value>)',
@@ -51,7 +55,7 @@ module.exports = {
         700: 'rgb(var(--color-red-700) / <alpha-value>)',
         900: 'rgb(var(--color-red-900) / <alpha-value>)',
       },
-      'green': {
+      green: {
         100: 'rgb(var(--color-green-100) / <alpha-value>)',
         300: 'rgb(var(--color-green-300) / <alpha-value>)',
         DEFAULT: 'rgb(var(--color-green-500) / <alpha-value>)',
@@ -59,11 +63,11 @@ module.exports = {
         700: 'rgb(var(--color-green-700) / <alpha-value>)',
         900: 'rgb(var(--color-green-900) / <alpha-value>)',
       },
-      'orange': {
+      orange: {
         DEFAULT: 'rgb(var(--color-orange-500) / <alpha-value>)',
         500: 'rgb(var(--color-orange-500) / <alpha-value>)',
       },
-      'gray': {
+      gray: {
         100: 'rgb(var(--color-gray-100) / <alpha-value>)',
         300: 'rgb(var(--color-gray-300) / <alpha-value>)',
         400: 'rgb(var(--color-gray-400) / <alpha-value>)',
@@ -72,7 +76,7 @@ module.exports = {
         700: 'rgb(var(--color-gray-700) / <alpha-value>)',
         900: 'rgb(var(--color-gray-900) / <alpha-value>)',
       },
-      'white': {
+      white: {
         DEFAULT: 'rgb(var(--color-white) / <alpha-value>)',
       },
     },
@@ -83,19 +87,19 @@ module.exports = {
     screens: {
       xs: '475px',
       ...defaultTheme.screens,
-    }
+    },
   },
   plugins: [
-    plugin(function ({ addUtilities }) {
+    plugin(function({ addUtilities }) {
       addUtilities({
         '.horizontal-tb': {
           'writing-mode': 'horizontal-tb',
         },
         '.vertical-rl': {
-          'writing-mode': 'vertical-rl'
+          'writing-mode': 'vertical-rl',
         },
         '.vertical-lr': {
-          'writing-mode': 'vertical-lr'
+          'writing-mode': 'vertical-lr',
         },
       })
       addUtilities({
@@ -108,6 +112,6 @@ module.exports = {
           'overflow-wrap': 'anywhere',
         },
       })
-    })
+    }),
   ],
 }

@@ -49,17 +49,22 @@ export interface IngredientBlock extends BaseBlock {
   content: { quantity: string, name: string | null, text: string | null }
 }
 
-export type Block = H1Block | H2Block | H3Block | TextBlock | RowBlock | ColumnBlock | SidebarBlock | ImageBlock | IngredientBlock
+export interface NumberBlock extends BaseBlock {
+  type: 'number'
+  content: { text: string }
+}
+
+export type Block = H1Block | H2Block | H3Block | TextBlock | RowBlock | ColumnBlock | SidebarBlock | ImageBlock | IngredientBlock | NumberBlock
 
 export type ContentBlockIdBlock = Extract<Block, { content: { blockId: string | null } }>
 export type ContentAttachmentIdBlock = Extract<Block, { content: { attachmentId: string | null } }>
 
-export type BlockCommandType = 'h1' | 'h2' | 'h3' | 'text' | 'columns' | 'addColumn' | 'sidebar' | 'image' | 'ingredient'
+export type BlockCommandType = 'h1' | 'h2' | 'h3' | 'text' | 'columns' | 'addColumn' | 'sidebar' | 'image' | 'ingredient' | 'number'
 
 export interface BlockCommand {
   description: string
   label: string
-  call(block: Block): void
+  call(block: Block, payload: { event: Event, position?: number, index?: number | null }): void
 }
 
 export type BlockCommandDict = { [key in BlockCommandType]: BlockCommand }
@@ -159,5 +164,8 @@ export interface UImageBlockCaptain<FType> extends UBlockCaptainBase<ImageBlock,
 export interface UIngredientBlockCaptain<FType> extends UBlockCaptainBase<IngredientBlock, FType> {
   onInput(args: { event: InputEvent, contentType: 'quantity' | 'name' | 'text' }): void
 }
+export interface UNumberBlockCaptain<FType> extends UBlockCaptainBase<NumberBlock, FType> {
 
-export type TBlockCaptain<B extends Block, FType> = B extends H1Block ? UH1BlockCaptain<FType> : B extends H2Block ? UH2BlockCaptain<FType> : B extends H3Block ? UH3BlockCaptain<FType> : B extends TextBlock ? UTextBlockCaptain<FType> : B extends RowBlock ? URowBlockCaptain<FType> : B extends ColumnBlock ? UColumnBlockCaptain<FType> : B extends SidebarBlock ? USidebarBlockCaptain<FType> : B extends ImageBlock ? UImageBlockCaptain<FType> : B extends IngredientBlock ? UIngredientBlockCaptain<FType> : never
+}
+
+export type TBlockCaptain<B extends Block, FType> = B extends H1Block ? UH1BlockCaptain<FType> : B extends H2Block ? UH2BlockCaptain<FType> : B extends H3Block ? UH3BlockCaptain<FType> : B extends TextBlock ? UTextBlockCaptain<FType> : B extends RowBlock ? URowBlockCaptain<FType> : B extends ColumnBlock ? UColumnBlockCaptain<FType> : B extends SidebarBlock ? USidebarBlockCaptain<FType> : B extends ImageBlock ? UImageBlockCaptain<FType> : B extends IngredientBlock ? UIngredientBlockCaptain<FType> : B extends NumberBlock ? UNumberBlockCaptain<FType> : never

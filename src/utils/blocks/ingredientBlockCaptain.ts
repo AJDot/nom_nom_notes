@@ -42,6 +42,7 @@ export default class IngredientBlockCaptain<FType> implements UIngredientBlockCa
       case 'sidebar':
       case 'image':
       case 'ingredient':
+      case 'number':
         this.director.move(block, this.block)
         break
       case 'column': {
