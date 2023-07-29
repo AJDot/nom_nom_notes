@@ -133,7 +133,7 @@
               >
                 <dropdown-item-button
                   class="grid grid-cols-1 text-left"
-                  @click="onCommandClick({ block: currentBlock!, command: commandResult.raw })"
+                  @click="onCommandClick({ block: currentBlock!, command: commandResult.raw, event: $event })"
                 >
                   <h1 class="font-sans text-lg bold">
                     {{ commandResult.label }}
@@ -195,6 +195,7 @@ import Searcher from '~/utils/searcher'
 import Selector from '~/utils/selector'
 import { ScaleActionTypes } from '~/store/modules/scale'
 import math from '~/utils/math'
+import { Item } from '@vuex-orm/core'
 
 interface Data {
   dynamicRecipe: DynamicRecipe | null
@@ -409,9 +410,7 @@ export default defineComponent({
     this.blockDirector = new BlockDirector<IFileUpload>({
       blocks: this.dynamicRecipe.blocks,
       findAttachment: this.findAttachment.bind(this),
-      focus: async (block) => {
-        await this.focusStepBlock(block, 0).get(0).focus()
-      },
+      focus: async (block) => this.focusStepBlock(block, 0).get(0).focus(),
       focusAfter: this.focusAfter.bind(this),
       focusBefore: this.focusBefore.bind(this),
       onArrowDown: this.onArrowDown.bind(this),
@@ -435,6 +434,9 @@ export default defineComponent({
           (this.currentBlock?.type === 'sidebar' && this.blockDirector.find(this.currentBlock?.parentId)?.type === 'row')
         ) {
           allowableCommands.push('addColumn')
+        }
+        if (this.currentBlock?.type === 'text') {
+          allowableCommands.push('number')
         }
         return allowableCommands.reduce<BlockCommand[]>((commands, commandId) => {
           commands.push(this.blockDirector.COMMANDS[commandId])
@@ -534,13 +536,13 @@ export default defineComponent({
 
       call()
     },
-    onEnter({ block, call }: { block: Block, event: KeyboardEvent, call: () => void }) {
+    onEnter({ block, call, event, index }: { block: Block, event: KeyboardEvent, call: () => void, index: number | null }) {
       if (!this.dynamicRecipe) return
 
       if (this.dropdownState) {
         if (!this.commandSelector.current) return
 
-        this.executeCommand({ block: this.currentBlock, command: this.commandSelector.current.raw })
+        this.executeCommand({ block: this.currentBlock, command: this.commandSelector.current.raw, event, position: Math.max(0, (window?.getSelection()?.getRangeAt(0).startOffset ?? 0) - (this.q.length + 1)), index })
         this.focus(block)
         this.save()
         return
@@ -576,8 +578,8 @@ export default defineComponent({
 
       call()
     },
-    async onDestroyAttachments(block) {
-      const b: ContentAttachmentIdBlock = block as ContentAttachmentIdBlock
+    async onDestroyAttachments({ block }: {block: ContentAttachmentIdBlock}) {
+      const b: ContentAttachmentIdBlock = block
       const attachmentId = ObjectUtils.dig(b, 'content', 'attachmentId')
       let attachment: FileUpload | null = null
       if (attachmentId) b.content.attachmentId = null
@@ -591,16 +593,16 @@ export default defineComponent({
         if (index >= 0) this.dynamicRecipe.attachments.splice(index, 1)
       }
     },
-    onCommandClick({ block, command }: { block: Block, command: BlockCommand }) {
-      this.executeCommand({ block, command })
+    onCommandClick({ block, command, event }: { block: Block, command: BlockCommand, event: MouseEvent }) {
+      this.executeCommand({ block, command, event })
       this.focus(block)
       this.save()
     },
-    async executeCommand({ block, command }: { block: Block | null, command: BlockCommand }) {
+    async executeCommand({ block, command, event, position, index }: { block: Block | null, command: BlockCommand, event: Event, position?: number, index?: number | null }) {
       if (block === null) return
 
       if (block === this.textBlock) this.blockDirector.add(this.textBlock)
-      command.call(block)
+      command.call(block, { event, position, index })
 
       // hack to make block component reload - which wipe the "fake" characters used for command search
       if ('content' in block && 'text' in block.content) {
@@ -634,7 +636,7 @@ export default defineComponent({
       const $focusableRoot = $focusables.eq(index)
       return $focusableRoot.is('[data-focus]') ? $focusableRoot : step > 0 ? $focusableRoot.find('[data-focus]').first() : $focusableRoot.find('[data-focus]').last()
     },
-    openSearch({ block, call }: {block, data, call}) {
+    openSearch({ block, call }: {block: Block, data: unknown, call: () => void}) {
       this.currentBlock = block
       this.dropdownState = true
       this.q = ''
@@ -706,7 +708,8 @@ export default defineComponent({
         })
       }
     },
-    save: debounce(async function (this) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    save: debounce(async function (this: any) {
       let action: string
       if (this.isCreateMode) {
         action = StoreModulePath.DynamicRecipes + DynamicRecipeActionTypes.CREATE
@@ -717,18 +720,18 @@ export default defineComponent({
         return this.$store.dispatch(StoreModulePath.Tags + TagActionTypes.CREATE, tag)
       }))
       this.$store.dispatch(action, this.dynamicRecipe)
-        .then((response) => this.updateSuccessful(response))
-        .catch((error) => this.updateError(error))
+        .then((response: unknown) => this.updateSuccessful(response))
+        .catch((error: unknown) => this.updateError(error))
     }, 500),
     async onSave() {
       await this.save()
     },
     async addTag(item: { data: SearchResult<RTag, 'result'> | SearchResult<{ command: Command, name: string }, 'command'> }) {
       if (!this.dynamicRecipe) return
-      let tag
+      let tag: Item<Tag> = null
       if (item.data.type === 'command') {
         if (item.data.raw.command) {
-          tag = (await Tag.insertOrUpdate({ data: { name: item.data.value.trim() } })).Tag[0]
+          tag = (await Tag.insertOrUpdate({ data: { name: item.data.value.trim() } })).Tag[0] as Item<Tag>
         }
       } else {
         await Tag.insertOrUpdate({ data: item.data.raw })
@@ -736,7 +739,7 @@ export default defineComponent({
       }
 
       if (tag) {
-        if (!this.dynamicRecipe.tags.find(c => c.clientId === tag.clientId)) {
+        if (!this.dynamicRecipe.tags.find(c => c.clientId === tag!.clientId)) {
           this.dynamicRecipe.tags.push(tag)
         }
 
@@ -780,8 +783,9 @@ export default defineComponent({
     onScaleClick(scale: ScaleOption) {
       this.setScale(scale.value)
     },
-    onScaleEnter(event) {
-      this.setScale(event.target.value)
+    onScaleEnter(event: KeyboardEvent) {
+      const target = event.target as HTMLInputElement
+      this.setScale(target.value)
     },
     setScale(scale: string) {
       this.scaleDropdownState = false

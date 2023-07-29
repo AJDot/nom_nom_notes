@@ -32,6 +32,7 @@ export default class ColumnBlockCaptain<FType> implements UColumnBlockCaptain<FT
       case 'row':
       case 'image':
       case 'ingredient':
+      case 'number':
         this.director.moveInside(block, this.block)
         break
       case 'column':

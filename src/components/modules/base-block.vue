@@ -1,7 +1,7 @@
 <template>
   <component
     :is="componentMap[block.type]"
-    class="items-start w-full justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input"
+    class="items-start justify-start whitespace-pre-wrap transition-bg-shadow focus:bg-gray-100 focus:shadow-input"
     :mode="mode"
     :data-id="block.id"
     :block="block"
@@ -26,6 +26,7 @@ import IngredientBlock from './ingredient-block.vue'
 import RowBlock from './row-block.vue'
 import SidebarBlock from './sidebar-block.vue'
 import TextBlock from './text-block.vue'
+import NumberBlock from './number-block.vue'
 
 interface Data {
   componentMap: Record<Block['type'], string>
@@ -43,6 +44,7 @@ export default defineComponent({
     SidebarBlock,
     ImageBlock,
     IngredientBlock,
+    NumberBlock,
   },
   mixins: [
     draggableMixin,
@@ -78,6 +80,7 @@ export default defineComponent({
         sidebar: 'sidebar-block',
         image: 'image-block',
         ingredient: 'ingredient-block',
+        number: 'number-block',
       },
     }
   },

@@ -40,6 +40,7 @@ export default class H1BlockCaptain<FType> implements UH1BlockCaptain<FType> {
       case 'sidebar':
       case 'image':
       case 'ingredient':
+      case 'number':
         this.director.move(block, this.block)
         break
       case 'column': {

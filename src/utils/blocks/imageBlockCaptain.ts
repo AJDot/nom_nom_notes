@@ -37,6 +37,7 @@ export default class ImageBlockCaptain<FType> implements UImageBlockCaptain<FTyp
       case 'sidebar':
       case 'image':
       case 'ingredient':
+      case 'number':
         this.director.move(block, this.block)
         break
       case 'column': {

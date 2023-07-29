@@ -5,8 +5,8 @@
     class="p-1"
     :class="hoverClass.concat(dragClass)"
     @dragstart="onStartDrag"
-    @mouseover.stop="onMouseover"
-    @mouseout.stop="onMouseout"
+    @mouseover="onMouseover"
+    @mouseout="onMouseout"
     @drop="onDrop"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -85,11 +85,17 @@ export default defineComponent({
       }
       this.dragClass = []
     },
-    onMouseover(_event) {
-      this.hoverClass = [this.hoverColor, 'shadow-input']
+    onMouseover(event: MouseEvent) {
+      if (this.droppable || this.draggable) {
+        this.hoverClass = [this.hoverColor, 'shadow-input']
+        event.stopPropagation()
+      }
     },
-    onMouseout(_event) {
-      this.hoverClass = []
+    onMouseout(event: MouseEvent) {
+      if (this.droppable || this.draggable) {
+        this.hoverClass = []
+        event.stopPropagation()
+      }
     },
   },
 })

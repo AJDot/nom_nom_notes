@@ -1,4 +1,4 @@
-import { Block, BlockCommandDict, BlockDirector as GBlockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, IngredientBlock, RowBlock, TextBlock } from 'Interfaces/blockInterfacesGeneral'
+import { Block, BlockCommandDict, BlockDirector as GBlockDirector, BlockDirectorOptions, ColumnBlock, ContentAttachmentIdBlock, FindAttachmentReturn, ImageBlock, IngredientBlock, NumberBlock, RowBlock, TextBlock } from 'Interfaces/blockInterfacesGeneral'
 import Uploader from '~/uploaders/uploader'
 import { ObjectUtils } from '~/utils/objectUtils'
 import assertNever from '../assertNever'
@@ -10,6 +10,7 @@ import H2BlockCaptain from './h2BlockCaptain'
 import H3BlockCaptain from './h3BlockCaptain'
 import ImageBlockCaptain from './imageBlockCaptain'
 import IngredientBlockCaptain from './ingredientBlockCaptain'
+import NumberBlockCaptain from './numberBlockCaptain'
 import RowBlockCaptain from './rowBlockCaptain'
 import SidebarBlockCaptain from './sidebarBlockCaptain'
 import TextBlockCaptain from './textBlockCaptain'
@@ -96,6 +97,25 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
         ingredientBlock.content = { quantity: '', name: ingredientBlock.content.text, text: '' }
       },
     },
+    number: {
+      label: 'Number',
+      description: 'Scaleable number',
+      call: (block: TextBlock, payload: { position?: number }) => {
+        const position = payload.position
+        const blockParent = this.find(block.parentId)
+        const parentBlock = blockParent?.type === 'text' ? blockParent : block
+        const numberBlock: NumberBlock = { id: Guid.create(), type: 'number', content: { text: '' } }
+        this.addInside(numberBlock, parentBlock)
+
+        const left = block.content.text.slice(0, position)
+        const right = block.content.text.slice(position)
+        block.content.text = left
+        if (right) {
+          const textBlockRight: TextBlock = { id: Guid.create(), type: 'text', content: { text: right } }
+          this.addInside(textBlockRight, parentBlock)
+        }
+      },
+    },
   }
 
   // eslint-disable-next-line no-useless-constructor
@@ -172,7 +192,7 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
    * @param direction {'down' | 'up' | 'both'} crawl up/down/both the tree to destroy childless parents and/or children of +block+
    * @returns {Boolean} successful operation
    */
-  destroy(block: Block, direction: 'down' | 'up' | 'both' = 'both') {
+  destroy(block: Block, direction: 'down' | 'up' | 'both' = 'both'): boolean {
     const destroyChildlessParents = ['up', 'both'].includes(direction)
     const destroyChildren = ['down', 'both'].includes(direction)
 
@@ -231,7 +251,7 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
         }
       }
       return true
-    }) as ((block) => block is Extract<Block, T>))
+    }) as ((block: Block) => block is Extract<Block, T>))
   }
 
   async focus(block: Block) {
@@ -364,6 +384,8 @@ export default class BlockDirector<FType> implements GBlockDirector<FType> {
         return new ImageBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       case 'ingredient':
         return new IngredientBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
+      case 'number':
+        return new NumberBlockCaptain<FType>(block, this) as TBlockCaptain<B, FType>
       default:
         assertNever(block)
     }
