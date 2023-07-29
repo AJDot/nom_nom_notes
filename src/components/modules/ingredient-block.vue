@@ -36,7 +36,7 @@
         :data-toggle-key="block.id"
         :placeholder="placeholder('quantity')"
         data-focus
-        class="shrink-0 text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+        class="shrink-0 text-base font-bold min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
         :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
         :contenteditable="isEditable"
         @input="onInputQuantity"
@@ -66,7 +66,7 @@
         :data-toggle-key="block.id"
         :placeholder="placeholder('text')"
         data-focus
-        class="grow text-base min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+        class="grow text-base italic min-h-9 py-1 outline-none border-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
         :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
         :contenteditable="isEditable"
         @input="onInputText"
