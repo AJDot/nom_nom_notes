@@ -2,7 +2,7 @@
   <component
     :is="tag"
     :draggable="draggable"
-    class="p-1"
+    class="p-0.5"
     :class="hoverClass.concat(dragClass)"
     @dragstart="onStartDrag"
     @mouseover="onMouseover"

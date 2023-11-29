@@ -17,7 +17,7 @@
       data-focus
       :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id], inline: childBlocks.length || director.find(block.parentId)?.type === 'text' }"
       :contenteditable="isEditable"
-      class="text-base min-h-16 py-1 outline-none border-2 border-transparent rounded-md break-anywhere after:text-gray-500 after:empty:content-[attr(placeholder)] focus:shadow-input focus:bg-gray-100"
+      class="text-base min-h-4 outline-none border-2 border-transparent rounded-md break-anywhere after:text-gray-500 after:empty:content-[attr(placeholder)] focus:shadow-input focus:bg-gray-100"
       @input="onInput"
       @keydown="onKeydown"
       @click="onClick"

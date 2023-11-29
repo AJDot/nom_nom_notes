@@ -5,7 +5,7 @@
     :droppable="droppableTest"
     :item="block"
     :data-focusable="false"
-    class="flex flex-col gap-1 sm:gap-x-4 sm:gap-y-2 grow basis-0 py-1 rounded-md"
+    class="flex flex-col gap-px sm:gap-x-4 grow basis-0 py-1 rounded-md"
     :class="{ 'cursor-pointer': isChooseMode }"
     :hover-color="hoverColor"
     data-test-block="column"
