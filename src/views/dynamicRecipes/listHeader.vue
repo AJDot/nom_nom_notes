@@ -111,7 +111,6 @@
 import Modal from '@/modal.vue'
 import { UBlockDirector } from 'Interfaces/blockInterfaces'
 import { FileUpload } from 'Interfaces/fileUploadInterfaces'
-import { AxiosError } from 'axios'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 import { ModalId } from '~/enums/modalId'
@@ -189,10 +188,11 @@ export default defineComponent({
           .finally(() => this.resetSelectTemplateModal())
       })
     },
-    updateError(error: AxiosError) {
-      let errorText = error.response?.data.error
+    async updateError(response: Response) {
+      const json = await response.json()
+      let errorText = json?.error
       const opts: { signOut: boolean | null } = { signOut: null }
-      switch (error.response?.status) {
+      switch (json?.status) {
         case (HttpStatusCode.Unauthorized):
           opts.signOut = true
           break
@@ -205,7 +205,7 @@ export default defineComponent({
       this.processFailedUpdate(errorText, opts)
     },
     processFailedUpdate(errorText: string | null | undefined, { signOut }: { signOut: boolean | null }) {
-      if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      // if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText || 'An unknown error occurred' },

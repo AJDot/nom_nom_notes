@@ -81,14 +81,12 @@
 <script lang="ts">
 import Flash from '@/flash.vue'
 import { ShoppingListItem } from 'Interfaces/shoppingListInterfaces'
-import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
 import { mapActions, mapMutations, mapState, useStore } from 'vuex'
 import currentUserMixin from '~/mixins/currentUserMixin'
 import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { FlashActionTypes, FlashMutationTypes } from '~/store/modules/flash'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import math from '~/utils/math'
@@ -123,11 +121,11 @@ export default defineComponent({
     items(): Pick<ShoppingListItem, 'id' | 'quantity' | 'name' | 'description'>[] {
       return this.isCondensed ? this.condensedItems : this.shoppingList.items
     },
-    condensedItems(): Pick<ShoppingListItem, 'id' | 'quantity'| 'name' | 'description'>[] {
+    condensedItems(): Pick<ShoppingListItem, 'id' | 'quantity' | 'name' | 'description'>[] {
       if (!this.shoppingList) return []
       const shoppingItems: ShoppingListItem[] = this.shoppingList.items
 
-      const items: {id: string, unit: math.Unit, name: string, nameNorm: string, description: string}[] = shoppingItems.map(item => {
+      const items: { id: string, unit: math.Unit, name: string, nameNorm: string, description: string }[] = shoppingItems.map(item => {
         return {
           id: Guid.create(),
           unit: math.parseUnit(item.quantity || '1', { unitFallback: item.name }),
@@ -194,7 +192,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
+    // ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
     ...mapMutations(StoreModulePath.Flash, { setFlash: FlashMutationTypes.SET }),
     ...mapActions(StoreModulePath.ShoppingLists, { update: ShoppingListActionTypes.UPDATE }),
     async save(opts: { onSuccess?: () => void } = {}) {
@@ -203,7 +201,7 @@ export default defineComponent({
         opts.onSuccess?.()
         this.updateSuccessful(response)
       } catch (error) {
-        this.updateError(error as unknown as AxiosError)
+        this.updateError(error as Response)
       }
     },
     async destroyItem(item: Pick<ShoppingListItem, 'id'>) {
@@ -225,18 +223,22 @@ export default defineComponent({
       })
       this.save({ onSuccess: () => { this.selectedItemsIds = [] } })
     },
-    async updateSuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.updateFailed(response)
+    async updateSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json.error) {
+        this.updateFailed(responseClone)
       }
     },
-    updateFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error, { signOut: false })
+    async updateFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error, { signOut: false })
     },
-    updateError(error: AxiosError) {
-      let errorText = error.response?.data.error
+    async updateError(response: Response) {
+      const json = await response.json()
+      let errorText = json?.error
       const opts: { signOut: boolean | null } = { signOut: null }
-      switch (error.response?.status) {
+      switch (json?.status) {
         case (HttpStatusCode.Unauthorized):
           opts.signOut = true
           break

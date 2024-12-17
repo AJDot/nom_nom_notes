@@ -1,10 +1,8 @@
-import { Action, ActionContext, ActionTree } from 'vuex'
-import { FeaturesState, RootState } from '~/store/interfaces'
-import { AxiosResponse } from 'axios'
 import { ServerRecordResponse } from 'Interfaces/serverInterfaces'
-import { securedAxiosInstance } from '~/backend/axios'
-import { ApiPath } from '~/router/path'
 import { FeatureAttributes } from 'Models/feature'
+import { Action, ActionContext, ActionTree } from 'vuex'
+import { ApiPath } from '~/router/path'
+import { FeaturesState, RootState } from '~/store/interfaces'
 import { FeatureMutationTypes } from '~/store/modules/features/mutations'
 
 export enum FeatureActionTypes {
@@ -18,10 +16,11 @@ type FeatureActions = {
 const actions: ActionTree<FeaturesState, RootState> & FeatureActions = {
   async [FeatureActionTypes.FETCH]({ commit }: ActionContext<FeaturesState, RootState>, { key }: { key: string }) {
     try {
-      const response: AxiosResponse<ServerRecordResponse<FeatureAttributes>> = await securedAxiosInstance.get(ApiPath.feature(key))
+      const response = await fetch(ApiPath.feature(key), { headers: { "Content-Type": "application/json" } })
+      if (!response.ok) return response
 
-      commit(FeatureMutationTypes.ADD, response.data)
-      return response
+      const json: ServerRecordResponse<FeatureAttributes> = await response.json()
+      commit(FeatureMutationTypes.ADD, json)
     } catch (err) {
       commit(FeatureMutationTypes.ADD, { key, state: 'off' })
     }

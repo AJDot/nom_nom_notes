@@ -161,13 +161,13 @@
 
 <script lang="ts">
 import Search from '@/structure/search.vue'
+import { Item } from '@vuex-orm/core'
 import { UBlockDirector } from 'Interfaces/blockInterfaces'
 import { Block, BlockCommand, BlockCommandType, ContentAttachmentIdBlock, FindAttachmentReturn, TextBlock } from 'Interfaces/blockInterfacesGeneral'
 import { FileUpload as IFileUpload } from 'Interfaces/fileUploadInterfaces'
 import { Uploader as IUploader } from 'Interfaces/imageInterfaces'
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 import { USelector } from 'Interfaces/selectInterfaces'
-import { AxiosError, AxiosResponse } from 'axios'
 import { debounce } from 'lodash'
 import { defineComponent, nextTick } from 'vue'
 import { mapActions, mapState, useStore } from 'vuex'
@@ -183,19 +183,17 @@ import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { ChoiceActionTypes } from '~/store/modules/interfaces/modules/choice'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { ScaleActionTypes } from '~/store/modules/scale'
 import { TagActionTypes } from '~/store/modules/tags/actions'
 import Uploader from '~/uploaders/uploader'
 import BlockDirector from '~/utils/blocks/blockDirector'
 import Guid from '~/utils/guid'
 import { HttpStatusCode } from '~/utils/httpUtils'
 import Logger from '~/utils/logger'
+import math from '~/utils/math'
 import { ObjectUtils } from '~/utils/objectUtils'
 import Searcher from '~/utils/searcher'
 import Selector from '~/utils/selector'
-import { ScaleActionTypes } from '~/store/modules/scale'
-import math from '~/utils/math'
-import { Item } from '@vuex-orm/core'
 
 interface Data {
   dynamicRecipe: DynamicRecipe | null
@@ -208,7 +206,7 @@ interface Data {
   emptyCommandSearchTimes: number
   textBlock: TextBlock
   scaleDropdownState: boolean
-  scaleSelector: USelector<{label: string, value: string}[][]>
+  scaleSelector: USelector<{ label: string, value: string }[][]>
 }
 
 interface ScaleOption {
@@ -467,9 +465,11 @@ export default defineComponent({
             attachableType: 'DynamicRecipe',
             attachableId: this.dynamicRecipe.clientId,
           },
+          contentType: null,
         })
-        await FileUpload.insertOrUpdate({ data: { id: imageResponse.data.data.id, ...imageResponse.data.data.attributes } })
-        const imageUpload = FileUpload.find(imageResponse.data.data.attributes.clientId!)!
+        const imageJson = await imageResponse.json()
+        await FileUpload.insertOrUpdate({ data: { id: imageJson.data.id, ...imageJson.data.attributes } })
+        const imageUpload = FileUpload.find(imageJson.data.attributes.clientId!)!
         this.dynamicRecipe.attachments.push(imageUpload)
         const oldAttachmentId = block.content.attachmentId
         let oldAttachment: FileUpload | null = null
@@ -578,7 +578,7 @@ export default defineComponent({
 
       call()
     },
-    async onDestroyAttachments({ block }: {block: ContentAttachmentIdBlock}) {
+    async onDestroyAttachments({ block }: { block: ContentAttachmentIdBlock }) {
       const b: ContentAttachmentIdBlock = block
       const attachmentId = ObjectUtils.dig(b, 'content', 'attachmentId')
       let attachment: FileUpload | null = null
@@ -636,7 +636,7 @@ export default defineComponent({
       const $focusableRoot = $focusables.eq(index)
       return $focusableRoot.is('[data-focus]') ? $focusableRoot : step > 0 ? $focusableRoot.find('[data-focus]').first() : $focusableRoot.find('[data-focus]').last()
     },
-    openSearch({ block, call }: {block: Block, data: unknown, call: () => void}) {
+    openSearch({ block, call }: { block: Block, data: unknown, call: () => void }) {
       this.currentBlock = block
       this.dropdownState = true
       this.q = ''
@@ -656,23 +656,27 @@ export default defineComponent({
       this.q = ''
       this.emptyCommandSearchTimes = 0
     },
-    async updateSuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.updateFailed(response)
+    async updateSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json?.error) {
+        this.updateFailed(responseClone)
         return
       }
       if (response.status === HttpStatusCode.Created) {
         await this.$routerExtension.replace({ name: this.$routerExtension.names.EditDynamicRecipe, params: { clientId: this.dynamicRecipe!.clientId } })
       }
     },
-    updateFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error, { signOut: false })
+    async updateFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error, { signOut: false })
     },
-    updateError(error: AxiosError) {
-      let errorText = error.response?.data.error
+    async updateError(response: Response) {
+      const json = await response.json()
+      let errorText = json?.error
       const opts: { signOut: boolean | null } = { signOut: null }
       if (this.isCreateMode) {
-        switch (error.response?.status) {
+        switch (json?.status) {
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
@@ -686,7 +690,7 @@ export default defineComponent({
             break
         }
       } else {
-        switch (error.response?.status) {
+        switch (json?.status) {
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
@@ -701,7 +705,7 @@ export default defineComponent({
       this.processFailedUpdate(errorText, opts)
     },
     processFailedUpdate(errorText: string | null | undefined, { signOut }: { signOut: boolean | null }) {
-      if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      // if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText || 'An unknown error occurred' },
@@ -719,9 +723,18 @@ export default defineComponent({
       await Promise.all(Tag.query().where('id', null).get().map(tag => {
         return this.$store.dispatch(StoreModulePath.Tags + TagActionTypes.CREATE, tag)
       }))
-      this.$store.dispatch(action, this.dynamicRecipe)
-        .then((response: unknown) => this.updateSuccessful(response))
-        .catch((error: unknown) => this.updateError(error))
+        .then((responses: Response[]) => {
+          const badResponse = responses.filter(response => !response.ok)[0]
+          if (badResponse) {
+            this.updateError(badResponse)
+            return Promise.reject(badResponse)
+          }
+        })
+        .then(() => {
+          this.$store.dispatch(action, this.dynamicRecipe)
+            .then((response: unknown) => this.updateSuccessful(response))
+            .catch((error: unknown) => this.updateError(error))
+        })
     }, 500),
     async onSave() {
       await this.save()

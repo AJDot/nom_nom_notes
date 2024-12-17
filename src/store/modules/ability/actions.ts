@@ -1,11 +1,9 @@
-import { AxiosResponse } from 'axios'
 import { Action, ActionContext, ActionTree } from 'vuex'
 import { AbilityRules } from '~/appAbility'
-import { securedAxiosInstance } from '~/backend/axios'
 import { ApiPath } from '~/router/path'
 import { AbilityState, RootState } from '~/store/interfaces'
 import { AbilityMutationTypes } from '~/store/modules/ability/mutations'
-
+ 
 export enum AbilityActionTypes {
   FETCH = 'FETCH',
 }
@@ -16,9 +14,13 @@ type AbilityActions = {
 
 const actions: ActionTree<AbilityState, RootState> & AbilityActions = {
   async [AbilityActionTypes.FETCH]({ commit }: ActionContext<AbilityState, RootState>, { user }) {
-    const response: AxiosResponse<AbilityRules> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.currentAbility(), { params: { user_id: user?.clientId } })
+    const response = await fetch(ApiPath.base() + ApiPath.currentAbility() + '?' + new URLSearchParams({ user_id: user?.clientId.toString() }), {
+      headers: {"Content-Type": "application/json"},
+    })
+    if (!response.ok) return response
 
-    commit(AbilityMutationTypes.SET, response.data)
+    const json: AbilityRules = await response.json()
+    commit(AbilityMutationTypes.SET, json)
     return response
   },
 }

@@ -72,7 +72,7 @@ Cypress.Commands.add('createUser', (user: { email: string, password: string, use
     user: {
       email: user.email,
       password: user.password,
-      password_confirmation: user.password,
+      status: 'verified',
       username: user.username,
     },
   })
@@ -89,19 +89,14 @@ Cypress.Commands.add('createFry', () => {
 })
 
 Cypress.Commands.add('forceSignIn', (user?: { email?: string, password?: string }) => {
-  cy.apiRequest('POST', '/signin', {
+  cy.apiRequest('POST', '/auth/login', {
     email: user?.email || 'philip.fry@planet-express.com',
     password: user?.password || 'ah123456',
   }).its('body').as('signIn')
-    .then((response) => {
-      localStorage.setItem('csrf', response.csrf)
-      localStorage.setItem('signedIn', 'true')
-    })
 })
 
 Cypress.Commands.add('forceSignOut', () => {
-  localStorage.removeItem('csrf')
-  localStorage.removeItem('signedIn')
+  cy.apiRequest('POST', '/auth/logout')
 })
 
 Cypress.Commands.add('getFlash', (text: string) => {

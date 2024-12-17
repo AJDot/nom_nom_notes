@@ -41,9 +41,7 @@
 <script lang="ts">
 
 import { defineComponent, ref } from 'vue'
-import { plainAxiosInstance } from '~/backend/axios'
 import { ApiPath } from '~/router/path'
-import { AxiosError, AxiosResponse } from 'axios'
 import { RouteName } from '~/router/routeName'
 import { StoreModulePath } from '~/store'
 import { FlashActionTypes } from '~/store/modules/flash'
@@ -59,17 +57,23 @@ export default defineComponent({
     }
   },
   methods: {
-    changePassword() {
-      plainAxiosInstance.put(ApiPath.base() + ApiPath.changePassword(), {
+    async changePassword() {
+      fetch(ApiPath.base() + ApiPath.changePassword(), {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
         ...this.formData,
-        token: this.$routerExtension.currentRoute.query.token,
+          token: this.$routerExtension.currentRoute.query.token,
+        })
       })
-        .then((response: AxiosResponse) => this.changeSuccessful(response))
-        .catch((error: AxiosError) => this.changeError(error))
+        .then((response: Response) => this.changeSuccessful(response))
+        .catch((error: Response) => this.changeError(error))
     },
-    async changeSuccessful(response: AxiosResponse) {
-      if (response.data?.error) {
-        this.changeFailed(response)
+    async changeSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json?.error) {
+        this.changeFailed(responseClone)
         return
       }
       await this.$router.push({
@@ -79,11 +83,13 @@ export default defineComponent({
         flash: { success: 'Password was reset successfully. Please sign in.' },
       })
     },
-    changeFailed(error: AxiosResponse) {
-      this.processFailedRequest(error?.data?.error)
+    async changeFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedRequest(json?.error)
     },
-    changeError(error: AxiosError) {
-      this.processFailedRequest(error.response?.data.error)
+    async changeError(response: Response) {
+      const json = await response.json()
+      this.processFailedRequest(json?.data.error)
     },
     processFailedRequest(errorText: string | null | undefined) {
       if (errorText) {

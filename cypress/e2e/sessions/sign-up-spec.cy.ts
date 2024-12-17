@@ -9,8 +9,6 @@ describe('Sign Up', () => {
 
     it('allows users to create an account', () => {
       cy.visit('/')
-      expect(localStorage.getItem('csrf')).to.be.null
-      expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
       cy.contains('a', 'Sign Up').click()
       cy.url().should('include', '/sign_up')
       cy.contains('a', 'Sign Up').should('not.exist') // no sign up link when on sign up page
@@ -23,8 +21,6 @@ describe('Sign Up', () => {
       })
       cy.contains('New Dynamic Recipe')
         .then(() => {
-          expect(localStorage.getItem('csrf')).to.not.be.null
-          expect(localStorage.getItem('signedIn')).to.eq('true')
           cy.url().should('include', '/dynamic_recipes')
           cy.contains('a', 'Sign Up').should('not.exist')
           cy.contains('a', 'Sign Out').should('exist')
@@ -42,30 +38,31 @@ describe('Sign Up', () => {
       })
       cy.get('form')
         .then(() => {
-          cy.contains('Username can\'t be blank').should('exist')
-          cy.contains('Password can\'t be blank').should('exist')
+          cy.contains("email: minimum 3 characters").should('exist')
+          cy.contains("username: can't be blank").should('not.exist')
+          cy.contains("password can't be blank").should('not.exist')
           // confirmation error only shows when password is given
-          cy.contains('Password confirmation can\'t be blank').should('not.exist')
-          cy.contains('Email can\'t be blank').should('exist')
-          cy.contains('Email is invalid').should('exist')
+          cy.contains("password_confirmation can't be blank").should('not.exist')
+        })
+      cy.get('form').within(() => {
+        cy.getByLabel('Email').type('philip@fry')
+        cy.contains('input', 'Sign Up').click()
+      })
+      cy.get('form')
+        .then(() => {
+          cy.contains("email: not a valid email address").should('exist')
         })
 
       cy.get('form').within(() => {
-        cy.getByLabel('Email').type('philip@fry')
+        cy.getByLabel('Email').type('.futurama')
         cy.getByLabel('Username').type('orangejoe')
         cy.getByLabel(/^Password$/).type('i.c. wiener')
         cy.getByLabel('Confirm Password').type('i.c. wiener!')
         cy.contains('input', 'Sign Up').click()
       })
-      cy.contains('Username can\'t be blank').should('not.exist')
-      cy.contains('Password can\'t be blank').should('not.exist')
-      cy.contains('Password confirmation can\'t be blank').should('not.exist')
-      cy.contains('Email can\'t be blank').should('not.exist')
-      cy.contains('Email is invalid').should('exist')
-      cy.contains('Password confirmation doesn\'t match Password').should('exist')
+      cy.contains('password: passwords do not match').should('exist')
 
       cy.get('form').within(() => {
-        cy.contains('label', 'Email').type('.futurama')
         cy.contains('label', /^Password$/).type('!')
         cy.contains('input', 'Sign Up').click()
       })
@@ -79,20 +76,23 @@ describe('Sign Up', () => {
           cy.get('form').within(() => {
             cy.getByLabel('Email').type('philip.fry@planet-express.com')
             cy.getByLabel('Username').type('orangejoe')
-            cy.getByLabel(/^Password$/).type('AH1234')
-            cy.getByLabel('Confirm Password').type('AH1234')
+            cy.getByLabel(/^Password$/).type('AH123456')
+            cy.getByLabel('Confirm Password').type('AH123456')
             cy.contains('input', 'Sign Up').click()
           })
-          cy.contains('Email has already been taken').should('exist')
-          cy.contains('Username has already been taken').should('exist')
+          cy.contains('username: already taken').should('exist')
 
           cy.get('form').within(() => {
-            cy.getByLabel('Email').type('a')
             cy.getByLabel('Username').type('a')
             cy.contains('input', 'Sign Up').click()
           })
+          cy.contains('already an account with this login').should('exist')
+          cy.get('form').within(() => {
+            cy.getByLabel('Email').type('a')
+            cy.contains('input', 'Sign Up').click()
+          })
           cy.url().should('include', '/dynamic_recipes')
-          cy.contains('orangejoe').should('exist')
+          cy.contains('orangejoea').should('exist')
         })
     })
 
@@ -121,8 +121,6 @@ describe('Sign Up', () => {
 
     it('it not possible to sign up', () => {
       cy.visit('/')
-      expect(localStorage.getItem('csrf')).to.be.null
-      expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
       cy.contains('Sign Up').should('not.exist')
       cy.visit('/sign_up')
       // redirect to recipes and shows flash message

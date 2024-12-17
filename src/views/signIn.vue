@@ -40,26 +40,18 @@
 </template>
 
 <script lang="ts">
+// import ForgotPasswordLink from '@/forgot-password-link.vue'
 import { defineComponent } from 'vue'
-import { StoreModulePath } from '~/store'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
-import { FlashActionTypes } from '~/store/modules/flash'
-import { AxiosError, AxiosResponse } from 'axios'
-import { SessionActionTypes } from '~/store/modules/sessions/actions'
 import { mapGetters } from 'vuex'
+import { StoreModulePath } from '~/store'
+import { FlashActionTypes } from '~/store/modules/flash'
+import { SessionActionTypes } from '~/store/modules/sessions/actions'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
-import ForgotPasswordLink from '@/forgot-password-link.vue'
 
 export default defineComponent({
   name: 'SignIn',
   components: {
-    ForgotPasswordLink,
-  },
-  setup() {
-    const getters = mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN })
-    return {
-      ...getters,
-    }
+    // ForgotPasswordLink,
   },
   data() {
     return {
@@ -79,34 +71,37 @@ export default defineComponent({
     this.checkSignedIn()
   },
   methods: {
-    signin() {
+    async signin() {
       this.$store.dispatch(StoreModulePath.Session + SessionActionTypes.CREATE, this.formData)
-        .then((response: AxiosResponse) => this.signinSuccessful(response))
-        .catch((error: AxiosError) => this.signinError(error))
+        .then((response) => this.signinSuccessful(response))
+        .catch((error) => this.signinFailed(error))
     },
-    signinSuccessful(response: AxiosResponse) {
+    signinSuccessful(response: Response) {
       if (!this.signedIn) {
         this.signinFailed(response)
         return
       }
       this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
     },
-    signinFailed(error: AxiosResponse) {
-      this.processFailedSignin(error?.data?.error)
+    async signinFailed(response: Response) {
+      const json = await response.json()
+      const errors = [json.error]
+      const fieldError = json['field-error']
+      if (fieldError) {
+        errors.push(`${fieldError[0]}: ${fieldError[1]}`)
+      }
+      this.processFailedSignin(errors)
     },
-    signinError(error: AxiosError) {
-      this.processFailedSignin(error.response?.data.error)
-    },
-    processFailedSignin(errorText: string | null | undefined) {
+    processFailedSignin(errorText: string | string[] | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      // this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
     checkSignedIn() {
-      if (localStorage.signedIn) {
+      if (this.signedIn) {
         this.$router.replace({ name: this.$routerExtension.names.Home })
       }
     },

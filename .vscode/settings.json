@@ -1,5 +1,8 @@
 {
   "search.useIgnoreFiles": false,
   "eslint.lintTask.enable": true,
-  "standard.enable": false
+  "standard.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
 }

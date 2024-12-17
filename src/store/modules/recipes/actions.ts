@@ -1,8 +1,6 @@
-import { AxiosResponse } from 'axios'
 import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import Recipe, { RecipeAttributes } from 'Models/recipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
-import { securedAxiosInstance } from '~/backend/axios'
 import { ApiPath } from '~/router/path'
 import { RecipesState, RootState } from '~/store/interfaces'
 import { RecipeMutationTypes } from '~/store/modules/recipes/mutations'
@@ -23,29 +21,37 @@ type RecipeActions = {
 
 const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
   async [RecipeActionTypes.FETCH]({ commit }: ActionContext<RecipesState, RootState>, id: string) {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipe(id))
-    if (!response.data) throw new Error('Recipe not found')
+    const response = await fetch(ApiPath.base() + ApiPath.recipe(id), {
+      headers: { "Content-Type": "application/json" },
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<RecipeAttributes> = await response.json()
+    if (!json) throw new Error('Recipe not found')
 
     commit(RecipeMutationTypes.ADD, {
-      id: response.data.data.id,
-      ...response.data.data.attributes,
+      id: json.data.id,
+      ...json.data.attributes,
     })
-    const recipe = Recipe.find(response.data.data.attributes.clientId!)!
-    await StoreUtils.processIncluded(recipe, response.data.included, response.data.data.relationships)
-    return response
+    const recipe = Recipe.find(json.data.attributes.clientId!)!
+    await StoreUtils.processIncluded(recipe, json.included, json.data.relationships)
+    return responseClone
   },
   async [RecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<RecipesState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes, Array<ServerRecordData<RecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.recipes())
+    const response = await fetch(ApiPath.base() + ApiPath.recipes(), {
+      headers: { "Content-Type": "application/json" },
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<RecipeAttributes, Array<ServerRecordData<RecipeAttributes>>> = await response.json()
     commit(
       RecipeMutationTypes.SET,
-      response.data.data.map((x) => {
+      json.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await Promise.all(response.data.data.map(datum => {
-      return StoreUtils.processIncluded(Recipe.find(datum.attributes.clientId!)!, response.data.included, datum.relationships)
+    await Promise.all(json.data.map(datum => {
+      return StoreUtils.processIncluded(Recipe.find(datum.attributes.clientId!)!, json.included, datum.relationships)
     }))
-    return response
+    return responseClone
   },
   async [RecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<RecipesState, RootState>, id: string): Promise<Recipe | null> {
     const recipe = Recipe.find(id)
@@ -56,26 +62,47 @@ const actions: ActionTree<RecipesState, RootState> & RecipeActions = {
       return Promise.resolve(Recipe.find(id))
     }
   },
-  async [RecipeActionTypes.CREATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerRecordResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.recipes(), {
-      recipe: recipe.$toJson(),
+  async [RecipeActionTypes.CREATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.recipes(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ recipe: recipe.$toJson(), }),
     })
-    recipe.id = response.data.data.id
-    await recipe.$update({ data: { id: recipe.id, ...response.data.data.attributes } })
-    return response
-  },
-  async [RecipeActionTypes.UPDATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerRecordResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.patch(ApiPath.base() + ApiPath.recipe(recipe.clientId), {
-      recipe: recipe.$toJson(),
-    })
+    console.log('a')
+    if (!response.ok) return response
 
-    if (!response.data.error) {
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<RecipeAttributes> = await response.json()
+    recipe.id = json.data.id
+    await recipe.$update({ data: { id: recipe.id, ...json.data.attributes } })
+    return responseClone
+  },
+  async [RecipeActionTypes.UPDATE](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.recipe(recipe.clientId), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ recipe: recipe.$toJson(), }),
+    })
+    if (!response.ok) return response
+
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<RecipeAttributes> = await response.json()
+
+    if (!json.error) {
       await recipe.save()
     }
-    return response
+    return responseClone
   },
-  async [RecipeActionTypes.DESTROY](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<AxiosResponse<ServerRecordResponse<RecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<RecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.recipe(recipe.clientId))
+  async [RecipeActionTypes.DESTROY](_store: ActionContext<RecipesState, RootState>, recipe: Recipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.recipe(recipe.clientId), {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    })
+    if (!response.ok) return response
+
     await recipe.$delete()
     return response
   },

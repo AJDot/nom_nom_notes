@@ -11,7 +11,7 @@
     <h1
       ref="text"
       :placeholder="placeholder"
-      class="basis-full text-3xl min-h-12 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
+      class="inline-block w-full basis-full text-3xl min-h-12 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
       :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }"
       :contenteditable="isEditable"
       data-focus

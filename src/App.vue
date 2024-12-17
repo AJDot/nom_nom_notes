@@ -30,8 +30,8 @@ export default defineComponent({
       fetched: false,
     }
   },
-  beforeCreate() {
-    store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
+  async mounted() {
+    await store.dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT)
       .then(() => {
         store.dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: this.currentUser })
           .then(() => {

@@ -36,7 +36,7 @@ describe('Edit Dynamic Recipe', () => {
             type: 'image/jpeg',
           })
           cy.getContentEditableEmpty('Type anything...').type('Soy Sauce/ingredient{enter}')
-          cy.contains('Soy Sauce').type('{upArrow}1 cup')
+          cy.getContentEditable('Soy Sauce').type('{upArrow}1 cup')
         })
       cy.wait('@image')
         .then(() => {

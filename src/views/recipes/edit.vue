@@ -183,7 +183,6 @@
 
 <script lang="ts">
 import Search from '@/structure/search.vue'
-import { AxiosError, AxiosResponse } from 'axios'
 import { ImageSource } from 'Interfaces/imageInterfaces'
 import { SearchOptions, SearchResult } from 'Interfaces/searchInterfaces'
 import Ingredient from 'Models/ingredient'
@@ -192,7 +191,7 @@ import Step from 'Models/step'
 import Tagging from 'Models/tagging'
 import IngredientsList from 'Views/ingredients/list.vue'
 import StepsList from 'Views/steps/list.vue'
-import { defineComponent, ImgHTMLAttributes } from 'vue'
+import { ImgHTMLAttributes, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { Command } from '~/enums/command'
 import loading from '~/mixins/loading'
@@ -200,7 +199,7 @@ import Tag, { RTag } from '~/models/tag'
 import { DurationFilter } from '~/plugins/filters/durationFilter'
 import router from '~/router'
 import { ApiPath } from '~/router/path'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
@@ -380,15 +379,18 @@ export default defineComponent({
           .catch((error) => this.updateError(error))
       })
     },
-    async updateSuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.updateFailed(response)
+    async updateSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json?.error) {
+        this.updateFailed(responseClone)
         return
       }
       if (this.recipe) {
         // if image uploaded, then upload it
         if (this.tmpImage.raw) {
           const uploader = new Uploader(ApiPath.base() + ApiPath.recipe(this.recipe.clientId))
+          console.log(uploader)
           const imageResponse = await uploader.patch({
             root: 'recipe',
             data: {
@@ -396,8 +398,10 @@ export default defineComponent({
               id: this.recipe.id,
               image: this.tmpImage.raw,
             },
+            contentType: null,
           })
-          await this.recipe.$update({ image: imageResponse.data.data.attributes.image })
+          const imageResponseJson = await imageResponse.json()
+          await this.recipe.$update({ image: imageResponseJson.data.attributes.image })
         }
         await this.$router.push({
           name: this.$routerExtension.names.Recipe,
@@ -408,14 +412,16 @@ export default defineComponent({
         })
       }
     },
-    updateFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error, { signOut: false })
+    async updateFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error, { signOut: false })
     },
-    updateError(error: AxiosError) {
-      let errorText = error.response?.data.error
+    async updateError(response: Response) {
+      const json = await response.json()
+      let errorText = json?.error
       const opts: { signOut: boolean | null } = { signOut: null }
       if (this.mode === 'create') {
-        switch (error.response?.status) {
+        switch (json?.status) {
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
@@ -429,7 +435,7 @@ export default defineComponent({
             break
         }
       } else {
-        switch (error.response?.status) {
+        switch (json?.status) {
           case (HttpStatusCode.Unauthorized):
             opts.signOut = true
             break
@@ -444,7 +450,7 @@ export default defineComponent({
       this.processFailedUpdate(errorText, opts)
     },
     processFailedUpdate(errorText: string | null | undefined, { signOut }: { signOut: boolean | null }) {
-      if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      // if (signOut) this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText || 'An unknown error occurred' },

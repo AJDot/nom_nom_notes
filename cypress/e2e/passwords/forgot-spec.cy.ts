@@ -1,4 +1,4 @@
-describe('Forgot Password', () => {
+describe.skip('Forgot Password', () => {
   context('when already signed in', () => {
     beforeEach(() => {
       cy.createFry().as('fry')

@@ -50,14 +50,13 @@
 
 <script lang="ts">
 import Modal from '@/modal.vue'
-import { AxiosError, AxiosResponse } from 'axios'
 import Recipe from 'Models/recipe'
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
 import router from '~/router'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { FlashActionTypes } from '~/store/modules/flash'
 import { RecipeActionTypes } from '~/store/modules/recipes/actions'
@@ -101,9 +100,11 @@ export default defineComponent({
           .catch((error) => this.destroyError(error))
       })
     },
-    async destroySuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.destroyFailed(response)
+    async destroySuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json.error) {
+        this.destroyFailed(responseClone)
         return
       }
 
@@ -116,11 +117,13 @@ export default defineComponent({
         })
       }
     },
-    destroyFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error)
+    async destroyFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error)
     },
-    destroyError(error: AxiosError) {
-      const errorText = error.response?.data.error
+    async destroyError(response: Response) {
+      const json = await response.json()
+      const errorText = json?.error
       this.processFailedUpdate(errorText)
     },
     processFailedUpdate(errorText: string | null | undefined) {

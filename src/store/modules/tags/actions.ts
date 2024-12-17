@@ -1,7 +1,5 @@
-import { AxiosResponse } from 'axios'
 import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import { Action, ActionContext, ActionTree } from 'vuex'
-import { securedAxiosInstance } from '~/backend/axios'
 import Tag, { TagAttributes } from '~/models/tag'
 import { ApiPath } from '~/router/path'
 import { RootState, TagsState } from '~/store/interfaces'
@@ -19,25 +17,36 @@ type TagActions = {
 
 const actions: ActionTree<TagsState, RootState> & TagActions = {
   async [TagActionTypes.FETCH_ALL]({ commit }: ActionContext<TagsState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<TagAttributes, Array<ServerRecordData<TagAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.tags())
+    const response = await fetch(ApiPath.base() + ApiPath.tags(), {
+      headers: { "Content-Type": "application/json" },
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<TagAttributes, Array<ServerRecordData<TagAttributes>>> = await response.json()
     commit(
       TagMutationTypes.SET,
-      response.data.data.map((x) => {
+      json.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await Promise.all(response.data.data.map(datum => {
-      return StoreUtils.processIncluded(Tag.find(datum.attributes.clientId!)!, response.data.included)
+    await Promise.all(json.data.map(datum => {
+      return StoreUtils.processIncluded(Tag.find(datum.attributes.clientId!)!, json.included)
     }))
-    return response
+    return responseClone
   },
-  async [TagActionTypes.CREATE](_store: ActionContext<TagsState, RootState>, tag: Tag): Promise<AxiosResponse<ServerRecordResponse<TagAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<TagAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.tags(), {
-      tag: tag.$toJson(),
+  async [TagActionTypes.CREATE](_store: ActionContext<TagsState, RootState>, tag: Tag): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.tags(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ tag: tag.$toJson(), }),
     })
-    tag.id = response.data.data.id
-    await tag.$insertOrUpdate({ data: { id: tag.id, ...response.data.data.attributes } })
-    return response
+    if (!response.ok) return response
+
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<TagAttributes> = await response.json()
+    tag.id = json.data.id
+    await tag.$insertOrUpdate({ data: { id: tag.id, ...json.data.attributes } })
+    return responseClone
   },
 }
 

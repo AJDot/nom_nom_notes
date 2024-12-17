@@ -8,18 +8,18 @@
     data-test-block="h2"
     @drop="onDrop"
   >
-    <h2
-      ref="text"
-      :placeholder="placeholder"
-      class="text-2xl min-h-11 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
-      :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }"
-      :contenteditable="isEditable"
-      data-focus
-      @input="onInput"
-      @keydown="onKeydown"
-      @click="onClick"
-      v-html="block.content.text"
-    />
+      <h2
+        ref="text"
+        :placeholder="placeholder"
+        class="inline-block w-full text-2xl min-h-11 py-1 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
+        :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }"
+        :contenteditable="isEditable"
+        data-focus
+        @input="onInput"
+        @keydown="onKeydown"
+        @click="onClick"
+        v-html="block.content.text"
+      />
   </draggable>
 </template>
 

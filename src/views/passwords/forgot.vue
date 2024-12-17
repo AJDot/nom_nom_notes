@@ -29,14 +29,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { mapGetters } from 'vuex'
-import { securedAxiosInstance } from '~/backend/axios'
-import { AxiosError, AxiosResponse } from 'axios'
+import { ApiPath, AppPath } from '~/router/path'
+import { RouteName } from '~/router/routeName'
 import { StoreModulePath } from '~/store'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { RouteName } from '~/router/routeName'
-import { AppPath, ApiPath } from '~/router/path'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 
 export default defineComponent({
   name: 'ForgotPassword',
@@ -65,13 +63,19 @@ export default defineComponent({
   },
   methods: {
     requestForgotPassword() {
-      securedAxiosInstance.put(ApiPath.base() + ApiPath.forgotPassword(), this.formData)
-        .then((response: AxiosResponse) => this.requestSuccessful(response))
-        .catch((error: AxiosError) => this.requestError(error))
+      fetch(ApiPath.base() + ApiPath.forgotPassword(), {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify( this.formData,)
+      })
+        .then((response: Response) => this.requestSuccessful(response))
+        .catch((error: Response) => this.requestError(error))
     },
-    async requestSuccessful(response: AxiosResponse) {
-      if (response.data?.error) {
-        this.requestFailed(response)
+    async requestSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json?.error) {
+        this.requestFailed(responseClone)
         return
       }
       await this.$router.push({
@@ -82,11 +86,13 @@ export default defineComponent({
         flash: { success: 'A request to change your password was made. Please check your email for instructions.' },
       })
     },
-    requestFailed(error: AxiosResponse) {
-      this.processFailedSignin(error?.data?.error)
+    async requestFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedSignin(json?.error)
     },
-    requestError(error: AxiosError) {
-      this.processFailedSignin(error.response?.data.error)
+    async requestError(response: Response) {
+      const json = await response.json()
+      this.processFailedSignin(json?.data.error)
     },
     processFailedSignin(errorText: string | null | undefined) {
       if (errorText) {
@@ -96,7 +102,7 @@ export default defineComponent({
       }
     },
     checkSignedIn() {
-      if (localStorage.signedIn) {
+      if (this.signedIn) {
         this.$router.replace({ name: this.$routerExtension.names.Home })
       }
     },

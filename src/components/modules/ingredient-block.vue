@@ -27,52 +27,54 @@
       :for="`shopping-list-checkbox-${block.id}`"
       class="flex grow flex-wrap pb-1 sm:px-2"
     >
-      <div
-        v-if="isEditable || block.content.quantity"
-        :key="block.id + '-quantity'"
-        ref="quantity"
-        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
-        for="shopping-list-checkbox"
-        :data-toggle-key="block.id"
-        :placeholder="placeholder('quantity')"
-        data-focus
-        class="shrink-0 text-base font-bold min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
-        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
-        :contenteditable="isEditable"
-        @input="onInputQuantity"
-        @keydown="onKeydownQuantity"
-        v-html="quantityDisplay"
-      />
-      <div
-        v-if="isEditable || block.content.name"
-        :key="block.id + '-name'"
-        ref="name"
-        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
-        for="shopping-list-checkbox"
-        :data-toggle-key="block.id"
-        :placeholder="placeholder('name')"
-        data-focus
-        class="shrink-0 text-base min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
-        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
-        :contenteditable="isEditable"
-        @input="onInputName"
-        @keydown="onKeydownName"
-        v-html="block.content.name"
-      />
-      <div
-        :key="block.id + '-text'"
-        ref="text"
-        v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
-        :data-toggle-key="block.id"
-        :placeholder="placeholder('text')"
-        data-focus
-        class="grow text-base italic min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
-        :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
-        :contenteditable="isEditable"
-        @input="onInputText"
-        @keydown="onKeydownText"
-        v-html="block.content.text"
-      />
+      <div>
+        <div
+          v-if="isEditable || block.content.quantity"
+          :key="block.id + '-quantity'"
+          ref="quantity"
+          v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+          for="shopping-list-checkbox"
+          :data-toggle-key="block.id"
+          :placeholder="placeholder('quantity')"
+          data-focus
+          class="inline-block shrink-0 text-base font-bold min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+          :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+          :contenteditable="isEditable"
+          @input="onInputQuantity"
+          @keydown="onKeydownQuantity"
+          v-html="quantityDisplay"
+        />
+        <div
+          v-if="isEditable || block.content.name"
+          :key="block.id + '-name'"
+          ref="name"
+          v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+          for="shopping-list-checkbox"
+          :data-toggle-key="block.id"
+          :placeholder="placeholder('name')"
+          data-focus
+          class="inline-block shrink-0 text-base min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+          :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+          :contenteditable="isEditable"
+          @input="onInputName"
+          @keydown="onKeydownName"
+          v-html="block.content.name"
+        />
+        <div
+          :key="block.id + '-text'"
+          ref="text"
+          v-toggle-state="(key) => isShowMode ? toggleToggleState(key) : null"
+          :data-toggle-key="block.id"
+          :placeholder="placeholder('text')"
+          data-focus
+          class="inline-block grow text-base italic min-h-4 outline-none border-x-2 border-transparent rounded-md break-anywhere focus:shadow-input focus:bg-gray-100 after:text-gray-500 after:empty:content-[attr(placeholder)]"
+          :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id] }"
+          :contenteditable="isEditable"
+          @input="onInputText"
+          @keydown="onKeydownText"
+          v-html="block.content.text"
+        />
+      </div>
     </label>
   </draggable>
 </template>
@@ -225,6 +227,7 @@ export default defineComponent({
       }
     },
     onKeydownName(event) {
+      console.log(event.key)
       if (!this.isEditable) return
 
       switch (event.key) {

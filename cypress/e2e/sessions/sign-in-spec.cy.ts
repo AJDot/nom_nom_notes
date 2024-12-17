@@ -11,8 +11,6 @@ describe('Sign In', () => {
       cy.createFry()
         .then(() => {
           cy.visit('/')
-          expect(localStorage.getItem('csrf')).to.be.null
-          expect(localStorage.getItem('signedIn')).to.be.oneOf([false, null])
           cy.contains('a', 'Sign In').click()
           cy.url().should('include', '/sign_in')
           cy.contains('a', 'Sign In').should('not.exist') // no sign up link when on sign up page
@@ -23,8 +21,6 @@ describe('Sign In', () => {
           })
           cy.contains('New Dynamic Recipe').should('be.visible')
             .then(() => {
-              expect(localStorage.getItem('csrf')).to.not.be.null
-              expect(localStorage.getItem('signedIn')).to.eq('true')
               cy.url().should('include', '/dynamic_recipes')
               cy.contains('a', 'Sign Up').should('not.exist')
               cy.contains('a', 'Sign Out').should('exist')
@@ -43,25 +39,25 @@ describe('Sign In', () => {
           cy.get('form').within(() => {
             cy.contains('input', 'Sign In').click()
           })
-          cy.getFlash('Email can\'t be blank').should('exist')
+          cy.getFlash('email: no matching login').should('exist')
 
           cy.get('form').within(() => {
             cy.contains('label', 'Email').type('philip.fry@planet-express')
             cy.contains('input', 'Sign In').click()
           })
-          cy.getFlash('Email is invalid').should('exist')
+          cy.getFlash('email: no matching login').should('exist')
 
           cy.get('form').within(() => {
             cy.contains('label', 'Email').type('.com')
             cy.contains('input', 'Sign In').click()
           })
-          cy.getFlash('Password can\'t be blank').should('exist')
+          cy.getFlash('password: invalid password').should('exist')
 
           cy.get('form').within(() => {
             cy.contains('label', /^Password$/).type('ah12345')
             cy.contains('input', 'Sign In').click()
           })
-          cy.getFlash('Not Authorized').should('exist')
+          cy.getFlash('password: invalid password').should('exist')
 
           cy.get('form').within(() => {
             cy.contains('label', /^Password$/).type('6')

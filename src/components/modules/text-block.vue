@@ -17,7 +17,7 @@
       data-focus
       :class="{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable, 'line-through': toggleState[block.id], inline: childBlocks.length || director.find(block.parentId)?.type === 'text' }"
       :contenteditable="isEditable"
-      class="text-base min-h-4 outline-none border-2 border-transparent rounded-md break-anywhere after:text-gray-500 after:empty:content-[attr(placeholder)] focus:shadow-input focus:bg-gray-100"
+      class="inline-block w-full min-h-4 text-base outline-none border-2 border-transparent rounded-md break-anywhere after:text-gray-500 after:empty:content-[attr(placeholder)] focus:shadow-input focus:bg-gray-100"
       @input="onInput"
       @keydown="onKeydown"
       @click="onClick"
@@ -154,6 +154,8 @@ export default defineComponent({
     onBackspace(event) {
       if (!this.isEditable) return
       const captain = this.director.captainFor(this.block)
+      console.log('onBackspace')
+      console.log(captain.isEmpty)
       if (captain.isEmpty) {
         this.director.onBackspace({
           block: this.block,
