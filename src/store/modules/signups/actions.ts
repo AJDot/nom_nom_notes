@@ -1,10 +1,7 @@
-import { AxiosResponse } from 'axios'
-import { RootState, SignupsState } from '~/store/interfaces'
 import { Action, ActionTree } from 'vuex'
-import { ApiPath } from '~/router/path'
-import { plainAxiosInstance } from '~/backend/axios'
+import { AuthPath } from '~/router/path'
 import { StoreModulePath } from '~/store'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
+import { RootState, SignupsState } from '~/store/interfaces'
 import { UserActionTypes } from '~/store/modules/users/actions'
 import { AbilityActionTypes } from '../ability/actions'
 
@@ -21,13 +18,15 @@ const actions: ActionTree<SignupsState, RootState> & SignupActions = {
     commit,
     dispatch,
     rootState,
-  }, payload: { email: string, password: string, passwordConfirmation: string, username: string }): Promise<AxiosResponse> {
-    const response = await plainAxiosInstance.post(ApiPath.signup(), payload)
-    if (response.data.csrf) {
-      commit(StoreModulePath.Session + SessionMutationTypes.SIGN_IN, response.data.csrf, { root: true })
-      await dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT, null, { root: true })
-      dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: rootState.users.current }, { root: true })
-    }
+  }, payload: { email: string, password: string, passwordConfirmation: string, username: string }): Promise<Response> {
+    const response = await fetch(AuthPath.base() + AuthPath.signup(), {
+      method: 'POST',
+      credentials: "include", // include cookies on cross-origin requests
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    await dispatch(StoreModulePath.Users + UserActionTypes.FETCH_CURRENT, null, { root: true })
+    dispatch(StoreModulePath.Ability + AbilityActionTypes.FETCH, { user: rootState.users.current }, { root: true })
     return response
   },
 }

@@ -4,9 +4,7 @@ import AInput from '@/structure/a-input.vue'
 import ATextarea from '@/structure/a-textarea.vue'
 import 'Styles/index.css'
 import { createApp } from 'vue'
-import VueAxios from 'vue-axios'
 import App from '~/App.vue'
-import { plainAxiosInstance, securedAxiosInstance } from '~/backend/axios'
 import DropdownItemButton from '~/components/structure/dropdown-item-button.vue'
 import DropdownItemEmpty from '~/components/structure/dropdown-item-empty.vue'
 import DropdownItem from '~/components/structure/dropdown-item.vue'
@@ -27,10 +25,6 @@ import '~/vendor'
 createApp(App)
   .use(router)
   .use(store, stateKey)
-  .use(VueAxios, {
-    secured: securedAxiosInstance,
-    plain: plainAxiosInstance,
-  })
   .use(routerExtension)
   .use(filters)
   .use(modalStore)

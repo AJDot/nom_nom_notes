@@ -70,18 +70,18 @@
 </template>
 
 <script lang="ts">
+// import ForgotPasswordLink from '@/forgot-password-link.vue'
 import { defineComponent } from 'vue'
+import { mapGetters } from 'vuex'
 import { StoreModulePath } from '~/store'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { AxiosError, AxiosResponse } from 'axios'
+import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { SignupActionTypes } from '~/store/modules/signups/actions'
-import ForgotPasswordLink from '@/forgot-password-link.vue'
 
 export default defineComponent({
   name: 'SignUp',
   components: {
-    ForgotPasswordLink,
+    // ForgotPasswordLink,
   },
   data() {
     return {
@@ -99,35 +99,46 @@ export default defineComponent({
   updated() {
     this.checkSignedIn()
   },
+  computed: {
+    ...mapGetters('sessions', { signedIn: SessionGetterTypes.SIGNED_IN }),
+  },
   methods: {
     signup() {
       this.$store.dispatch(StoreModulePath.Signup + SignupActionTypes.CREATE, this.formData)
         .then((response) => this.signupSuccessful(response))
         .catch((error) => this.signupError(error))
     },
-    signupSuccessful(response: AxiosResponse) {
-      if (!response.data.csrf) {
+    signupSuccessful(response: Response) {
+      if (!this.signedIn) {
         this.signupFailed(response)
         return
       }
       this.$router.replace({ name: this.$routerExtension.names.Home })
     },
-    signupFailed(error: AxiosResponse) {
-      this.processFailedSignup(error?.data?.error)
+    async signupFailed(response: Response) {
+      const json = await response.json()
+      const errors = [json.error]
+      const fieldError = json['field-error']
+      if (fieldError) {
+        errors.push(`${fieldError[0]}: ${fieldError[1]}`)
+      }
+      this.processFailedSignup(errors)
     },
-    signupError(error: AxiosError) {
-      this.processFailedSignup(error.response?.data.error)
+    signupError(error: Error) {
+      const errorText = error.message || 'There was an error creating your account'
+      this.processFailedSignup(errorText)
     },
-    processFailedSignup(errorText: string | null | undefined) {
+    processFailedSignup(errorText: string | string[] | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },
         })
       }
-      this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
+      // this.$store.commit(StoreModulePath.Session + SessionMutationTypes.SIGN_OUT)
     },
+
     checkSignedIn() {
-      if (localStorage.signedIn) {
+      if (this.signedIn) {
         this.$router.replace({ name: this.$routerExtension.names.Home })
       }
     },

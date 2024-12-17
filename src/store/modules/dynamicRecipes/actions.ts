@@ -1,8 +1,6 @@
-import { AxiosResponse } from 'axios'
 import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import DynamicRecipe, { DynamicRecipeAttributes } from 'Models/dynamicRecipe'
 import { Action, ActionContext, ActionTree } from 'vuex'
-import { securedAxiosInstance } from '~/backend/axios'
 import { ApiPath } from '~/router/path'
 import { DynamicRecipesState, RootState } from '~/store/interfaces'
 import { DynamicRecipeMutationTypes } from '~/store/modules/dynamicRecipes/mutations'
@@ -23,29 +21,37 @@ type DynamicRecipeActions = {
 
 const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions = {
   async [DynamicRecipeActionTypes.FETCH]({ commit }: ActionContext<DynamicRecipesState, RootState>, id: string) {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipe(id))
-    if (!response.data) throw new Error('Dynamic Recipe not found')
+    const response = await fetch(ApiPath.base() + ApiPath.dynamicRecipe(id), {
+      headers: {"Content-Type": "application/json"}
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<DynamicRecipeAttributes> = await response.json()
+    if (!json) throw new Error('Dynamic Recipe not found')
 
     commit(DynamicRecipeMutationTypes.ADD, {
-      id: response.data.data.id,
-      ...response.data.data.attributes,
+      id: json.data.id,
+      ...json.data.attributes,
     })
-    const dynamicRecipe = DynamicRecipe.find(response.data.data.attributes.clientId!)!
-    await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
-    return response
+    const dynamicRecipe = DynamicRecipe.find(json.data.attributes.clientId!)!
+    await StoreUtils.processIncluded(dynamicRecipe, json.included, json.data.relationships)
+    return responseClone
   },
   async [DynamicRecipeActionTypes.FETCH_ALL]({ commit }: ActionContext<DynamicRecipesState, RootState>) {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData<DynamicRecipeAttributes>>>> = await securedAxiosInstance.get(ApiPath.base() + ApiPath.dynamicRecipes())
+    const response = await fetch(ApiPath.base() + ApiPath.dynamicRecipes(), {
+      headers: {"Content-Type": "application/json"},
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<DynamicRecipeAttributes, Array<ServerRecordData<DynamicRecipeAttributes>>> = await response.json()
     commit(
       DynamicRecipeMutationTypes.SET,
-      response.data.data.map((x) => {
+      json.data.map((x) => {
         return { id: x.id, ...x.attributes }
       }),
     )
-    await Promise.all(response.data.data.map(datum => {
-      return StoreUtils.processIncluded(DynamicRecipe.find(datum.attributes.clientId!)!, response.data.included, datum.relationships)
+    await Promise.all(json.data.map(datum => {
+      return StoreUtils.processIncluded(DynamicRecipe.find(datum.attributes.clientId!)!, json.included, datum.relationships)
     }))
-    return response
+    return responseClone
   },
   async [DynamicRecipeActionTypes.FIND_OR_FETCH]({ dispatch }: ActionContext<DynamicRecipesState, RootState>, id: string): Promise<DynamicRecipe | null> {
     const dynamicRecipe = DynamicRecipe.find(id)
@@ -56,27 +62,45 @@ const actions: ActionTree<DynamicRecipesState, RootState> & DynamicRecipeActions
       return Promise.resolve(DynamicRecipe.find(id))
     }
   },
-  async [DynamicRecipeActionTypes.CREATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.post(ApiPath.base() + ApiPath.dynamicRecipes(), {
-      dynamicRecipe: dynamicRecipe.$toJson(),
+  async [DynamicRecipeActionTypes.CREATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.dynamicRecipes(), {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      credentials: "include",
+      body: JSON.stringify({ dynamicRecipe: dynamicRecipe.$toJson(), }),
     })
-    dynamicRecipe.id = response.data.data.id
-    await dynamicRecipe.$insertOrUpdate({ data: { id: dynamicRecipe.id, ...response.data.data.attributes } })
-    return response
-  },
-  async [DynamicRecipeActionTypes.UPDATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.patch(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId), {
-      dynamicRecipe: dynamicRecipe.$toJson(),
-    })
+    if (!response.ok) return response
 
-    if (!response.data.error) {
-      await dynamicRecipe.save()
-      await StoreUtils.processIncluded(dynamicRecipe, response.data.included, response.data.data.relationships)
-    }
-    return response
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<DynamicRecipeAttributes> = await response.json()
+    dynamicRecipe.id = json.data.id
+    await dynamicRecipe.$insertOrUpdate({ data: { id: dynamicRecipe.id, ...json.data.attributes } })
+    return responseClone
   },
-  async [DynamicRecipeActionTypes.DESTROY](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>>> {
-    const response: AxiosResponse<ServerRecordResponse<DynamicRecipeAttributes>> = await securedAxiosInstance.delete(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId))
+  async [DynamicRecipeActionTypes.UPDATE](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId), {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      credentials: "include",
+      body: JSON.stringify({ dynamicRecipe: dynamicRecipe.$toJson(), }),
+    })
+    const responseClone = response.clone()
+    const json: ServerRecordResponse<DynamicRecipeAttributes> = await response.json()
+
+    if (!json.error) {
+      await dynamicRecipe.save()
+      await StoreUtils.processIncluded(dynamicRecipe, json.included, json.data.relationships)
+    }
+    return responseClone
+  },
+  async [DynamicRecipeActionTypes.DESTROY](_store: ActionContext<DynamicRecipesState, RootState>, dynamicRecipe: DynamicRecipe): Promise<Response> {
+    const response = await fetch(ApiPath.base() + ApiPath.dynamicRecipe(dynamicRecipe.clientId), { 
+      headers: {"Content-Type": "application/json"},
+      credentials: "include",
+      method: "DELETE" ,
+    })
+    if (!response.ok) return response
+
     await dynamicRecipe.$delete()
     return response
   },

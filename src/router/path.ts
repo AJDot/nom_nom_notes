@@ -98,14 +98,6 @@ class ApiPath extends Path {
     return AppConfig.API_URL + '/api/v1'
   }
 
-  signin(): string {
-    return '/signin'
-  }
-
-  signup(): string {
-    return '/signup'
-  }
-
   refresh(): string {
     return '/refresh'
   }
@@ -135,7 +127,7 @@ class ApiPath extends Path {
   }
 
   flipperBase() {
-    return '/flipper'
+    return AppConfig.API_URL + '/flipper'
   }
 
   flipperApi() {
@@ -183,7 +175,26 @@ class ApiPath extends Path {
   }
 }
 
+class AuthPath extends Path {
+  base(): string {
+    return AppConfig.API_URL + '/auth'
+  }
+
+  signin(): string {
+    return '/login'
+  }
+
+  signout(): string {
+    return '/logout'
+  }
+
+  signup(): string {
+    return '/create-account'
+  }
+}
+
 const appPath = new AppPath()
 const apiPath = new ApiPath()
+const authPath = new AuthPath()
 
-export { apiPath as ApiPath, appPath as AppPath }
+export { apiPath as ApiPath, appPath as AppPath, authPath as AuthPath }

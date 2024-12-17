@@ -72,7 +72,6 @@ import { mapGetters } from 'vuex'
 import { StoreModulePath } from '~/store'
 import Flash from '@/flash.vue'
 import { FlashActionTypes } from '~/store/modules/flash'
-import { AxiosError, AxiosResponse } from 'axios'
 import { SessionGetterTypes } from '~/store/modules/sessions/getters'
 import { SessionActionTypes } from '~/store/modules/sessions/actions'
 import { FeatureActionTypes } from '~/store/modules/features/actions'
@@ -101,35 +100,24 @@ export default defineComponent({
     this.$store.dispatch(StoreModulePath.Features + FeatureActionTypes.FETCH, { key: 'signup' })
   },
   methods: {
-    setError(error: AxiosError, text: string): void {
-      const errorText =
-        (error.response && error.response.data && error.response.data.error) ||
-        text
-      if (errorText) {
-        this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
-          flash: { alert: errorText },
-        })
-      }
-    },
     signOut(): void {
       this.$store.dispatch(StoreModulePath.Session + SessionActionTypes.DESTROY)
-        .then((response: AxiosResponse) => this.signOutSuccessful(response))
-        .catch((error: AxiosError) => this.signOutError(error))
+        .then((response: Response) => this.signOutSuccessful(response))
+        .catch((response: Response) => this.signOutFailed(response))
     },
-    signOutSuccessful(response: AxiosResponse) {
+    signOutSuccessful(response: Response) {
       if (this.signedIn) {
         this.signOutFailed(response)
         return
       }
       this.$routerExtension.replace({ name: this.$routerExtension.names.Home })
     },
-    signOutFailed(error: AxiosResponse) {
-      this.processFailedSignOut(error?.data?.error)
+    async signOutFailed(response: Response) {
+      const json = await response.json()
+      const errors = [json.error]
+      this.processFailedSignOut(errors)
     },
-    signOutError(error: AxiosError) {
-      this.processFailedSignOut(error.response?.data.error || 'Cannot sign out')
-    },
-    processFailedSignOut(errorText: string | null | undefined) {
+    processFailedSignOut(errorText: string | string[] | null | undefined) {
       if (errorText) {
         this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {
           flash: { alert: errorText },

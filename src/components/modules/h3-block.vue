@@ -11,7 +11,7 @@
     <h3
       ref="text"
       :placeholder="placeholder"
-      class="text-xl py-1 min-h-10 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
+      class="inline-block w-full text-xl py-1 min-h-10 outline-none border-2 border-transparent break-anywhere focus:shadow-input focus:bg-gray-100 rounded-md after:text-gray-500 after:empty:content-[attr(placeholder)] sm:px-2"
       :class="{ 'cursor-text': isEditable, 'cursor-pointer': isChooseMode }"
       :contenteditable="isEditable"
       data-focus

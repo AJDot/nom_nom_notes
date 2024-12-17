@@ -1,6 +1,7 @@
 import Feature from 'Models/feature'
-import ChangePassword from 'Views/passwords/change.vue'
-import ForgotPassword from 'Views/passwords/forgot.vue'
+import { SessionGetterTypes } from './../store/modules/sessions/getters'
+// import ChangePassword from 'Views/passwords/change.vue'
+// import ForgotPassword from 'Views/passwords/forgot.vue'
 import { createRouter, createWebHistory, NavigationGuard, RouteLocationNormalized, RouteRecord, RouteRecordRaw } from 'vue-router'
 import { AppAbilityTuple } from '~/appAbility'
 import AppConfig from '~/appConfig'
@@ -29,8 +30,8 @@ import ListRecipeHeader from '~/views/recipes/listHeader.vue'
 import ShowRecipe from '~/views/recipes/show.vue'
 import ShowRecipeHeader from '~/views/recipes/showHeader.vue'
 import EditShoppingList from '~/views/shoppingLists/edit.vue'
-import ShowShoppingListHeader from '~/views/shoppingLists/showHeader.vue'
 import EditShoppingListHeader from '~/views/shoppingLists/editHeader.vue'
+import ShowShoppingListHeader from '~/views/shoppingLists/showHeader.vue'
 import SignIn from '~/views/signIn.vue'
 import SignUp from '~/views/signUp.vue'
 
@@ -43,20 +44,23 @@ const publicRoutes: Array<RouteRecord['name'] | null | undefined> = [
   RouteName.DynamicRecipes,
   RouteName.DynamicRecipe,
   RouteName.NotFound,
-  RouteName.ForgotPassword,
-  RouteName.ChangePassword,
+  // RouteName.ForgotPassword,
+  // RouteName.ChangePassword,
 ]
 
-const checkSignIn: NavigationGuard = (to, _from) => {
+const checkSignIn: NavigationGuard = async (to, _from) => {
   // if a public route, navigate to it
-  if (publicRoutes.includes(to.name) || store.state[StoreModuleType.Session].signedIn) {
-    return true
-  } else {
-    // if not a public route, navigate to sign in
-    return {
-      name: RouteName.SignIn,
-      params: { originalRequest: to.path },
-    }
+  if (publicRoutes.includes(to.name)) return true
+
+  // if signed in, navigate
+  await store.state[StoreModuleType.Users].fetchCurrentPromise
+  const signedIn = store.getters[`${StoreModuleType.Session}/${SessionGetterTypes.SIGNED_IN}`]
+  if (signedIn) return true
+
+  // if not a public route, and not signed in, navigate to sign in
+  return {
+    name: RouteName.SignIn,
+    params: { originalRequest: to.path },
   }
 }
 
@@ -259,16 +263,16 @@ const routes: (RouteRecordRaw & { name: RouteName })[] = [
     component: SignUp,
     beforeEnter: checkCanSignUp,
   },
-  {
-    name: RouteName.ForgotPassword,
-    path: AppPath.forgotPassword(),
-    component: ForgotPassword,
-  },
-  {
-    name: RouteName.ChangePassword,
-    path: AppPath.changePassword(),
-    component: ChangePassword,
-  },
+  // {
+  //   name: RouteName.ForgotPassword,
+  //   path: AppPath.forgotPassword(),
+  //   component: ForgotPassword,
+  // },
+  // {
+  //   name: RouteName.ChangePassword,
+  //   path: AppPath.changePassword(),
+  //   component: ChangePassword,
+  // },
   {
     name: RouteName.NotFound,
     path: '/:catchAll(.*)',

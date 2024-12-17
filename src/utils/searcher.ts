@@ -1,8 +1,6 @@
-import { AxiosResponse } from 'axios'
 import { SearchOptions, SearchResult, USearcher } from 'Interfaces/searchInterfaces'
 import { ServerRecordData, ServerRecordResponse } from 'Interfaces/serverInterfaces'
 import { KeysOfType } from 'Interfaces/utilInterfaces'
-import { securedAxiosInstance } from '~/backend/axios'
 import { ObjectUtils } from '~/utils/objectUtils'
 import { SearchOptionsEndpoint, SearchOptionsLocal } from './../interfaces/searchInterfaces'
 
@@ -30,17 +28,12 @@ export default class Searcher<T> implements USearcher<T> {
   }
 
   private async searchEndpoint(q = '', options: SearchOptionsEndpoint<T>): Promise<void> {
-    const response: AxiosResponse<ServerRecordResponse<T, Array<ServerRecordData<T>>>> = await securedAxiosInstance.get(
-      options.endpoint,
-      {
-        params: {
-          query: Object.assign({},
-            options.query,
-            { term: q },
-          ),
-        },
-      })
-    this.results = response.data.data.map(item => {
+    const query = new URLSearchParams({ query: JSON.stringify(Object.assign({}, options.query, { term: q },),) })
+    const response = await fetch(`${options.endpoint}?${query}`, {
+      headers: { "Content-Type": "application/json" },
+    })
+    const json: ServerRecordResponse<T, Array<ServerRecordData<T>>> = await response.json()
+    this.results = json.data.map(item => {
       const obj = ObjectUtils.combine(item, 'id', 'attributes') as T
       return {
         type: getValue(options, 'type', { q }),

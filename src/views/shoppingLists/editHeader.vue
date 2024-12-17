@@ -26,13 +26,11 @@
 </template>
 
 <script lang="ts">
-import { AxiosError, AxiosResponse } from 'axios'
 import { defineComponent } from 'vue'
 import { mapActions, mapMutations, mapState, useStore } from 'vuex'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { FlashMutationTypes } from '~/store/modules/flash'
-import { SessionMutationTypes } from '~/store/modules/sessions/mutations'
 import { ShoppingListActionTypes } from '~/store/modules/shoppingLists/actions'
 import { HttpStatusCode } from '~/utils/httpUtils'
 
@@ -46,7 +44,7 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
+    // ...mapMutations(StoreModulePath.Session, { signOut: SessionMutationTypes.SIGN_OUT }),
     ...mapMutations(StoreModulePath.Flash, { setFlash: FlashMutationTypes.SET }),
     ...mapActions(StoreModulePath.ShoppingLists, { update: ShoppingListActionTypes.UPDATE }),
     async save(opts: { onSuccess?: () => void } = {}) {
@@ -55,7 +53,7 @@ export default defineComponent({
         opts.onSuccess?.()
         this.updateSuccessful(response)
       } catch (error) {
-        this.updateError(error as unknown as AxiosError)
+        this.updateError(error as unknown as Response)
       }
     },
     async destroyAll() {
@@ -64,18 +62,22 @@ export default defineComponent({
       this.shoppingList.items.splice(0, this.shoppingList.items.length)
       return this.save()
     },
-    async updateSuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.updateFailed(response)
+    async updateSuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json.error) {
+        this.updateFailed(responseClone)
       }
     },
-    updateFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error, { signOut: false })
+    async updateFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error, { signOut: false })
     },
-    updateError(error: AxiosError) {
-      let errorText = error.response?.data.error
+    async updateError(response: Response) {
+      const json = await response.json()
+      let errorText = json?.error
       const opts: { signOut: boolean | null } = { signOut: null }
-      switch (error.response?.status) {
+      switch (json?.status) {
         case (HttpStatusCode.Unauthorized):
           opts.signOut = true
           break

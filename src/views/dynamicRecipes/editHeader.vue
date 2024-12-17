@@ -59,14 +59,13 @@
 
 <script lang="ts">
 import Modal from '@/modal.vue'
-import { AxiosError, AxiosResponse } from 'axios'
 import DynamicRecipe from 'Models/dynamicRecipe'
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { ModalId } from '~/enums/modalId'
 import loading from '~/mixins/loading'
 import router from '~/router'
-import { stateKey, StoreModulePath } from '~/store'
+import { StoreModulePath, stateKey } from '~/store'
 import { RootState } from '~/store/interfaces'
 import { DynamicRecipeActionTypes } from '~/store/modules/dynamicRecipes/actions'
 import { FlashActionTypes } from '~/store/modules/flash'
@@ -110,9 +109,11 @@ export default defineComponent({
           .catch((error) => this.destroyError(error))
       })
     },
-    async destroySuccessful(response: AxiosResponse) {
-      if (response.data.error) {
-        this.destroyFailed(response)
+    async destroySuccessful(response: Response) {
+      const responseClone = response.clone()
+      const json = await response.json()
+      if (json.error) {
+        this.destroyFailed(responseClone)
         return
       }
 
@@ -125,12 +126,12 @@ export default defineComponent({
         })
       }
     },
-    destroyFailed(error: AxiosResponse) {
-      this.processFailedUpdate(error?.data?.error)
+    async destroyFailed(response: Response) {
+      const json = await response.json()
+      this.processFailedUpdate(json?.error)
     },
-    destroyError(error: AxiosError) {
-      const errorText = error.response?.data.error
-      this.processFailedUpdate(errorText)
+    async destroyError(error: Error) {
+      this.processFailedUpdate(error.message)
     },
     processFailedUpdate(errorText: string | null | undefined) {
       this.$store.dispatch(StoreModulePath.Flash + FlashActionTypes.SET, {

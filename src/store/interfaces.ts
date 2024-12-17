@@ -16,12 +16,11 @@ export interface TagsState {
 }
 
 export interface SessionsState {
-  csrf: string | null
-  signedIn: boolean | null
 }
 
 export interface UsersState {
   current: User | null
+  fetchCurrentPromise: Promise<unknown> | null
 }
 
 export interface SignupsState {

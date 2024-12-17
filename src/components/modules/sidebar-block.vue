@@ -32,18 +32,20 @@
           class="flex grow self-stretch py-2 border-transparent rounded-md break-anywhere sm:px-1"
           @click.prevent="onSidebarClick"
         >
-          <span
-            ref="text"
-            data-focus
-            class="grow sticky top-0 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]"
-            :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]"
-            :placeholder="placeholder"
-            :contenteditable="isEditable"
-            @input="onInput"
-            @keydown="onKeydown"
-            @click="onClick"
-            v-html="block.content.text"
-          />
+          <span class="grow sticky top-0">
+            <span
+              ref="text"
+              data-focus
+              class="inline-block w-full min-h-4 outline-none after:text-gray-500 after:empty:content-[attr(placeholder)]"
+              :class="[{ 'cursor-text': isEditable, 'cursor-pointer': !isEditable }, rotateStyle]"
+              :placeholder="placeholder"
+              :contenteditable="isEditable"
+              @input="onInput"
+              @keydown="onKeydown"
+              @click="onClick"
+              v-html="block.content.text"
+            />
+          </span>
         </button>
       </template>
       <base-block
